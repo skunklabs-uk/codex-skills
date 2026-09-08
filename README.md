@@ -162,6 +162,17 @@ Le 16 skill operative del pacchetto OpenAI Data Analytics sono consumate diretta
 | Skill | Sorgente | Uso |
 | --- | --- | --- |
 | `baia-publish` | locale | Pubblica contenuti seguendo workflow editoriale, fonti, immagini ed eventi. |
+| [`seo-audit`](projects/baialupo/seo-audit/SKILL.md) | `coreyhaines31/marketingskills` | Individua problemi SEO tecnici e di contenuto e ordina gli interventi per priorità. |
+
+`seo-audit` è una skill di progetto per `baialupo.com`, non una skill globale. Sono importati `SKILL.md` e i due file in `references/` da [`skills/seo-audit` al commit `5b2c0007766c6a1cf1d53fd8fc73e979e0821022`](https://github.com/coreyhaines31/marketingskills/tree/5b2c0007766c6a1cf1d53fd8fc73e979e0821022/skills/seo-audit), versione 2.0.1. La [licenza MIT originale](projects/baialupo/seo-audit/LICENSE) è inclusa. Gli altri moduli marketing citati dalla skill non sono installati con questa importazione.
+
+Per collegarla al checkout locale di Baialupo, eseguire dalla radice di `codex-skills`:
+
+```bash
+bash scripts/install-project.sh --no-global-agents baialupo /percorso/baialupo.com seo-audit
+```
+
+Il comando crea `.agents/skills/seo-audit` come symlink e lascia intatto l'`AGENTS.md` del progetto. Il collegamento va eseguito in ciascun checkout locale: il commit della sorgente non installa la skill sul computer dell'utente. Prima di usarla, leggere le fonti attive del progetto; le indicazioni SEO upstream vanno verificate contro la documentazione corrente di Google Search Central, non applicate come regole assolute. L'installazione non avvia audit, modifiche al sito o pubblicazioni.
 
 ### Cantieri Protetti AI
 
