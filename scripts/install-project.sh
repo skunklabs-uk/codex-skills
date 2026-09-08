@@ -88,6 +88,23 @@ fi
 
 mkdir -p "${dest_root}"
 
+# Retire only broken links created from this project's canonical sources.
+# Real directories and links to other repositories remain untouched.
+if [[ "${replace}" -eq 1 ]]; then
+  while IFS= read -r -d '' old_link; do
+    [[ -e "${old_link}" ]] && continue
+    old_source="$(readlink "${old_link}")"
+    case "${old_source}" in
+      "${source_root}"/*)
+        mkdir -p "${project_root}/.agents/skill-backups"
+        backup_dir="$(mktemp -d "${project_root}/.agents/skill-backups/retired.XXXXXX")/$(basename "${old_link}")"
+        mv -- "${old_link}" "${backup_dir}"
+        echo "Retired broken managed link to ${backup_dir}"
+        ;;
+    esac
+  done < <(find "${dest_root}" -mindepth 1 -maxdepth 1 -type l -print0)
+fi
+
 if [[ "$#" -gt 0 ]]; then
   skill_names=("$@")
 else
@@ -114,7 +131,8 @@ for skill_name in "${skill_names[@]}"; do
       echo "Use --replace to move it to a backup and relink." >&2
       exit 1
     fi
-    backup_dir="${target_dir}.backup-$(date +%Y%m%d%H%M%S)"
+    mkdir -p "${project_root}/.agents/skill-backups"
+    backup_dir="$(mktemp -d "${project_root}/.agents/skill-backups/${skill_name}.XXXXXX")/skill"
     mv "${target_dir}" "${backup_dir}"
     echo "Moved existing symlink to ${backup_dir}"
   fi
@@ -125,7 +143,8 @@ for skill_name in "${skill_names[@]}"; do
       echo "Use --replace to move it to a backup and relink." >&2
       exit 1
     fi
-    backup_dir="${target_dir}.backup-$(date +%Y%m%d%H%M%S)"
+    mkdir -p "${project_root}/.agents/skill-backups"
+    backup_dir="$(mktemp -d "${project_root}/.agents/skill-backups/${skill_name}.XXXXXX")/skill"
     mv "${target_dir}" "${backup_dir}"
     echo "Moved existing directory to ${backup_dir}"
   fi

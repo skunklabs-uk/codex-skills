@@ -17,6 +17,19 @@ repo_skills_dir="${repo_root}/global"
 codex_home="${CODEX_HOME:-${HOME}/.codex}"
 installed_skills_dir="${codex_home}/skills"
 
+# Do not re-vendor upstream skills or resurrect intentionally retired names.
+declare -A excluded=()
+while IFS= read -r skill_name; do
+  [[ -n "${skill_name}" ]] && excluded["${skill_name}"]=1
+done < <(
+  if [[ -f "${repo_root}/config/global-skill-upstreams.tsv" ]]; then
+    awk -F '\t' '!/^#/ && NF { print $1 }' "${repo_root}/config/global-skill-upstreams.tsv"
+  fi
+  if [[ -f "${repo_root}/config/global-skill-prune.txt" ]]; then
+    awk '{ sub(/#.*/, ""); gsub(/^[ \t]+|[ \t]+$/, ""); if (length) print }' "${repo_root}/config/global-skill-prune.txt"
+  fi
+)
+
 mkdir -p "${repo_skills_dir}"
 
 if [[ ! -d "${installed_skills_dir}" ]]; then
@@ -26,6 +39,11 @@ fi
 
 while IFS= read -r -d '' source_dir; do
   skill_name="$(basename "${source_dir}")"
+
+  if [[ -n "${excluded[${skill_name}]+x}" ]]; then
+    echo "Skip ${skill_name}: upstream-managed or retired"
+    continue
+  fi
 
   if [[ "${skill_name}" == ".system" ]]; then
     echo "Skip ${skill_name}: system skills are managed by Codex"

@@ -1,37 +1,12 @@
 ---
 name: write-tests
-description: Use this skill when adding or updating tests.
+description: "Usa quando i test CAP Aeris dipendono da pratiche, permessi, requisiti documentali o revisioni dei moduli."
 ---
 
-# Write Tests
+# Test CAP Aeris
 
-Use this skill when adding or updating tests.
+Leggi `AGENTS.md`, le fonti pertinenti in `docs/cap/` e `docs/wiki/`, e i test esistenti. Il metodo di testing resta quello upstream scelto per l'implementazione, non un secondo ciclo.
 
-## Read First
+Conserva i contratti CAP effettivamente interessati: transizioni e blocchi delle pratiche, documenti obbligatori, ruoli/azioni e casi negativi; identità del modello, revisione ed effective date dei moduli; ownership, metadata, immutabilità e operazioni sui documenti. Non espandere la suite a tutto il dominio per una modifica locale.
 
-- `AGENTS.md`
-- relevant files in `docs/cap/`
-- relevant syntheses in `docs/wiki/`
-- existing tests in the repository
-
-## Steps
-
-1. Identify expected behavior from documentation.
-2. Locate existing test patterns.
-3. Keep test names, helper functions, fixtures, and comments in English.
-4. Add tests close to the affected code.
-5. Cover the happy path.
-6. Cover important validation or failure cases.
-7. For CAP practices, cover workflow transition gates, required document checks, role/action permissions, and negative paths.
-8. For forms/modules, cover template identity, revision/effective-date metadata, and generated artifact behavior.
-9. For documents, cover ownership, metadata, revision/immutability expectations, and critical upload/delete/update behavior.
-10. Avoid brittle implementation-specific tests.
-11. Run the test suite or the relevant subset.
-
-## Definition of Done
-
-- Tests reflect documented behavior.
-- Regression cases are covered where relevant.
-- Tests are readable and maintainable.
-- Critical API and domain policy behavior is tested at the appropriate layer.
-- Final response states which tests were run.
+Nomi dei test, helper, fixture e commenti in inglese. Verifica comportamento osservabile e regressioni pertinenti alle interfacce concordate, senza dipendere dalla struttura interna. Usa pattern e runner del progetto e riporta i comandi realmente eseguiti. Non modificare fonti primarie per far coincidere il requisito con l'implementazione.

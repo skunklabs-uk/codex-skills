@@ -11,8 +11,8 @@ usage() {
   cat <<'EOF'
 Usage: scripts/prune-local.sh [--dry-run]
 
-Remove globally installed skill entries listed in config/global-skill-prune.txt.
-Only direct children of $CODEX_HOME/skills are touched.
+Move listed global skill entries out of discovery into $CODEX_HOME/skill-backups.
+Only direct children of $CODEX_HOME/skills are moved; symlink targets are untouched.
 EOF
 }
 
@@ -72,8 +72,10 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
   if [[ "${dry_run}" -eq 1 ]]; then
     echo "WOULD REMOVE ${target}"
   else
-    rm -rf -- "${target}"
-    echo "REMOVED ${target}"
+    mkdir -p "${codex_home}/skill-backups"
+    backup_dir="$(mktemp -d "${codex_home}/skill-backups/${entry}.XXXXXX")/skill"
+    mv -- "${target}" "${backup_dir}"
+    echo "RETIRED ${target} -> ${backup_dir}"
   fi
   removed=$((removed + 1))
 done < "${config_file}"

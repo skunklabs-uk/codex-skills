@@ -1,6 +1,6 @@
 ---
 name: ask-skills
-description: Use when the user asks which available skill fits the current task or how to choose between the repository's skill catalogs.
+description: "Usa quando l’utente chiede quale skill disponibile sia adatta al task o come scegliere tra i cataloghi del repository."
 disable-model-invocation: true
 ---
 
@@ -8,23 +8,17 @@ disable-model-invocation: true
 
 Scegli la skill pertinente; non definire un altro metodo di sviluppo.
 
-## Selezione
+1. Leggi l'inventario del `README.md` e le istruzioni attive del progetto. Il manifest `config/global-skill-upstreams.tsv` identifica gli originali e i commit approvati.
+2. Verifica la disponibilità nel runtime: catalogata non significa installata. Dichiarala non verificata quando non puoi controllarla.
+3. Scegli l'ingresso più specifico e leggilo, rispettando specializzazioni di progetto e policy di invocazione. `reality-check` confronta documentazione e stato effettivo quando la baseline è incerta; non equivale a ricerca sulle API ufficiali.
+4. Lascia alla skill il processo e le dipendenze. Non concatenare automaticamente framework, interviste, piani, review o tracker. `brainstorming` sceglie la scala del design; `grill-with-docs` resta a invocazione esplicita. Una specifica già approvata non va riscritta per rito.
 
-1. Leggi l'inventario del `README.md` e le istruzioni attive del progetto. Il manifest `config/global-skill-upstreams.tsv` distingue gli upstream diretti dalle copie locali.
-2. Verifica quali skill sono disponibili nel runtime. Catalogata non significa installata; quando non puoi verificarlo, dichiaralo.
-3. Scegli l'ingresso più specifico per la richiesta e leggine le istruzioni. Rispetta eventuali specializzazioni di progetto realmente applicabili e la policy di invocazione della skill.
-4. Lascia alla skill scelta il proprio processo e le proprie dipendenze. Non concatenare automaticamente framework, interviste, piani, review o tracker. Non imporre un documento di piano a ogni modifica.
+Per eseguire un piano, considera `subagent-driven-development` soltanto quando il runtime offre subagenti e il lavoro si presta alla delega; altrimenti `executing-plans`. Non fingere deleghe, parallelismo o review indipendenti. Non sovrapporre il ciclo TDD/review Matt a quello Superpowers sullo stesso task; ciascuno mantiene i propri riferimenti.
 
-Per design e modifiche al comportamento, `brainstorming` upstream sceglie il percorso proporzionato. Per un'intervista documentale richiesta esplicitamente usa `grill-with-docs`; senza tale richiesta non aggirare `allow_implicit_invocation: false`.
+Rispondi con nome, motivo, disponibilità ed eventuali prerequisiti mancanti. Se nessuna skill aggiunge valore, non inventarne una. Per altre aree seleziona dalle descrizioni del catalogo, senza riprodurre qui l'inventario.
 
-Per altri bisogni usa le descrizioni del catalogo: debugging, refactoring, dati, scrittura, browser e operazioni di progetto non richiedono tutti lo stesso percorso. Consulta fonti disponibili prima di chiedere dati già recuperabili, come previsto dalle istruzioni attive.
-
-## Disponibilità e output
-
-Rispondi con nome, motivo della scelta, stato nel runtime ed eventuali dipendenze mancanti. Se nessuna skill aggiunge valore, dillo e non inventarne una.
-
-Per una skill globale non installata, indica `bash scripts/install-local.sh <nome>`; per una skill di progetto, `bash scripts/install-project.sh --no-global-agents <progetto> <root> <nome>`. Gli installer non risolvono dipendenze transitive: includi nel comando quelle effettivamente richieste dal flusso. Non avviare installazioni senza richiesta. Riavvia Codex dopo l'installazione.
+Per installare usa `bash scripts/install-local.sh <nome>` oppure `bash scripts/install-project.sh --no-global-agents <progetto> <root> <nome>`. La selezione parziale non risolve dipendenze transitive: includi quelle richieste, oppure usa l'installazione globale completa. Non installare senza richiesta; riavvia Codex dopo l'installazione.
 
 ## Provenienza
 
-Derivato ridotto di `mattpocock/skills`, `skills/engineering/ask-matt/SKILL.md`, commit `9603c1cc8118d08bc1b3bf34cf714f62178dea3b`. Resta locale soltanto per selezionare tra il catalogo multi-upstream e le skill di progetto; non duplica il metodo dei framework. Motivazione e stato della riduzione: `docs/reviews/2026-09-08-skill-origin-audit.md`.
+Derivato ridotto di `mattpocock/skills`, `skills/engineering/ask-matt/SKILL.md`, commit `9603c1cc8118d08bc1b3bf34cf714f62178dea3b`. Resta locale per selezionare tra più cataloghi e contesti di progetto, non per riscrivere i framework. Motivazione nell'audit del 2026-09-08.

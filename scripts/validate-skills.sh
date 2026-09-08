@@ -129,7 +129,7 @@ PY
 }
 
 validate_upstreams() {
-  local skill_name repo_url ref skill_path extra
+  local skill_name repo_url ref skill_path extra project_dir
   declare -A seen=()
 
   [[ -f "${upstreams_file}" ]] || return 0
@@ -167,6 +167,12 @@ validate_upstreams() {
       echo "ERROR upstream/${skill_name}: duplicate local copy exists in global/${skill_name}" >&2
       status=1
     fi
+
+    for project_dir in "${project_skills_dir}"/*/"${skill_name}"; do
+      [[ -d "${project_dir}" ]] || continue
+      echo "ERROR upstream/${skill_name}: duplicate local copy exists in ${project_dir#${repo_root}/}" >&2
+      status=1
+    done
 
     seen["${skill_name}"]=1
   done < "${upstreams_file}"

@@ -1,72 +1,16 @@
 ---
 name: pptx-package-validation
-description: Use before final delivery of a generated, repaired, merged, or modified .pptx file, especially when PowerPoint package integrity or open-without-repair behavior matters.
+description: "Usa prima della consegna di un PowerPoint quando occorre verificare integrità del pacchetto e possibili avvisi di repair."
 ---
 
-# PPTX Package Validation
+# Validazione tecnica PPTX
 
-## Purpose
+Leggi i requisiti del task e le istruzioni di esecuzione del progetto. Riusa gli strumenti di validazione già presenti; non costruire un nuovo validator se i controlli disponibili coprono il caso.
 
-Validate a `.pptx` as an Office Open XML package before claiming it is ready.
+Controlla sul file effettivamente consegnato: integrità ZIP; parsing XML; Override di `[Content_Types].xml` verso parti esistenti; target interni delle relazioni; master/layout e media; extents non negativi; integrità delle relazioni notes master/theme quando presenti. I target esterni non sono file interni mancanti.
 
-Use this as the technical gate. Use `commercial-deck-quality-review` for storyline and business quality.
+Verifica anche che il sorgente non sia stato sovrascritto senza permesso. Usa render/export disponibile per le verifiche visuali richieste, ma distinguine l'esito dalla validità del pacchetto e dall'apertura nel programma PowerPoint.
 
-## Required Reads
+Se PowerPoint ripara il file, confronta i pacchetti originali/riparati: correggi dangling override, relazioni o geometrie invalide dimostrate, non pattern innocui per supposizione. Non imporre `theme2.xml` o normalizzazioni dei tag vuoti a ogni file: valgono struttura e riferimenti corretti, non una topologia fissa. Non alterare theme e aspetto visivo approvati durante una riparazione tecnica.
 
-Read:
-
-1. `.codex/execution.md`
-2. `.codex/skills/powerpoint-manipulation/SKILL.md`
-
-## Checks
-
-Run equivalent checks for the target `.pptx`:
-
-1. File exists in the relevant presentation folder unless explicitly requested otherwise.
-2. `unzip -t "<file>.pptx"` passes.
-3. Every XML file parses.
-4. Every `[Content_Types].xml` override points to an existing part.
-5. Every non-external `.rels` target resolves.
-6. Expected media assets exist.
-7. Slide XML has no negative extents (`cx < 0`, `cy < 0`).
-8. No source deck was overwritten without approval.
-9. LibreOffice PDF export passes when available and useful.
-10. PowerPoint manual open-without-repair is requested when local automation cannot prove it.
-
-## Failure Handling
-
-If validation fails:
-
-- do not call the deck ready;
-- identify the failing package part;
-- repair into a new file unless in-place repair was approved;
-- rerun the full validation set after repair.
-
-## Final Report
-
-Report:
-
-```markdown
-## PPTX Validation
-
-- File:
-- unzip:
-- XML parse:
-- content types:
-- relationships:
-- media:
-- negative extents:
-- PDF export:
-- PowerPoint manual check:
-- Result:
-- Residual risk:
-```
-
-## Common Risks
-
-- Dangling content type overrides.
-- Missing media targets.
-- Relationship paths that resolve incorrectly from `_rels` folders.
-- Negative extents from line shapes.
-- Notes master/theme relationships that trigger PowerPoint repair.
-- Successful LibreOffice export but PowerPoint repair warning still possible.
+Un errore richiede identificazione della parte, correzione in un nuovo output salvo autorizzazione e ripetizione delle verifiche pertinenti. Riporta file, controlli eseguiti, esiti e rischi residui. Se non puoi provare l'apertura senza repair in PowerPoint, dichiarala non verificata. La review commerciale è separata.

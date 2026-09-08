@@ -1,82 +1,14 @@
 ---
 name: homelab-gateway-routes
-description: Use when adding, changing, debugging, or reviewing exposed homelab services that use Kubernetes Gateway API, Traefik, HTTPRoute, Cloudflare DNS, Cloudflare Access, or cloudflared tunnel ingress.
+description: "Usa per esporre o verificare un servizio Homelab tramite Gateway condiviso, HTTPRoute e routing Cloudflare."
 ---
 
-# Homelab Gateway Routes
+# Gateway e route Homelab
 
-Use this skill for ingress and exposure work in the homelab repository.
+Leggi i manifest correnti e le istruzioni del progetto. Il modello adottato usa Gateway API/Traefik: verifica identità e listener del Gateway condiviso, namespace e service backend prima di modificare la route. Non assumere un IP live dalla documentazione.
 
-## Canonical Model
+Preferisci HTTPRoute a Ingress dove il contratto corrente lo richiede. Mantieni espliciti in Git i default che altrimenti producono drift Argo: `parentRefs.group`, `parentRefs.kind`, `backendRefs.group`, `backendRefs.kind`, `backendRefs.weight`. Verifica hostname, sectionName, porta, namespace e ownership.
 
-- The active ingress model is Kubernetes Gateway API with Traefik.
-- The shared Gateway is `kube-system/traefik-gateway`.
-- The Gateway is programmed on `10.10.20.240`.
-- Prefer `HTTPRoute` over `Ingress` for new exposed services.
-- Cloudflare DNS, Access, and tunnel rules live under
-  `infra/opentofu/cloudflare-zero-trust/` and `gitops/infra/cloudflare/`.
-- Grafana talks to Loki through
-  `http://monitoring-loki.monitoring.svc:3100`, not through the protected
-  public Loki URL.
+Per il percorso pubblico riconcilia con le fonti Cloudflare in `infra/opentofu/cloudflare-zero-trust/` e `gitops/infra/cloudflare/`; usa `homelab-cloudflare-operations` quando serve quel contesto. Non duplicare qui endpoint di altre applicazioni.
 
-## HTTPRoute Requirements
-
-Keep defaulted Gateway API fields explicit in Git to avoid Argo drift:
-
-```yaml
-parentRefs:
-  - group: gateway.networking.k8s.io
-    kind: Gateway
-    name: traefik-gateway
-    namespace: kube-system
-backendRefs:
-  - group: ""
-    kind: Service
-    name: service-name
-    port: 80
-    weight: 1
-```
-
-Check hostnames, `sectionName`, service port, namespace, and route ownership
-before syncing.
-
-## Preflight
-
-```bash
-kubectl -n kube-system get gateway traefik-gateway
-kubectl get httproute -A
-kubectl -n <namespace> get svc,endpoints <service>
-kubectl -n argocd get application <app>
-```
-
-For Cloudflare-backed routes, also inspect the OpenTofu and cloudflared
-manifests before assuming DNS or Access behavior.
-
-## Debugging Flow
-
-1. Confirm the service has endpoints.
-2. Confirm the `HTTPRoute` is accepted and resolved.
-3. Confirm the Gateway listener matches the hostname/protocol.
-4. Confirm Cloudflare DNS/tunnel routes match the hostname.
-5. Confirm Cloudflare Access policy is expected.
-6. Test internal service URL before public URL when possible.
-
-Useful commands:
-
-```bash
-kubectl describe httproute -n <namespace> <name>
-kubectl -n kube-system describe gateway traefik-gateway
-kubectl -n <namespace> get endpoints <service>
-kubectl -n <namespace> logs deploy/<app> --tail=100
-```
-
-## Stop Conditions
-
-Stop before syncing if:
-
-- the route would expose an admin UI without Access or another explicit control;
-- service endpoints are empty;
-- Cloudflare and Gateway hostnames disagree;
-- Argo drift is caused only by omitted Gateway API defaults;
-- a public URL is protected by Access but an internal integration should use the
-  service DNS name.
+La verifica copre condizioni della route e del listener, risoluzione del backend, endpoint, DNS/tunnel e Access previsti. Un servizio privo di endpoint o un hostname non coerente va diagnosticato prima del rollout dipendente. Nessuna console admin esposta per aggirare un guasto; le integrazioni interne non devono passare inutilmente da Access pubblico.
