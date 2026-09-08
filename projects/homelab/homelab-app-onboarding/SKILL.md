@@ -1,65 +1,14 @@
 ---
 name: homelab-app-onboarding
-description: Use when adding, exposing, or standardizing a new homelab application with Kubernetes manifests, ArgoCD Application, SOPS secrets, CNPG database, HTTPRoute, Cloudflare, Homepage, PVCs, or backups.
+description: "Usa per inserire un’applicazione nell’Homelab e definire ownership GitOps, database, secret, esposizione e Homepage."
 ---
 
-# Homelab App Onboarding
+# Onboarding applicazioni Homelab
 
-Use this skill when introducing or normalizing an app under `gitops/apps/`.
+Leggi `AGENTS.md`, il runbook corrente e un'app analoga sotto `gitops/apps/`. Ricava dal repository namespace, Application Argo, layout, dipendenze e convenzioni: non creare componenti soltanto perché compaiono in una ricetta.
 
-## Required Decisions
+Il layout ordinario è `gitops/apps/<app>/` con la relativa Application sotto `gitops/apps/applications/`. Verifica se servono davvero database, PVC, object storage e backup; per PostgreSQL controlla l'ownership sotto `gitops/apps/postgres/` e la reflection dei secret verso il namespace applicativo.
 
-Before editing, determine:
+Determina esposizione interna/LAN/tunnel privato/tunnel pubblico e visibilità Homepage. Usa il contratto di `homelab-gateway-routes` per HTTPRoute e default espliciti, e `homelab-secret-management` per SOPS e bootstrap. Mantieni `revisionHistoryLimit: 0` dove previsto dalla convenzione corrente o motiva la deroga.
 
-- namespace and owning ArgoCD Application;
-- whether the app needs Postgres, PVCs, object storage, or backups;
-- exposure mode: internal only, private Cloudflare tunnel, public Cloudflare tunnel, or LAN-only;
-- Homepage visibility and health signal;
-- secret source of truth and reflection needs.
-
-## Standard Files
-
-Typical app layout:
-
-```text
-gitops/apps/<app>/
-  deployment.yaml
-  service.yaml
-  httproute.yaml
-  pvc.yaml
-  secrets.enc.yaml
-  kustomization.yaml
-gitops/apps/applications/<app>.yaml
-```
-
-If the app needs Postgres, add database resources under `gitops/apps/postgres/`
-and use Reflector annotations on source secrets in namespace `postgres`.
-
-## Rules
-
-- Prefer `HTTPRoute` over `Ingress`.
-- Keep Gateway defaulted fields explicit: `parentRefs.group`, `parentRefs.kind`, `backendRefs.group`, `backendRefs.kind`, `backendRefs.weight`.
-- Set `revisionHistoryLimit: 0` on Deployments unless there is a documented reason not to.
-- Use SOPS for secrets; do not commit plaintext Kubernetes Secret manifests.
-- For Cloudflare-exposed apps, update OpenTofu inputs and tunnel routing together.
-- Add Homepage annotations to the HTTPRoute when the app should appear on Homepage.
-
-## Verification
-
-```bash
-kubectl apply --dry-run=server -k gitops/apps/<app>
-kubectl -n argocd get application <app>
-kubectl -n <namespace> get deploy,pod,svc,endpoints
-kubectl -n <namespace> logs deploy/<app> --tail=100
-```
-
-For Cloudflare exposure, also use `homelab-cloudflare-operations`.
-
-## Stop Conditions
-
-Stop and reassess if:
-
-- the app requires a manual live resource that is not represented in Git;
-- route, DNS, Access policy, and tunnel ingress do not agree;
-- database role or reflected secret ordering is unclear;
-- PVC retention or backup ownership is not decided.
+La consegna segue `homelab-gitops-operations`: manifesta in Git le risorse durevoli, valida, verifica la revisione applicata e la salute dell'app. Nessuna risorsa manuale permanente, secret plaintext o backup senza owner/retention/restore definiti.

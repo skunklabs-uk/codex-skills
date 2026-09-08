@@ -167,7 +167,8 @@ for skill_name in "${skill_names[@]}"; do
       echo "Use --replace to move it to a backup and relink." >&2
       exit 1
     fi
-    backup_dir="${target_dir}.backup-$(date +%Y%m%d%H%M%S)"
+    mkdir -p "${codex_home}/skill-backups"
+    backup_dir="$(mktemp -d "${codex_home}/skill-backups/${skill_name}.XXXXXX")/skill"
     mv "${target_dir}" "${backup_dir}"
     echo "Moved existing symlink to ${backup_dir}"
   fi
@@ -178,7 +179,8 @@ for skill_name in "${skill_names[@]}"; do
       echo "Use --replace to move it to a backup and relink." >&2
       exit 1
     fi
-    backup_dir="${target_dir}.backup-$(date +%Y%m%d%H%M%S)"
+    mkdir -p "${codex_home}/skill-backups"
+    backup_dir="$(mktemp -d "${codex_home}/skill-backups/${skill_name}.XXXXXX")/skill"
     mv "${target_dir}" "${backup_dir}"
     echo "Moved existing directory to ${backup_dir}"
   fi

@@ -1,37 +1,12 @@
 ---
 name: update-docs
-description: Use this skill when behavior, workflows, architecture, UI, or assumptions change.
+description: "Usa quando un cambiamento CAP Aeris interessa fonti primarie protette, sintesi wiki o domande aperte."
 ---
 
-# Update Documentation
+# Documentazione CAP Aeris
 
-Use this skill when behavior, workflows, architecture, UI, or assumptions change.
+Leggi `AGENTS.md` e le fonti coinvolte in `docs/cap/`, `docs/ui/`, `docs/wiki/` e `docs/architecture.md` quando presenti. Per metodo documentale e ADR usa l'upstream pertinente, rispettando le convenzioni già attive.
 
-## Read First
+Non modificare le fonti primarie `docs/cap/` senza richiesta esplicita. Interpretazioni e conclusioni tra fonti appartengono a `docs/wiki/syntheses/`; incertezze non risolte a `docs/wiki/questions/`. Prima di adeguare un documento al codice, verifica che sia il documento a essere superato e non il codice a violare il requisito.
 
-- `AGENTS.md`
-- affected files in `docs/cap/`
-- affected files in `docs/ui/`
-- `docs/wiki/`
-- `docs/architecture.md`
-
-## Steps
-
-1. Identify what changed.
-2. Identify the correct documentation area.
-3. Do not modify primary CAP source documents in `docs/cap/` unless explicitly requested.
-4. Put interpretations, decisions, and cross-source conclusions in `docs/wiki/syntheses/`.
-5. Put unresolved questions in `docs/wiki/questions/`.
-6. Update project-level guidance files only for stable guidance that applies across features.
-7. Update only the relevant sections.
-8. Do not duplicate large blocks of information.
-9. Add unclear items to `Open Questions`.
-10. Keep documentation concise and operational.
-11. When documentation references code, use English identifiers for code-level names and keep Italian only for user-facing labels or source-document terminology.
-
-## Definition of Done
-
-- Documentation matches implementation.
-- No obsolete behavior remains documented.
-- Open questions are explicit.
-- Primary source material remains unchanged unless explicitly intended.
+Aggiorna solo sezioni interessate; rinvia alle fonti invece di duplicarle. Le istruzioni di progetto contengono soltanto convenzioni stabili. Identificatori tecnici in inglese; etichette rivolte agli utenti e terminologia dei documenti possono restare in italiano. Riporta le fonti aggiornate e ciò che resta non verificato.

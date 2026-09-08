@@ -1,62 +1,14 @@
 ---
 name: homelab-cloudflare-operations
-description: Use when working on Cloudflare DNS, Access, Zero Trust, cloudflared tunnel ingress, public hostnames, protected services, or debugging external reachability for this homelab.
+description: "Usa quando un intervento Homelab attraversa DNS Cloudflare, Access, tunnel ed esposizione GitOps."
 ---
 
-# Homelab Cloudflare Operations
+# Cloudflare Homelab
 
-Use this skill for Cloudflare-facing work in the homelab.
+Controlla le fonti attive in `infra/opentofu/cloudflare-zero-trust/` e `gitops/infra/cloudflare/`: OpenTofu possiede DNS/Access/Zero Trust; GitOps possiede workload cloudflared e secret. Ricava gli oggetti esatti dalla configurazione corrente.
 
-## Canonical Model
+Verifica insieme DNS, applicazione/policy Access, ingresso del tunnel, Gateway/HTTPRoute e backend. Parti da service ed endpoint interni prima di attribuire un guasto a Cloudflare. Le integrazioni interne devono usare il service DNS quando il public hostname è protetto da Access.
 
-- Cloudflare DNS, Access applications, and Zero Trust resources are managed from
-  `infra/opentofu/cloudflare-zero-trust/`.
-- `cloudflared` workloads and tunnel tokens are managed by GitOps under
-  `gitops/infra/cloudflare/`.
-- Public URLs may be Cloudflare Access protected; internal integrations should
-  prefer Kubernetes service DNS.
-- Loki public URL is Access protected; Grafana must use
-  `http://monitoring-loki.monitoring.svc:3100`.
+Non esporre console amministrative o dati pubblicamente senza il controllo approvato. Non rimuovere Access né ruotare token per tentativi. Per il contratto della route usa `homelab-gateway-routes`; per modifiche IaC usa `homelab-opentofu-terraform`. Un plan non è un apply e un apply non prova la raggiungibilità applicativa.
 
-## Safety Rules
-
-- Do not expose admin or data services publicly without Access or an explicit
-  alternative control.
-- Do not change DNS/Access/tunnel rules without checking the matching
-  Kubernetes route and service endpoints.
-- Do not print tunnel tokens or Cloudflare API credentials.
-- Keep OpenTofu state and GitOps manifests conceptually separate.
-
-## Debugging Flow
-
-1. Check Kubernetes service/endpoints first.
-2. Check `HTTPRoute` and Gateway status.
-3. Check cloudflared pod health and tunnel ingress config.
-4. Check Cloudflare DNS record and Access application/policy.
-5. Test internal service DNS before testing public URL.
-
-Commands:
-
-```bash
-kubectl -n <namespace> get svc,endpoints <service>
-kubectl get httproute -A
-kubectl -n cloudflare get pods
-kubectl -n cloudflare logs deploy/cloudflared --tail=100
-```
-
-For IaC-managed resources:
-
-```bash
-cd infra/opentofu/cloudflare-zero-trust
-tofu plan
-```
-
-## Stop Conditions
-
-Stop if:
-
-- Access policy would be removed from a sensitive public hostname;
-- public DNS points at a hostname without a matching tunnel ingress rule;
-- an app should use internal service DNS but is configured to use a protected
-  public URL;
-- tunnel token or credentials appear in command output, diffs, or docs.
+Redigi soltanto evidenze prive di token, credenziali o state sensibile; segnala disallineamenti e verifiche live mancanti.

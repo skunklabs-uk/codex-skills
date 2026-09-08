@@ -1,73 +1,27 @@
 ---
 name: reality-check
-description: Use when a task, plan, decision, or interview is grounded in an existing repository, specification, RFC, ADR, issue, or other authoritative source and the agent must determine what is already decided before asking the user.
+description: "Usa quando fonti autorevoli, piani o runbook possono essere superati o contraddire codice, configurazione, evidenze di deploy o decisioni approvate."
 ---
 
 # Reality Check
 
-## Scopo
+Verifica la baseline del lavoro, non soltanto ciò che dice la documentazione. Rimani nel perimetro richiesto; questo controllo non autorizza un audit generale, una modifica al prodotto o un'operazione live.
 
-Ridurre le domande e impedire l'introduzione di complessità non richiesta prima di `grilling`, `grill-with-docs`, design o pianificazione.
+## Confronto
 
-La scelta predefinita è la soluzione più semplice che soddisfa tutte le fonti autorevoli applicabili.
+1. Leggi le istruzioni del progetto e individua le fonti pertinenti, il loro stato e la revisione esaminata. Distingui il comportamento **approvato o desiderato** dallo stato dichiarato come **già implementato**.
+2. Confronta le affermazioni che condizionano il task con codice, configurazione, dipendenze, test pertinenti e cronologia delle decisioni. Un README `Active` non è una prova che il deploy sia avvenuto; una PR aperta non è una decisione approvata.
+3. Quando la conclusione dipende dal deploy o dall'operatività, cerca evidenze runtime disponibili e autorizzate in sola lettura, con ambiente e data/revisione. Un manifest in Git non dimostra lo stato live. Non ottenere permessi, leggere segreti o avviare deploy, restore, job o servizi per colmare il gap senza autorizzazione.
+4. Per ogni discrepanza distingui: **drift documentale**, **difetto dell'implementazione rispetto al requisito**, **drift di deploy/configurazione**, oppure **conflitto non risolto**. Se manca l'evidenza, scrivi **non verificato**: non è prova di drift né prova di correttezza.
+5. Ricostruisci l'intento dalle decisioni approvate prima di scegliere la correzione. Non riscrivere requisiti o documenti per legittimare un bug. Aggiorna una fonte soltanto quando la richiesta autorizza la modifica e la correzione è determinata; altrimenti indica il delta necessario. Preserva gli originali quando sono fonti primarie protette.
+6. Porta alla fase successiva soltanto la baseline verificata e le decisioni realmente aperte. Un conflitto che cambia prodotto, architettura, sicurezza o dati richiede una decisione umana; prosegui il lavoro indipendente già autorizzato.
 
-## Quando usarla
+## Risultato
 
-Usala quando esistono fonti autorevoli e devi:
+Riporta sinteticamente affermazione, stato dichiarato, evidenza osservata, fonte/revisione, esito e azione. Se utile, usa una tabella. Separa fatti, deduzioni, assunzioni e verifiche mancanti. Non dichiarare controlli runtime o test non eseguiti.
 
-- chiarire requisiti o decisioni;
-- preparare un'intervista;
-- valutare un piano o una proposta;
-- distinguere ciò che è già deciso da ciò che richiede davvero una decisione umana.
+Nessun contatore di domande, intervista, nuovo ADR, ticket o report permanente è obbligatorio. Se il confronto non rileva discrepanze pertinenti, dillo con il perimetro verificato e continua. La skill non sostituisce debugging, ricerca sulle API ufficiali o test eseguibili.
 
-Non usarla per sostituire ricerca, debugging, prototipi o validazioni eseguibili.
+## Ragione locale
 
-## Procedura
-
-1. Identifica le fonti autorevoli applicabili e usa per impostazione predefinita solo quelle attive.
-2. Classifica ogni elemento rilevante come:
-   - **Fatto**: presente in una fonte autorevole o verificato nel repository;
-   - **Deduzione**: derivazione logica certa da fatti espliciti;
-   - **Informazione mancante**: necessaria per scegliere correttamente tra alternative rilevanti.
-3. Elimina le domande già risolte da fatti o deduzioni certe.
-4. Non inventare entità, stati, regole, documenti o comportamenti di prodotto.
-5. Quando più soluzioni sono compatibili, raccomanda quella più semplice ed efficace.
-6. Passa a `grilling` o `grill-with-docs` soltanto le decisioni realmente aperte.
-7. Fai una sola domanda alla volta e mostra l'avanzamento come `n/N`.
-
-## Regola sul contatore
-
-- `N` è il numero iniziale delle decisioni aperte identificate.
-- `N` può diminuire quando una risposta chiude più decisioni.
-- `N` può aumentare soltanto se emerge una nuova informazione mancante rilevante; spiega esplicitamente perché non era rilevabile prima.
-- Non usare un totale arbitrario o decorativo.
-
-## Output minimo
-
-```text
-Reality Check
-
-Fonti consultate:
-- ...
-
-Decisioni già determinate: N
-Decisioni dedotte: N
-Decisioni aperte: N
-
-Domanda 1/N
-...
-```
-
-Se non restano decisioni aperte, non avviare un'intervista: riporta l'esito e procedi con il flusso successivo appropriato.
-
-## Guardrail
-
-Prima di porre una domanda verifica:
-
-1. La risposta è già presente in una fonte autorevole?
-2. È deducibile con certezza da fatti disponibili?
-3. La domanda è necessaria per il task corrente?
-4. Sto introducendo una complessità che non risponde a un requisito identificabile?
-5. Esiste una soluzione più semplice con risultato equivalente?
-
-Se una domanda fallisce una di queste verifiche, non porla.
+Mantenuta per il confronto tra stato approvato, documentato, implementato e osservato. La sola lettura delle fonti e `source-driven-development` non coprono questo contratto. Decisione e casi concreti: `docs/reviews/2026-09-08-skill-origin-audit.md`.

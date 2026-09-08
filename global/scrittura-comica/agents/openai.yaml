@@ -1,4 +1,0 @@
-interface:
-  display_name: "Scrittura Comica"
-  short_description: "Migliora battute, ritmo e tono comico"
-  default_prompt: "Usa $scrittura-comica per scrivere o riscrivere un testo con tono ironico, leggero e divertente."

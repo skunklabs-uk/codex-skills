@@ -1,68 +1,14 @@
 ---
 name: homelab-proxmox-operations
-description: Use when planning, documenting, or debugging Proxmox, PBS, Ceph, VM/LXC, node, storage, or backup operations in this homelab.
+description: "Usa quando un’operazione Homelab interessa nodi Proxmox, PBS, Ceph, VM o rete di management."
 ---
 
-# Homelab Proxmox Operations
+# Proxmox Homelab
 
-Use this skill for Proxmox, PBS, Ceph, VM/LXC, and node-level work.
+Leggi i runbook pertinenti sotto `doc/`: installazione nodi, rete Proxmox, cluster, Ceph/RBD, VM K3s e PBS/offsite. Verifica i percorsi correnti dall'indice, non da un titolo storico.
 
-## Canonical Docs
+Prima di interventi identifica nodo e VM/LXC/disco senza ambiguità, quorum, salute Ceph, capacità storage, backup/restore e dipendenze delle VM K3s. Preferisci diagnostica read-only. L'assenza di un warning in documentazione non è prova di salute live.
 
-Read the relevant runbook before acting:
+Non modificare rete da remoto senza console/rollback. Non cancellare dischi, pool, VM o snapshot PBS senza richiesta esplicita. Reboot e manutenzione devono preservare quorum e disponibilità delle dipendenze coinvolte.
 
-- `doc/03-Installazione Proxmox sui nodi.md`
-- `doc/04-Configurazione rete Proxmox.md`
-- `doc/07-Creazione cluster Proxmox.md`
-- `doc/08-Installazione e configurazione Ceph.md`
-- `doc/09-Integrazione Ceph RBD in Proxmox.md`
-- `doc/10-Creazione VM per K3s.md`
-- `doc/20-Proxmox Backup Server (PBS) - Best practices e offsite con rclone.md`
-
-## Safety Rules
-
-- Do not suggest destructive storage, Ceph, VM, or cluster commands without a
-  rollback path and confirmed target node/resource.
-- Treat quorum, Ceph health, and PBS restore capability as preflight checks.
-- Prefer read-only diagnostics before remediation.
-- Do not change Proxmox networking remotely without a console/rollback path.
-- Do not delete VM disks, Ceph pools, or PBS snapshots unless explicitly asked.
-
-## Read-Only Preflight
-
-Use available Proxmox tooling when the user can run it or when SSH access is
-configured:
-
-```bash
-pvecm status
-pvesm status
-qm list
-pct list
-ceph status
-ceph osd tree
-```
-
-For PBS/offsite:
-
-```bash
-proxmox-backup-manager datastore list
-```
-
-## Operational Checks
-
-- Cluster quorum healthy.
-- Ceph health is `HEALTH_OK` or known warnings are explained.
-- Storage has enough free space.
-- Target VM/LXC ID and node are unambiguous.
-- A recent backup exists before destructive maintenance.
-- K3s VM dependencies are understood before rebooting nodes.
-
-## Stop Conditions
-
-Stop if:
-
-- quorum is degraded;
-- Ceph health is unknown or unhealthy;
-- the target VM/LXC/disk cannot be uniquely identified;
-- networking changes could lock out management access;
-- backup or restore evidence is missing for a destructive action.
+Riporta osservazioni reali e condizioni residue; se il target, la salute o il recupero restano incerti, ferma l'operazione dipendente invece di proporre comandi distruttivi generici. Per rete usa `homelab-network-readiness`; per backup e storage i rispettivi runbook.

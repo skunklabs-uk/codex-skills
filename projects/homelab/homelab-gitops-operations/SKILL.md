@@ -1,88 +1,22 @@
 ---
 name: homelab-gitops-operations
-description: Use when changing, syncing, or debugging this homelab GitOps repository with ArgoCD, SOPS plugin Applications, Kustomize manifests, Kubernetes resources, or cluster rollout checks.
+description: "Usa per modificare manifest Homelab, riconciliare Application Argo o verificare una revisione distribuita."
 ---
 
-# Homelab GitOps Operations
+# Operazioni GitOps Homelab
 
-Use this skill for operational work in the current clone of
-`skunklabs-uk/homelab` that changes GitOps manifests or coordinates ArgoCD
-syncs.
+Leggi `AGENTS.md`, i manifest e il runbook corrente del servizio. Prima di assumere lo stato operativo, confronta sorgente, documentazione e revisione live disponibile; usa `reality-check` per discrepanze o baseline incerta.
 
-## Operating Model
+Git governa i cambi durevoli sotto `gitops/`. Un'operazione manuale live è ammessa soltanto per diagnostica, drill o recovery autorizzati e richiede riconciliazione/cleanup; non nascondere drift cambiando soltanto il cluster.
 
-- Treat Git as the source of truth for durable changes.
-- Prefer adding or changing manifests under `gitops/` instead of applying live
-  resources by hand.
-- Use manual `kubectl apply` only for temporary drills, emergency recovery, or
-  creating an ArgoCD `Application` before app-of-apps catches up.
-- Keep `postgres`, `apps`, `infra`, and backup-related Applications observable
-  during every sync.
-- Do not hide Argo drift by changing live resources without a follow-up GitOps
-  patch or documented cleanup.
+## Esecuzione
 
-## Standard Workflow
+1. Identifica Application, file e risorse interessate, impatto, verifica e rollback. Per lavori articolati usa il piano upstream appropriato, non un secondo piano Homelab. Preflight, revisione Argo, osservazioni live e cleanup devono restare nello stesso piano/runbook.
+2. Valida i manifest prima del push. Per Application SOPS, un `kubectl apply -k` diretto può fallire sui secret cifrati: usa la validazione prevista dal progetto, senza decifrare in output o applicare ciphertext live.
+3. Dopo commit/push autorizzati verifica che Argo riconcili la revisione attesa, non solo che mostri Healthy. Hard refresh o gestione di sync bloccati seguono il runbook, non tentativi indiscriminati.
+4. Osserva le risorse effettivamente coinvolte: readiness, condizioni degli operatori, endpoint e log pertinenti. Per workload con dati controlla writer endpoint e ownership dello storage.
+5. Registra esito, revisione, eventuale rollback e aggiornamento delle fonti interessate. Senza accesso al cluster la verifica live resta non eseguita.
 
-1. Read `AGENTS.md` and the relevant `doc/*.md` runbook before editing.
-2. Inspect the target Application and manifests:
+## Confini
 
-   ```bash
-   kubectl -n argocd get application <app>
-   kubectl -n argocd get application <app> -o yaml
-   kubectl apply --dry-run=server -k <manifest-dir>
-   ```
-
-3. For SOPS-managed Applications, remember that direct `kubectl apply -k` may
-   fail on encrypted secrets. Validate changed non-secret manifests individually
-   when needed.
-4. Commit and push GitOps changes before relying on Argo for reconciliation.
-5. Hard-refresh the affected Application when Argo is stale:
-
-   ```bash
-   kubectl -n argocd annotate application <app> argocd.argoproj.io/refresh=hard --overwrite
-   ```
-
-6. Watch Argo and live resources until the outcome is clear.
-
-## ArgoCD Checks
-
-Use these commands as a minimum evidence set:
-
-```bash
-kubectl -n argocd get application <app>
-kubectl -n argocd get application <app> -o jsonpath='{.status.sync.status}{"\n"}{.status.health.status}{"\n"}{.status.operationState.phase}{"\n"}{.status.operationState.message}{"\n"}'
-kubectl -n argocd get application <app> -o jsonpath='{.status.sync.revision}{"\n"}'
-```
-
-If Argo is stuck on an old operation, use the documented stale-sync runbook
-before forcing further changes.
-
-## Kubernetes Verification
-
-For each changed workload, verify:
-
-- desired resources exist;
-- pods are ready;
-- services/endpoints are present;
-- logs do not show fresh fatal errors;
-- owner Application is `Synced/Healthy`.
-
-Examples:
-
-```bash
-kubectl -n <namespace> get deploy,statefulset,cronjob,pod,svc
-kubectl -n <namespace> get endpoints <service>
-kubectl -n <namespace> logs deploy/<name> --tail=100
-```
-
-## Stop Conditions
-
-Stop and reassess if:
-
-- a write service loses all endpoints;
-- Argo is syncing an older revision than expected;
-- an Application remains `Progressing` without resource-level progress;
-- a CRD validation error appears after a push;
-- a manual live change is required to keep the service alive.
-
-Record surprising outcomes in the relevant `doc/*.md` runbook.
+Non eliminare PVC senza richiesta esplicita e recuperabilità verificata. Upgrade CRD/operatori hanno impatto potenzialmente cluster-wide e richiedono verifiche proporzionate. Risorse temporanee devono avere cleanup definito. Un writer senza endpoint, revisione inattesa, mancato progresso o errore CRD blocca l'azione dipendente: prima diagnosi/rollback, non ampliamento casuale del task. Autorizzazioni, segreti, costi e stop reali restano governati dal progetto.
