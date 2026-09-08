@@ -42,24 +42,13 @@ scripts/
 
 Le skill elencate in `config/global-skill-upstreams.tsv` non devono avere copie o fork locali in `global/` o `projects/`. Un derivato intenzionale richiede una decisione esplicita e deve avere identità e scopo distinti dall'upstream originale.
 
-## Percorsi consigliati
+## Scelta delle skill
 
-La mappa riguarda esclusivamente le skill globali. Le skill di progetto avranno percorsi dedicati, perché dipendono dal dominio e dalle convenzioni del singolo repository.
+Usa [`ask-skills`](global/ask-skills/SKILL.md) per scegliere tra i cataloghi, non per imporre una sequenza di framework. La skill selezionata governa il proprio processo; le istruzioni attive del progetto restano vincolanti.
 
-<p align="center">
-  <a href="docs/assets/global-skill-routing.svg">
-    <img src="docs/assets/global-skill-routing.svg" alt="Percorsi consigliati per scegliere e concatenare le skill globali Codex nei principali scenari di sviluppo" width="100%">
-  </a>
-</p>
+`brainstorming` è consumata direttamente da Superpowers: distingue Spike, Bounded e Architectural. Per una modifica Bounded prevede design e approvazione in chat, senza file di specifica o piano. La precedente infografica di routing è ritirata; non rappresenta più il processo corrente.
 
-Apri l’immagine per leggerla a piena risoluzione o ingrandirla su schermi piccoli.
-
-- Bordo continuo: passaggio normalmente richiesto.
-- Bordo tratteggiato: passaggio condizionale, da usare solo quando vale la nota.
-- `D`: coda comune di delivery e verifica.
-- `prototype`: esperimento throwaway; se il risultato deve evolvere in prodotto, si torna prima a design e pianificazione.
-
-Il router canonico e i criteri di scelta restano in [`global/ask-skills/SKILL.md`](global/ask-skills/SKILL.md); l’infografica è un orientamento rapido, non una seconda fonte normativa.
+`grill-with-docs`, `grilling` e `domain-modeling` provengono dallo stesso commit Matt Pocock. `grill-with-docs` richiede invocazione esplicita; l'attuale `grilling` raggruppa le domande indipendenti per round. Le skill definiscono il metodo, mentre glossario, ADR e limiti di scope restano nelle fonti autorevoli del progetto.
 
 ## Inventario
 
@@ -69,8 +58,8 @@ Il router canonico e i criteri di scelta restano in [`global/ask-skills/SKILL.md
 | --- | --- | --- |
 | `agent-loop` | locale | Coordina explorer, main agent, worker e reviewer per task autonomi bounded. |
 | `analyze-data-quality` | `openai/role-specific-plugins` (upstream diretto) | Valuta se dati, query, dashboard e definizioni metriche sono abbastanza affidabili da usare. |
-| `ask-skills` | `mattpocock/skills` | Individua la skill o il flusso adatto. |
-| `brainstorming` | `obra/superpowers` | Chiarisce intento, requisiti e design prima di modificare comportamento. |
+| `ask-skills` | derivato locale di `mattpocock/skills` | Seleziona tra cataloghi e skill di progetto senza duplicare i workflow. |
+| `brainstorming` | `obra/superpowers` (upstream diretto) | Chiarisce intento, requisiti e design prima di modificare comportamento. |
 | `build-dashboard` | `openai/role-specific-plugins` (upstream diretto) | Costruisce dashboard e scorecard source-backed con metriche, filtri, gerarchia visuale e QA. |
 | `build-report` | `openai/role-specific-plugins` (upstream diretto) | Produce report analitici durevoli con narrativa answer-first, evidenze, visual, caveat e fonti. |
 | `caveman` | `JuliusBrussee/caveman` (upstream diretto) | Riduce al minimo parole e token. |
@@ -80,12 +69,11 @@ Il router canonico e i criteri di scelta restano in [`global/ask-skills/SKILL.md
 | `codebase-design` | `mattpocock/skills` | Progetta moduli profondi, interfacce piccole e seam puliti. |
 | `create-data-context` | `openai/role-specific-plugins` (upstream diretto) | Crea e mantiene semantic layer con definizioni metriche, fonti autorevoli e caveat riusabili. |
 | `design-kpis` | `openai/role-specific-plugins` (upstream diretto) | Definisce KPI, driver, guardrail, target e piani di misurazione. |
-| `domain-modeling` | `mattpocock/skills` | Definisce termini, relazioni, invarianti e decisioni di dominio. |
+| `domain-modeling` | `mattpocock/skills` (upstream diretto) | Definisce termini, relazioni, invarianti e decisioni di dominio. |
 | `frontend-design` | `anthropics/skills` (upstream diretto) | Guida il design visuale distintivo e intenzionale delle interfacce frontend. |
 | `gather-business-context` | `openai/role-specific-plugins` (upstream diretto) | Raccoglie il contesto di business necessario prima dell’analisi. |
-| `gemini-presentation-handoff` | locale | Trasferisce a Gemini struttura, contenuti, fonti e asset di una presentazione lasciandogli libertà sul design visuale. |
 | `grill-with-docs` | `mattpocock/skills` (upstream diretto) | Intervista su piani e design e aggiorna ADR e glossario tramite le skill upstream collegate. |
-| `grilling` | `mattpocock/skills` | Intervista in profondità finché le ambiguità sono risolte. |
+| `grilling` | `mattpocock/skills` (upstream diretto) | Intervista in profondità finché le ambiguità sono risolte. |
 | `handoff` | `mattpocock/skills` | Compatta una sessione per consentire a un altro agente di continuarla. |
 | `humanize-writing` | `jpeggdev/humanize-writing` | Rende il testo più naturale e meno artificiale. |
 | `idea-refine` | `addyosmani/agent-skills` | Trasforma idee grezze in concetti chiari e azionabili. |
@@ -99,16 +87,13 @@ Il router canonico e i criteri di scelta restano in [`global/ask-skills/SKILL.md
 | `playwright` | `openai/skills` | Automatizza browser reali con Playwright CLI. |
 | `product-business-analysis` | `openai/role-specific-plugins` (upstream diretto) | Analizza domande di prodotto o business e produce raccomandazioni basate su evidenze. |
 | `prototype` | `mattpocock/skills` | Crea prototipi throwaway per validare design, stato o UI. |
-| `reality-check` | locale | Verifica fonti e decisioni già determinate prima di porre domande o introdurre complessità. |
 | `receiving-code-review` | `obra/superpowers` | Valuta feedback di review prima di applicarlo. |
 | `report-to-google-doc` | `openai/role-specific-plugins` (upstream diretto) | Converte report analitici HTML esistenti in Google Docs o DOCX. |
 | `report-to-google-slides` | `openai/role-specific-plugins` (upstream diretto) | Converte report analitici HTML esistenti in presentazioni Google Slides native. |
 | `report-to-pdf` | `openai/role-specific-plugins` (upstream diretto) | Converte report e dashboard analitici esistenti in PDF. |
 | `research` | `mattpocock/skills` | Ricerca con fonti primarie e salva risultati citati. |
-| `scrittura-comica` | locale | Scrive o adatta testi creativi con tono umoristico, ironico o satirico leggero. |
 | `requesting-code-review` | `obra/superpowers` | Prepara contesto e range per una review. |
 | `resolving-merge-conflicts` | `mattpocock/skills` | Risolve conflitti ricostruendo l’intento delle versioni. |
-| `senior-implementation-discipline` | locale | Impone disciplina da maintainer su cambi condivisi e rischiosi. |
 | `setup-matt-pocock-skills` | `mattpocock/skills` | Configura tracker, label e layout richiesti dalle skill importate. |
 | `systematic-debugging` | `obra/superpowers` | Diagnostica prima di proporre fix. |
 | `tdd` | `mattpocock/skills` | Guida implementazioni e bugfix con red-green-refactor. |
@@ -241,6 +226,14 @@ Il comando crea `.agents/skills/seo-audit` come symlink e lascia intatto l'`AGEN
 | `software-delivery-estimation` | locale | Stima lavoro e vincoli di una delivery software. |
 | `wbs-generation` | locale | Genera una work breakdown structure verificabile. |
 
+## Stato della razionalizzazione
+
+La PR #49 applica una prima parte dell'[audit del 2026-09-08](docs/reviews/2026-09-08-skill-origin-audit.md): elimina `gemini-presentation-handoff` su richiesta dell'utente, insieme alle checklist globali `reality-check`, `senior-implementation-discipline` e `scrittura-comica`; migra `brainstorming` e le dipendenze di `grill-with-docs` agli originali; riduce `ask-skills` alla selezione.
+
+La decisione dell'utente supera il precedente KEEP proposto per Gemini: sugli stessi 47 casi dell'audit gli esiti diventano **7 KEEP, 20 REDUCE, 11 REPLACE, 9 DELETE**. I conteggi descrivono le decisioni, non quante modifiche siano già state applicate. L'audit resta una proposta storica dello snapshot; il presente README e il manifest descrivono il catalogo operativo.
+
+Restano da completare `agent-loop`, `code-debt-review-loop`, le altre famiglie esterne e le riduzioni di progetto indicate nell'audit, verificandone dipendenze e vincoli unici. Non sono stati modificati i repository destinatari, i deployment o le installazioni personali. La PR non equivale al completamento dell'intera razionalizzazione.
+
 ## Forma di una skill
 
 Ogni skill vive in una directory con `SKILL.md` e frontmatter YAML:
@@ -260,7 +253,7 @@ Skill globali:
 
 ```bash
 scripts/install-local.sh
-scripts/install-local.sh playwright grill-with-docs
+scripts/install-local.sh playwright grill-with-docs grilling domain-modeling
 scripts/install-local.sh build-dashboard visualize-data
 scripts/install-local.sh caveman unslop
 scripts/install-local.sh --replace
@@ -282,6 +275,20 @@ Percorsi runtime:
 - globali locali: `$CODEX_HOME/skills/<skill-name>` -> `global/<skill-name>`
 - globali upstream: `$CODEX_HOME/skills/<skill-name>` -> `$CODEX_HOME/upstream-skills/<skill-name>/<skill-path>`
 - progetto: `<project-root>/.agents/skills/<skill-name>`
+
+### Migrazione delle installazioni esistenti
+
+Il commit aggiorna il catalogo, non il computer dell'utente. Dopo il merge e l'aggiornamento del checkout, installare insieme le dipendenze del flusso:
+
+```bash
+bash scripts/install-local.sh --replace brainstorming grill-with-docs grilling domain-modeling
+```
+
+L'installer non risolve dipendenze transitive. `writing-plans`, già a catalogo, serve al percorso Architectural di `brainstorming`: verificare anche la sua disponibilità quando si sceglie quel percorso. Questa modifica non migra l'intero bundle Superpowers.
+
+Prima di rimuovere vecchie installazioni, ispezionare `bash scripts/prune-local.sh --dry-run` e `config/global-skill-prune.txt`: la lista contiene anche rimozioni storiche, non soltanto questo intervento. Il comando senza `--dry-run` elimina le voci elencate; non va eseguito alla cieca su directory personalizzate.
+
+Nei checkout CAP Aeris, Cantieri Protetti AI, Homelab e PowerPoint, controllare `.agents/skills/grill-with-docs`: `install-local.sh` non modifica questi collegamenti. Rimuovere soltanto i symlink che puntano alle copie ritirate in questo repository; una directory reale o un link a un'altra sorgente richiede confronto prima della rimozione. Spostare gli eventuali backup ancora validi fuori dalle directory di discovery delle skill, quindi riavviare Codex. La migrazione sul runtime personale non è stata eseguita da questa PR.
 
 ## Sincronizzazione e verifica
 
