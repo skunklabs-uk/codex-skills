@@ -32,8 +32,6 @@ scripts/
   validate-skills.sh
 ```
 
-`grill-with-docs` esiste sia tra le skill globali sia in CAP Aeris: le due versioni non sono identiche e restano separate finché non viene decisa una generalizzazione esplicita.
-
 ## Fonti autorevoli e lifecycle documentale
 
 - `global/` e `projects/` contengono le fonti operative autorevoli delle skill mantenute localmente.
@@ -86,7 +84,7 @@ Il router canonico e i criteri di scelta restano in [`global/ask-skills/SKILL.md
 | `frontend-design` | `anthropics/skills` (upstream diretto) | Guida il design visuale distintivo e intenzionale delle interfacce frontend. |
 | `gather-business-context` | `openai/role-specific-plugins` (upstream diretto) | Raccoglie il contesto di business necessario prima dell’analisi. |
 | `gemini-presentation-handoff` | locale | Trasferisce a Gemini struttura, contenuti, fonti e asset di una presentazione lasciandogli libertà sul design visuale. |
-| `grill-with-docs` | locale | Stressa piani contro dominio, documentazione e decisioni. |
+| `grill-with-docs` | `mattpocock/skills` (upstream diretto) | Intervista su piani e design e aggiorna ADR e glossario tramite le skill upstream collegate. |
 | `grilling` | `mattpocock/skills` | Intervista in profondità finché le ambiguità sono risolte. |
 | `handoff` | `mattpocock/skills` | Compatta una sessione per consentire a un altro agente di continuarla. |
 | `humanize-writing` | `jpeggdev/humanize-writing` | Rende il testo più naturale e meno artificiale. |
@@ -140,7 +138,6 @@ Le 16 skill operative del pacchetto OpenAI Data Analytics sono consumate diretta
 | `deprecation-and-migration` | `addyosmani/agent-skills` | Gestisce rimozioni, migrazioni e sunset. |
 | `diagnose` | locale CAP | Diagnostica con riproduzione, ipotesi, strumentazione e regressione. |
 | `documentation-and-adrs` | `addyosmani/agent-skills` | Registra decisioni e ADR utili a sviluppatori e agenti. |
-| `grill-with-docs` | locale CAP | Stressa piani contro documenti, UI, wiki e decisioni CAP. |
 | `grill-with-screenshots` | locale CAP | Valuta UX, UI, responsività e accessibilità a partire da screenshot reali. |
 | `improve-codebase-architecture` | `mattpocock/skills` | Individua attriti architetturali e refactor profondi. |
 | `performance-optimization` | `addyosmani/agent-skills` | Ottimizza bottleneck misurati. |
@@ -179,7 +176,6 @@ Il comando crea `.agents/skills/seo-audit` come symlink e lascia intatto l'`AGEN
 | Skill | Sorgente | Uso |
 | --- | --- | --- |
 | `documentation-and-adrs` | `addyosmani/agent-skills` | Registra decisioni su dominio, payload, API, OCR, LLM e persistenza. |
-| `grill-with-docs` | locale | Stressa decisioni contro `CONTEXT.md`, ADR e dominio. |
 | `security-and-hardening` | `addyosmani/agent-skills` | Protegge privacy, segreti, file, API e documenti sensibili. |
 | `source-driven-development` | `addyosmani/agent-skills` | Ancora implementazioni a fonti tecniche aggiornate. |
 | `systematic-debugging` | `obra/superpowers` | Diagnostica pipeline PDF, OCR, LLM, API e CLI. |
@@ -189,7 +185,6 @@ Il comando crea `.agents/skills/seo-audit` come symlink e lascia intatto l'`AGEN
 
 | Skill | Sorgente | Uso |
 | --- | --- | --- |
-| `grill-with-docs` | locale | Stressa piani GitOps, rete, backup e architettura. |
 | `homelab-app-onboarding` | locale | Onboarding applicazioni con manifest, ArgoCD, SOPS, CNPG, routing e backup. |
 | `homelab-backup-restore` | locale | Backup, restore e recovery drill. |
 | `homelab-ceph-storage-operations` | locale | Ceph, CSI, RGW, RBD, PVC e bucket S3. |
@@ -232,7 +227,6 @@ Il comando crea `.agents/skills/seo-audit` come symlink e lascia intatto l'`AGEN
 
 | Skill | Sorgente | Uso |
 | --- | --- | --- |
-| `grill-with-docs` | locale | Verifica storyline e assunzioni contro le fonti. |
 | `business-case-storyline` | locale | Costruisce la storyline di un business case. |
 | `commercial-deck-quality-review` | locale | Revisiona qualità e coerenza di un deck commerciale. |
 | `deck-visual-grounding` | locale | Verifica il grounding visuale del deck rispetto alle fonti. |
