@@ -8,6 +8,19 @@ on:
       - "global/**"
       - "projects/**"
       - "scripts/**"
+      - "config/**"
+      - "renovate.json"
+      - "README.md"
+      - ".github/workflows/validate-skills.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "global/**"
+      - "projects/**"
+      - "scripts/**"
+      - "config/**"
+      - "renovate.json"
       - "README.md"
       - ".github/workflows/validate-skills.yml"
 
@@ -16,16 +29,31 @@ permissions:
 
 jobs:
   validate:
+    # Never execute code from external forks on the shared self-hosted runner.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ci-standard
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 2
+          persist-credentials: false
 
       - name: Check shell syntax
-        run: bash -n scripts/*.sh
+        shell: bash
+        run: |
+          for script in scripts/*.sh; do
+            bash -n "$script"
+          done
 
       - name: Validate skill structure
         run: bash scripts/validate-skills.sh
+
+      - name: Set up Node for Renovate and contract tests
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 22
 
       - name: Run deterministic skill tests
         shell: bash
@@ -36,10 +64,76 @@ jobs:
             bash "$test_script"
           done
 
+      - name: Detect upstream configuration changes
+        id: upstream
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          if git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null &&
+             git diff --quiet "$BASE_SHA" HEAD -- config/global-skill-upstreams.tsv renovate.json .github/workflows/validate-skills.yml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate Renovate configuration
+        if: steps.upstream.outputs.changed == 'true'
+        run: npx --yes --package renovate@44.30.3 -- renovate-config-validator --no-global --strict renovate.json
+
+      - name: Verify native Renovate lookup without creating updates
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          LOG_LEVEL: debug
+        run: npx --yes --package renovate@44.30.3 -- renovate --platform=local --dry-run=lookup --enabled-managers=custom.regex
+
+      - name: Verify pinned upstream paths without executing upstream code
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          GIT_TERMINAL_PROMPT: "0"
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from collections import defaultdict
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          repositories = defaultdict(list)
+          for line in Path("config/global-skill-upstreams.tsv").read_text().splitlines():
+              if line and not line.startswith("#"):
+                  name, repository, revision, path = line.split("\t")
+                  repositories[repository].append((name, revision, path))
+
+          with tempfile.TemporaryDirectory() as temporary:
+              for index, (repository, skills) in enumerate(repositories.items()):
+                  revisions = {revision for _, revision, _ in skills}
+                  if len(revisions) != 1:
+                      raise SystemExit(f"Mixed upstream revisions: {repository}")
+                  revision = revisions.pop()
+                  checkout = str(Path(temporary) / str(index))
+                  def git(*args):
+                      return subprocess.check_output(
+                          ["git", "-C", checkout, *args], text=True, timeout=90
+                      ).strip()
+                  subprocess.run(["git", "init", "--bare", "--quiet", checkout], check=True)
+                  git("fetch", "--quiet", "--depth=1", "--no-tags", repository, revision)
+                  if git("rev-parse", "FETCH_HEAD") != revision:
+                      raise SystemExit(f"Unexpected upstream revision: {repository}")
+                  for name, _, path in skills:
+                      skill_path = "SKILL.md" if path == "." else f"{path}/SKILL.md"
+                      if git("cat-file", "-t", f"{revision}:{skill_path}") != "blob":
+                          raise SystemExit(f"Missing skill file: {name}")
+                      if int(git("cat-file", "-s", f"{revision}:{skill_path}")) == 0:
+                          raise SystemExit(f"Empty skill file: {name}")
+                  print(f"Validated {len(skills)} skill paths: {repository}@{revision}", flush=True)
+          PY
+
       - name: Verify ui-depth-preview installation
         shell: bash
         run: |
           tmp_codex_home="$(mktemp -d)"
+          trap 'rm -rf "$tmp_codex_home"' EXIT
           CODEX_HOME="$tmp_codex_home" bash scripts/install-local.sh ui-depth-preview
           test -L "$tmp_codex_home/skills/ui-depth-preview"
           test "$(readlink "$tmp_codex_home/skills/ui-depth-preview")" = "$GITHUB_WORKSPACE/global/ui-depth-preview"
