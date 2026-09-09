@@ -53,7 +53,7 @@ jobs:
       - name: Set up Node for Renovate and contract tests
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Run deterministic skill tests
         shell: bash
@@ -85,6 +85,7 @@ jobs:
         if: steps.upstream.outputs.changed == 'true'
         env:
           LOG_LEVEL: debug
+          RENOVATE_LOG_LEVEL_REMAP: '[{"matchMessage":"Could not determine new digest for update.","newLogLevel":"error"}]'
         run: npx --yes --package renovate@44.30.3 -- renovate --platform=local --dry-run=lookup --enabled-managers=custom.regex
 
       - name: Verify pinned upstream paths without executing upstream code
