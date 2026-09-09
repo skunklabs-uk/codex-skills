@@ -235,6 +235,68 @@ L'installazione non esegue audit, pubblicazioni o operazioni live. Riavvia Codex
 
 `AGENTS.global.md` può essere collegato intenzionalmente con `bash scripts/install-global-agents.sh <project-root>`; `--replace` significa sostituire le istruzioni esistenti dopo backup e non va usato per cancellare convenzioni di progetto senza una decisione esplicita.
 
+## Aggiornamenti upstream
+
+Gli aggiornamenti seguono il percorso **upstream → PR Renovate → SHA approvato nel manifest → installazione locale**. Il contenuto delle skill non viene copiato qui e il manifest continua ad avere quattro colonne: nome, repository, commit e percorso. Questa automazione non aggiorna gli SHA già approvati al momento della sua introduzione.
+
+### Rilevamento e approvazione
+
+`renovate.json` configura il regex manager nativo con datasource `git-refs`: estrae lo SHA completo (`currentDigest`) e usa `currentValueTemplate: "main"` come riferimento da osservare. Il branch `main` è stato verificato nei nove upstream presenti; il manifest e l'installer continuano a usare soltanto SHA immutabili. Il validatore richiede un riferimento esplicito: `HEAD` sarebbe cercato come nome di branch o tag, non come branch predefinito. Prima di introdurre un upstream che usa un altro ramo, o in caso di rinomina di `main`, aggiornare il manager per quel repository in una PR revisionata. Non cambiare automaticamente canale e non alterare il formato del manifest per aggirare questa verifica.
+
+La finestra per creare e aggiornare le PR è **lunedì dalle 00:00 alle 06:00, Europe/Rome**; `updateNotScheduled: false` evita aggiornamenti ordinari dei branch fuori finestra. È una finestra del bot Renovate già collegato, non un nuovo cron: il bot deve comunque eseguire una scansione nella finestra. Il [Dependency Dashboard #24](https://github.com/skunklabs-uk/codex-skills/issues/24) mostra dipendenze rilevate, proposte ed eventuali errori; non modificarne manualmente le sezioni generate.
+
+Le righe dello stesso repository condividono l'identità della dipendenza e il gruppo: **una PR per upstream**, non una per skill e non una PR unica per tutti i framework. Tutte le skill della famiglia devono restare allo stesso SHA. L'automerge è disabilitato per queste dipendenze. Non viene promessa una maturazione temporale del commit: `git-refs` non fornisce il timestamp necessario a `minimumReleaseAge`.
+
+Prima del merge, leggere il confronto tra vecchio e nuovo commit per le skill selezionate e i loro riferimenti. Controllare soprattutto cambi a nomi/percorsi, dipendenze, metadati di invocazione, helper, autorizzazioni, regole di arresto e passaggi obbligatori. Non basta che il Markdown sia valido. Se un upstream elimina o rinomina una skill, correggere manifest, catalogo e migrazione nella stessa PR oppure non accettare il pin; non aggiungere automaticamente tutte le nuove skill della suite. Per cambi sostanziali al metodo, verificare un caso rappresentativo nel runtime prima dell'adozione e dichiarare l'eventuale prova mancante.
+
+Il flusso riguarda soltanto gli originali nel manifest. `seo-audit`, importata nel progetto Baialupo, e i derivati locali richiedono un aggiornamento esplicito del loro contenuto; i plugin nativi restano sul proprio canale e non vanno duplicati.
+
+### Applicazione e rollback
+
+Chiudere le sessioni Codex interessate prima di aggiornare i checkout upstream: le skill di una famiglia vengono aggiornate in sequenza, non in un'unica transazione. Dal checkout pulito di `codex-skills` sul branch `main`:
+
+```bash
+git pull --ff-only
+# Esempio: aggiornare tutta la famiglia Superpowers ai pin approvati.
+mapfile -t skills < <(awk -F '\t' '$2 == "https://github.com/obra/superpowers.git" {print $1}' config/global-skill-upstreams.tsv)
+if ((${#skills[@]})); then
+  bash scripts/install-local.sh "${skills[@]}"
+fi
+```
+
+Usare il repository della famiglia effettivamente gestita con questo installer. Il solo `git pull` aggiorna il manifest, non i checkout upstream. `--replace` serve se cambia il collegamento o si sostituisce una vecchia copia, non per il normale cambio di SHA. Non modificare la cache: il checkout forzato dell'installer sovrascrive modifiche tracciate. Dopo l'installazione riavviare Codex e verificare che non restino plugin o copie omonime su revisioni diverse.
+
+Per il rollback, ripristinare in PR il precedente SHA approvato per **tutta la famiglia**, quindi aggiornare il checkout locale e rieseguire lo stesso installer. Non ripristinare l'intero manifest a una vecchia versione perdendo aggiornamenti di altri upstream. Se un'installazione si interrompe, non usare la famiglia parzialmente aggiornata: completare l'installazione o riapplicare il pin precedente a tutte le sue skill.
+
+### Verifiche e limiti
+
+Il workflow esistente `Validate skills` controlla PR verso `main` e push a `main`, includendo manifest e configurazione Renovate. Sul runner condiviso le PR provenienti da fork esterni vengono saltate: **skipped non significa verificato**; serve revisione del codice e un branch fidato prima dell'esecuzione. I job hanno permessi `contents: read`, credenziali Git non persistenti e un limite di durata; non eseguono helper upstream.
+
+I test deterministici includono il contratto TSV/regex, con righe adiacenti, terminatori LF/CRLF, nomi dei repository e raggruppamento. Il workflow usa Node.js 24: la versione fissata di Renovate richiede Node `^24.11.0`. Quando cambiano manifest, configurazione Renovate o workflow, la stessa CI esegue il validatore ufficiale e una scansione nativa `--platform=local --dry-run=lookup`, quindi verifica con Git la presenza dei file `SKILL.md` non vuoti ai pin dichiarati, recuperando ogni repository una sola volta. Revisioni miste dello stesso upstream fanno fallire il controllo. Nel dry-run CI, il messaggio nativo di digest non risolto viene elevato a errore tramite `logLevelRemap`: una scansione che non trova i commit non deve sembrare riuscita. Se il confronto Git non è disponibile, i controlli vengono eseguiti anziché saltati.
+
+Queste verifiche non attestano la qualità del comportamento del modello, la completezza semantica delle dipendenze o l'avvenuta installazione sul computer. Il primo aggiornamento reale aperto dal bot e l'adozione locale sono osservazioni distinte dalla validazione della configurazione. Non vengono creati runner, hook o installazioni automatiche personali.
+
+Comandi ufficiali riutilizzati anche nel preset condiviso (versione del validatore fissata nel workflow):
+
+```bash
+npx --yes --package renovate@44.30.3 -- renovate-config-validator --no-global --strict renovate.json
+LOG_LEVEL=debug npx --yes --package renovate@44.30.3 -- renovate --platform=local --dry-run=lookup --enabled-managers=custom.regex
+```
+
+Riferimenti: [regex manager](https://docs.renovatebot.com/modules/manager/regex/), [git-refs](https://docs.renovatebot.com/modules/datasource/git-refs/), [scheduling](https://docs.renovatebot.com/configuration-options/#schedule), [validatore](https://docs.renovatebot.com/config-validation/) e [dry-run locale](https://docs.renovatebot.com/modules/platform/local/).
+
+### Necessità e closeout RFC-0001
+
+| Elemento | Decisione ed evidenza |
+|---|---|
+| Requisito e failure mode | Aggiornamenti revisionabili e riproducibili, richiesti dall'utente. Alla baseline `e51bb77`, Renovate non leggeva il TSV e la CI ignorava `config/**`: un pin poteva restare fermo o cambiare senza questi controlli. |
+| Copertura e gap | Manifest e installer già impongono SHA precisi. Il validatore locale verifica il formato, non la disponibilità remota dei percorsi; il vecchio trigger non avviava le verifiche sulle PR dei pin. Il primo dry-run della PR #50 ha inoltre mostrato che una configurazione valida può non risolvere i digest: la CI tratta ora quella mancata risoluzione come errore, usando il meccanismo nativo Renovate. |
+| Alternative | `KEEP` di manifest, installer, Renovate e workflow esistenti. `REPLACE` dell'aggiornamento manuale dei pin con il manager nativo; `DELETE` dell'ipotesi di updater/runner custom. Nessun nuovo formato di lock o catalogo parallelo. |
+| Beneficio e prova | Estrazione completa del manifest in gruppi per upstream; PR senza automerge; configurazione validata da Renovate; rifiuto di percorsi assenti e famiglie su pin misti. I log della PR identificano la revisione effettivamente verificata. |
+| Costo e perimetro | Configurazione, README, un test del contratto e step nel workflow esistente. Le letture di rete si eseguono solo quando cambia il flusso upstream; nessuno script upstream, nuovo account, deploy o aggiornamento personale. |
+| Impatto cumulativo e lifecycle | Un solo canale per ciascuna skill, un gruppo per repository. Owner: maintainer di `codex-skills`. Reversibilità tramite revert della configurazione e ripristino dei pin; eliminare il regex manager quando un manager nativo supporta direttamente questo manifest. |
+| Closeout documentale | Questo README rimane la fonte operativa: aggiorna manutenzione, CI, adozione e rollback. L'audit precedente resta Archived e storico; nessun nuovo documento operativo o duplicazione della RFC. La PR distingue verifiche concluse da scansione periodica e installazioni non osservate. |
+
 ## Manutenzione e verifiche
 
 Le skill locali hanno frontmatter YAML con `name` e `description`; riferimenti e helper appartengono alla directory della skill. Per proporre un nuovo controllo locale servono il gap e la prova previsti dalla RFC, non un nuovo framework.
@@ -248,4 +310,4 @@ for test_script in scripts/test-*.sh; do bash "$test_script"; done
 
 La sincronizzazione ignora originali nel manifest e nomi ritirati, anche con `--force`: non deve reimportare ciò che è stato eliminato o vendorizzare un upstream. Rivedi sempre il diff prima di committare.
 
-I test deterministici proteggono metadati, contratti specifici e comportamento degli installer. Non sono benchmark del modello né attestazioni di deploy o restore. La CI corrente è attivata dal push a `main`, non dalle PR: l'assenza di check su una Draft non significa che un job sia in attesa. Non rilanciare workflow per diagnosi o senza le autorizzazioni previste dalla RFC.
+I test deterministici proteggono metadati, contratti specifici e comportamento degli installer. Non sono benchmark del modello né attestazioni di deploy o restore. La CI esegue le verifiche sulle PR fidate verso `main` e sui push a `main` per i percorsi configurati, inclusi `config/**` e `renovate.json`; i dettagli e i limiti sono nella sezione aggiornamenti upstream. Non rilanciare workflow per diagnosi o senza le autorizzazioni previste dalla RFC.
