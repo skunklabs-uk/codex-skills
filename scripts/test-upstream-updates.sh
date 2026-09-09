@@ -14,8 +14,8 @@ const rows = text.split(/\r?\n/).filter(line => line && !line.startsWith('#'));
 const manager = config.customManagers?.find(m => m.datasourceTemplate === 'git-refs');
 assert.ok(manager, 'The upstream manifest must be discovered by Renovate');
 assert.equal(manager.customType, 'regex');
-// With git-refs, omitting currentValue selects remote HEAD. Literal HEAD is a branch name.
-assert.equal(manager.currentValueTemplate, undefined);
+// The validator requires a ref; all nine selected upstreams use the verified main branch.
+assert.equal(manager.currentValueTemplate, 'main');
 assert.equal(manager.matchStrings.length, 1);
 const filePattern = manager.managerFilePatterns[0];
 const fileRegex = new RegExp(filePattern.slice(1, -1));
