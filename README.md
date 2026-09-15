@@ -28,6 +28,20 @@ I documenti Archived sono evidenze storiche. L'[audit del 2026-09-08](docs/revie
 
 Non caricare tutto il catalogo per un task. Usa `grill-with-docs` solo quando è richiesta l'intervista documentale: la sua policy upstream vieta l'invocazione implicita. Il `grilling` corrente di Matt raggruppa per round le domande indipendenti; non conserva il vecchio contatore locale.
 
+## Collegamento seriale del workspace
+
+L'incarico richiede repository e thread ammessi, branch e head esatti e prompt corrente. Un solo consumer alla volta lavora nel checkout isolato. Il catalogo disponibile e le skill effettivamente installate nel runtime sono osservazioni distinte, come previsto da [`ask-skills`](global/ask-skills/SKILL.md).
+
+Un report non pubblica modifiche. Il percorso write richiede `publish_paths` con file esatti e una PR Draft nello stesso repository; per questo incarico documentale è autorizzato soltanto `README.md`. Il parent pubblica, poi il coordinatore rilegge SHA e diff remoto e completa RETURN. Il child non esegue commit, push, merge o rollout.
+
+L'adozione documentale non aggiorna manifest, pin, skill o istruzioni globali e non installa nulla nel runtime personale. Le procedure di installazione e manutenzione conservano la propria ownership: leggere un esempio di installazione non autorizza a eseguirlo.
+
+Le verifiche appartengono al producer. Il workflow [`Validate skills`](.github/workflows/validate-skills.yml) esegue controlli di sintassi shell, struttura delle skill e test deterministici sulle PR fidate verso `main` e sui push a `main` per i percorsi configurati, incluso `README.md`. I controlli upstream sono condizionali; questi controlli e il test CI di installazione di `ui-depth-preview` in un ambiente temporaneo isolato non provano un'installazione personale né il comportamento del modello. Per procedure e limiti, consulta [Manutenzione e verifiche](#manutenzione-e-verifiche) e [Verifiche e limiti](#verifiche-e-limiti).
+
+Questo repository distribuisce istruzioni e strumenti, non un servizio HTTP: la preview Kubernetes è **NON APPLICABILE** a questo incarico README. Restano necessarie la CI applicabile e la consegna reale con RETURN.
+
+Il runbook del collegamento è [`WORKSPACE-HANDOFF.md`](https://github.com/skunklabs-uk/developer-workspace/blob/main/docs/WORKSPACE-HANDOFF.md); enrollment e lifecycle runtime appartengono al [README Homelab](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/developer-workspace/README.md). Per enrollment, selezione GitOps, recupero e stato persistente, usa queste fonti proprietarie.
+
 ## Originali e compatibilità
 
 | Famiglia | Distribuzione e vincoli |
