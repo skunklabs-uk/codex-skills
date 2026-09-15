@@ -15,7 +15,7 @@ Leggi integralmente la RFC-0001 corrente fornita dal parent e `AGENTS.md`. La ri
 - `global/ask-skills/SKILL.md`, per il percorso di selezione delle capability.
 - `.github/workflows/validate-skills.yml`, per trigger e verifiche producer effettivi.
 
-Il runbook autorevole del collegamento è [WORKSPACE-HANDOFF.md](https://github.com/skunklabs-uk/developer-workspace/blob/main/docs/WORKSPACE-HANDOFF.md); enrollment e lifecycle runtime appartengono al [README Homelab](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/developer-workspace/README.md). Usa questi rimandi nel README; non interrogare fonti esterne dalla sandbox. Il parent fornisce gli estratti operativi correnti necessari insieme alla RFC.
+Il runbook autorevole del collegamento è [WORKSPACE-HANDOFF.md](https://github.com/skunklabs-uk/developer-workspace/blob/main/docs/WORKSPACE-HANDOFF.md); enrollment e lifecycle runtime appartengono al [README Homelab](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/developer-workspace/README.md). Il coordinatore ha verificato queste fonti sul producer `599dbc40d18892865443bfe9fb2606237b3c06c8` e Homelab `008506bc4e2853a96eff247221b77ef5b77be42c`. I punti 1, 2 e 6 sotto contengono il contesto operativo verificato necessario al task. Usa i rimandi nel README; non interrogare fonti esterne dalla sandbox.
 
 ## Modifica richiesta
 
