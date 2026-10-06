@@ -28,6 +28,17 @@ I documenti Archived sono evidenze storiche. L'[audit del 2026-09-08](docs/revie
 
 Non caricare tutto il catalogo per un task. Usa `grill-with-docs` solo quando è richiesta l'intervista documentale: la sua policy upstream vieta l'invocazione implicita. Il `grilling` corrente di Matt raggruppa per round le domande indipendenti; non conserva il vecchio contatore locale.
 
+## Uso circoscritto di GitNexus
+
+La [politica in RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md#strumenti-specialistici-di-analisi-dei-repository) governa attivazione, limiti e review. Questa procedura riguarda l'esecuzione tecnica; non aggiunge GitNexus al catalogo né autorizza installazioni o modifiche alle configurazioni globali.
+
+1. Rilevare agente, accesso alla shell, versione GitNexus eventualmente installata e strumenti effettivamente disponibili. Consultare `--help` della versione presente e la [documentazione upstream](https://github.com/abhigyanpatwari/GitNexus/blob/main/gitnexus/README.md#cli-commands); non usare `npx ...@latest` per installare implicitamente il tool.
+2. Controllare l'indice con `gitnexus status`, associandolo al repository corretto. Confrontare revisione e modifiche del working tree: la sola uguaglianza dello SHA non copre modifiche non indicizzate. Se serve creare o aggiornare l'indice nel perimetro autorizzato, usare `gitnexus analyze <path> --index-only`, verificando prima il supporto del flag e la destinazione dei dati. Questa modalità evita l'iniezione di AGENTS.md, CLAUDE.md e skill; non abilitare embeddings, hook o watcher per questo percorso.
+3. Da **Codex o OMP con shell disponibile**, usare le query CLI native, senza server MCP: `gitnexus query "<domanda>" --repo <repository>`, `gitnexus context <simbolo> --repo <repository>` o `gitnexus impact <simbolo> --repo <repository>`. Disambiguare simboli omonimi con i flag supportati dalla versione presente. L'assenza di una relazione nel grafo non prova l'assenza nel codice.
+4. Se si usa invece **MCP**, verificare discovery e configurazione nativa del runtime corrente. OMP dispone di [configurazione MCP propria](https://github.com/can1357/oh-my-pi/blob/main/docs/mcp-config.md); non copiarla in Codex. Esporre il server soltanto alla sessione del task, preservare lo stato iniziale e chiudere il processo o ripristinare l'override al termine. Se il runtime non consente questa separazione, usare la CLI disponibile o proseguire senza GitNexus; non introdurre wrapper.
+
+Usare gli output e le metriche native nel report già previsto dalla politica. Per dati temporanei, rimuovere soltanto quelli creati dal task; preservare indici e configurazioni preesistenti. La pubblicazione di questa procedura non verifica un'installazione personale, l'integrazione Codex o un beneficio economico netto.
+
 ## Collegamento seriale del workspace
 
 L'incarico richiede repository e thread ammessi, branch e head esatti e prompt corrente. Un solo consumer alla volta lavora nel checkout isolato. Il catalogo disponibile e le skill effettivamente installate nel runtime sono osservazioni distinte, come previsto da [`ask-skills`](global/ask-skills/SKILL.md).

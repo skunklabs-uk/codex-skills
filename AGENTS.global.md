@@ -81,4 +81,6 @@ For projects governed by [RFC-0001](https://github.com/skunklabs-uk/agent-os/blo
 
 ## Operating Rule
 
+Per l'uso di strumenti specialistici di analisi dei repository, applicare la [politica di RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md#strumenti-specialistici-di-analisi-dei-repository). La [procedura GitNexus](https://github.com/skunklabs-uk/codex-skills/blob/main/README.md#uso-circoscritto-di-gitnexus) descrive le capability tecniche, senza sostituire la politica o le istruzioni del progetto.
+
 When these instructions conflict with a narrower skill, project convention, or implementation preference, follow the stricter rule unless the user explicitly decides otherwise.
