@@ -131,6 +131,7 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 | `improve-codebase-architecture` | `mattpocock/skills` — diretto | Analisi degli attriti architetturali. |
 | `interview-me` | `addyosmani/agent-skills` — diretto | Chiarimento dell’intento. |
 | `loop-me` | `mattpocock/skills` — diretto | Beta: definizione iterativa di workflow nel workspace. |
+| `megacave` | `JuliusBrussee/caveman` — diretto | Modalità esplicita in cinese classico. |
 | `migrate-to-shoehorn` | `mattpocock/skills` — diretto | Utility: migrazione dei dati di test a shoehorn. |
 | `performance-optimization` | `addyosmani/agent-skills` — diretto | Ottimizzazione guidata da misure. |
 | `planning-and-task-breakdown` | `addyosmani/agent-skills` — diretto | Scomposizione del lavoro. |
@@ -191,7 +192,6 @@ Data Analytics usa il canale nativo del plugin, non il manifest TSV. Il manifest
 | `jupyter-notebooks` | Notebook riproducibili. |
 | `kpi-reporting` | Rendicontazione KPI. |
 | `market-sizing` | Dimensionamento del mercato. |
-| `megacave` | `JuliusBrussee/caveman` — diretto | Modalità esplicita in cinese classico. |
 | `metric-diagnostics` | Diagnosi dei movimenti delle metriche. |
 | `product-business-analysis` | Analisi di prodotto e business. |
 | `publish-artifact-to-sites` | Pubblicazione di artefatti quando il runtime e lo scope lo consentono. |
