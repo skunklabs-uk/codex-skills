@@ -13,6 +13,7 @@ n8n-workflow-patterns
 office-hours
 playwright.backup-20260624T132204
 scrittura-comica
+resolving-merge-conflicts
 senior-implementation-discipline
 zoom-out
 
