@@ -15,3 +15,21 @@ playwright.backup-20260624T132204
 scrittura-comica
 senior-implementation-discipline
 zoom-out
+
+# Data Analytics: eseguire il pruning solo dopo la verifica del plugin nativo.
+analyze-data-quality
+build-dashboard
+build-report
+create-data-context
+design-kpis
+gather-business-context
+jupyter-notebooks
+kpi-reporting
+market-sizing
+metric-diagnostics
+product-business-analysis
+report-to-google-doc
+report-to-google-slides
+report-to-pdf
+validate-data
+visualize-data
