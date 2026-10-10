@@ -62,7 +62,7 @@ La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito
 | Superpowers | Le 14 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
 | Matt Pocock | Un solo commit per le 18 capability selezionate, incluse dipendenze di grilling e TDD/review. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
 | Addy Osmani | 13 skill selezionate, senza copiare i comandi lifecycle o imporre un secondo orchestratore. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
-| Altri upstream | Data Analytics OpenAI, Playwright, humanize-writing, frontend-design, caveman e unslop rimangono pacchetti originali secondo i pin del manifest. |
+| Altri upstream | Playwright, humanize-writing, frontend-design, caveman e unslop rimangono pacchetti originali secondo i pin del manifest. |
 
 L'installer mantiene checkout completi, inclusi licenze, helper e riferimenti; per percorsi relativi complessi considera la directory fisica della skill. Non esegue gli script di setup dei framework né installa hook di un plugin nativo. Una skill a catalogo non prova che il runtime offra browser, subagenti, generazione immagini o un servizio esterno.
 
@@ -72,27 +72,22 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 
 ## Inventario corrente
 
-97 nomi distinti: **66 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
+99 nomi distinti: **50 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
 
 ### Globali
 
 | Skill | Fonte | Scopo |
 |---|---|---|
-| `analyze-data-quality` | `openai/role-specific-plugins` — diretto | Affidabilità dei dati. |
 | `api-and-interface-design` | `addyosmani/agent-skills` — diretto | Contratti e interfacce. |
 | `ask-skills` | `derivato locale di Matt Pocock` | Selezione multi-catalogo, senza riscrivere i processi. |
 | `brainstorming` | `obra/superpowers` — diretto | Design proporzionato: Spike, Bounded o Architectural. |
 | `browser-testing-with-devtools` | `addyosmani/agent-skills` — diretto | Verifica browser con DevTools disponibili. |
-| `build-dashboard` | `openai/role-specific-plugins` — diretto | Dashboard e scorecard. |
-| `build-report` | `openai/role-specific-plugins` — diretto | Report analitici. |
 | `caveman` | `JuliusBrussee/caveman` — diretto | Stile di risposta essenziale. |
 | `code-review` | `mattpocock/skills` — diretto | Review Matt su standard e specifica. |
 | `code-review-and-quality` | `addyosmani/agent-skills` — diretto | Review di correttezza, qualità, sicurezza e performance. |
 | `code-simplification` | `addyosmani/agent-skills` — diretto | Semplificazione senza variazione del comportamento. |
 | `codebase-design` | `mattpocock/skills` — diretto | Vocabolario di moduli, interfacce e testabilità. |
-| `create-data-context` | `openai/role-specific-plugins` — diretto | Contesto semantico dei dati. |
 | `deprecation-and-migration` | `addyosmani/agent-skills` — diretto | Ritiro e migrazione di comportamenti esistenti. |
-| `design-kpis` | `openai/role-specific-plugins` — diretto | Definizione di KPI. |
 | `diagnosing-bugs` | `mattpocock/skills` — diretto | Diagnosi Matt con loop riproducibile. |
 | `dispatching-parallel-agents` | `obra/superpowers` — diretto | Delega di indagini indipendenti quando utile. |
 | `documentation-and-adrs` | `addyosmani/agent-skills` — diretto | Documentazione e decisioni architetturali. |
@@ -101,7 +96,6 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `finishing-a-development-branch` | `obra/superpowers` — diretto | Verifica e integrazione finale del branch. |
 | `frontend-design` | `anthropics/skills` — diretto | Design visuale frontend. |
 | `frontend-ui-engineering` | `addyosmani/agent-skills` — diretto | Interfacce, design system, stati e accessibilità. |
-| `gather-business-context` | `openai/role-specific-plugins` — diretto | Contesto della domanda di business. |
 | `grill-with-docs` | `mattpocock/skills` — diretto | Intervista documentale esplicitamente richiesta. |
 | `grilling` | `mattpocock/skills` — diretto | Decisioni per round secondo le dipendenze. |
 | `handoff` | `mattpocock/skills` — diretto | Contesto trasferibile tra sessioni. |
@@ -109,20 +103,12 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `idea-refine` | `addyosmani/agent-skills` — diretto | Chiarimento di idee e alternative. |
 | `improve-codebase-architecture` | `mattpocock/skills` — diretto | Analisi degli attriti architetturali. |
 | `interview-me` | `addyosmani/agent-skills` — diretto | Chiarimento dell’intento. |
-| `jupyter-notebooks` | `openai/role-specific-plugins` — diretto | Notebook riproducibili. |
-| `kpi-reporting` | `openai/role-specific-plugins` — diretto | Rendicontazione KPI. |
-| `market-sizing` | `openai/role-specific-plugins` — diretto | Dimensionamento del mercato. |
-| `metric-diagnostics` | `openai/role-specific-plugins` — diretto | Diagnosi dei movimenti delle metriche. |
 | `performance-optimization` | `addyosmani/agent-skills` — diretto | Ottimizzazione guidata da misure. |
 | `planning-and-task-breakdown` | `addyosmani/agent-skills` — diretto | Scomposizione del lavoro. |
 | `playwright` | `openai/skills` — diretto | Browser reale tramite CLI. |
-| `product-business-analysis` | `openai/role-specific-plugins` — diretto | Analisi di prodotto e business. |
 | `prototype` | `mattpocock/skills` — diretto | Esperimento throwaway. |
 | `reality-check` | `locale` | Riconciliazione della baseline e del drift. |
 | `receiving-code-review` | `obra/superpowers` — diretto | Valutazione tecnica dei feedback. |
-| `report-to-google-doc` | `openai/role-specific-plugins` — diretto | Conversione di report in Docs/DOCX. |
-| `report-to-google-slides` | `openai/role-specific-plugins` — diretto | Conversione di report in Slides. |
-| `report-to-pdf` | `openai/role-specific-plugins` — diretto | Conversione di report in PDF. |
 | `requesting-code-review` | `obra/superpowers` — diretto | Preparazione della review. |
 | `research` | `mattpocock/skills` — diretto | Ricerca source-backed secondo il runtime upstream. |
 | `resolving-merge-conflicts` | `mattpocock/skills` — diretto | Risoluzione dei conflitti preservando l’intento. |
@@ -141,14 +127,45 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `unslop` | `theclaymethod/unslop` — diretto | Revisione della prosa. |
 | `using-git-worktrees` | `obra/superpowers` — diretto | Isolamento del lavoro. |
 | `using-superpowers` | `obra/superpowers` — diretto | Ingresso e adattamento del pacchetto Superpowers. |
-| `validate-data` | `openai/role-specific-plugins` — diretto | QA delle analisi. |
 | `verification-before-completion` | `obra/superpowers` — diretto | Evidenze prima della conclusione. |
-| `visualize-data` | `openai/role-specific-plugins` — diretto | Visualizzazione di dati. |
 | `wayfinder` | `mattpocock/skills` — diretto | Risoluzione di iniziative multi-sessione. |
 | `writing-plans` | `obra/superpowers` — diretto | Piano implementativo da requisiti definiti. |
 | `writing-skills` | `obra/superpowers` — diretto | Creazione e verifica di skill. |
 
-Le 16 skill operative OpenAI Data Analytics restano allo stesso pin. Il router interno `index` non è installato come skill globale: il catalogo mantiene nomi non ambigui.
+### Data Analytics: plugin ufficiale
+
+La fonte corrente è [openai/plugins](https://github.com/openai/plugins/tree/main/plugins/data-analytics), plugin **0.2.8** nel marketplace `openai-curated` («Codex official»). Il repository `openai/role-specific-plugins` è stato svuotato il 30 settembre 2026: non è più una sorgente di aggiornamenti. La revisione verificata del nuovo repository è `0722921d5542fc593105c27bd52630babd8b8c2a`.
+
+Data Analytics usa il canale nativo del plugin, non il manifest TSV. Il manifest ufficiale dichiara `Proprietary`: questa configurazione non copia, modifica o redistribuisce il pacchetto e non presume che la vecchia licenza MIT si applichi al nuovo contenuto. `ask-skills` resta l’ingresso multi-catalogo e verifica le skill disponibili nel runtime prima di selezionarle.
+
+| Skill del plugin | Scopo |
+|---|---|
+| `analyze-data-quality` | Affidabilità dei dati. |
+| `build-dashboard` | Dashboard. |
+| `build-report` | Report analitici. |
+| `create-data-context` | Contesto e semantica dei dati. |
+| `design-kpis` | Definizione di KPI. |
+| `gather-business-context` | Contesto della domanda di business. |
+| `index` | Router interno del plugin, nel suo namespace nativo. |
+| `jupyter-notebooks` | Notebook riproducibili. |
+| `kpi-reporting` | Rendicontazione KPI. |
+| `market-sizing` | Dimensionamento del mercato. |
+| `metric-diagnostics` | Diagnosi dei movimenti delle metriche. |
+| `product-business-analysis` | Analisi di prodotto e business. |
+| `publish-artifact-to-sites` | Pubblicazione di artefatti quando il runtime e lo scope lo consentono. |
+| `report-to-google-doc` | Esportazione in Docs/DOCX. |
+| `report-to-google-slides` | Esportazione in Slides. |
+| `report-to-pdf` | Esportazione in PDF. |
+| `validate-data` | Verifica delle analisi. |
+| `visualize-data` | Visualizzazione dei dati. |
+
+#### Migrazione dell’installazione
+
+1. Nel browser plugin del runtime cercare **Data Analytics** nella fonte ufficiale e installarlo. In Codex CLI il browser si apre con `/plugins`; avviare poi una nuova sessione. Se la fonte ufficiale non è disponibile, la documentazione [Package your plugin](https://developers.openai.com/plugins/build/plugins) descrive la registrazione nativa del marketplace: `codex plugin marketplace add openai/plugins --ref main`. Non modificare manualmente la cache.
+2. Verificare in una nuova sessione la discovery delle 18 skill del plugin e gli strumenti effettivamente connessi. Provare un’analisi circoscritta su dati forniti dall’utente; la sola discovery non dimostra che connessioni, export o Sites funzionino.
+3. Solo dopo questa verifica, spostare fuori dalla discovery le 16 vecchie voci installate dal TSV, conservandole in `$CODEX_HOME/skill-backups`. Confrontare prima i target: spostare soltanto i symlink che puntano a `$CODEX_HOME/upstream-skills/<nome>/plugins/data-analytics/skills/...`; directory reali o link estranei richiedono ispezione. I nomi sono quelli della tabella precedente, esclusi `index` e `publish-artifact-to-sites`. Non seguire i symlink e non eliminare il contenuto del checkout.
+
+La lista di pruning include queste 16 voci e la sincronizzazione le ignora. Eseguire `bash scripts/prune-local.sh --dry-run`, controllare le voci interessate e applicare il pruning soltanto dopo l’installazione verificata del plugin: anticiparlo toglierebbe una capability funzionante. Il manifest non le reinstalla. Per rollback disinstallare il plugin nativo e ripristinare i vecchi link dai backup; il vecchio snapshot è soltanto recupero temporaneo, non il canale operativo corrente. Plugin e connessioni personali non sono stati installati o verificati da questa modifica.
 
 ### baialupo
 
@@ -231,7 +248,7 @@ bash scripts/install-local.sh --replace grill-with-docs grilling domain-modeling
 
 Il percorso globale è `$CODEX_HOME/skills` (default `~/.codex/skills`). Gli originali sono checkout sotto `$CODEX_HOME/upstream-skills/<nome>`; i symlink puntano alla directory upstream con `SKILL.md`. `--replace` conserva le vecchie copie fuori dalla discovery, sotto `$CODEX_HOME/skill-backups`. Nessun wrapper del contenuto upstream viene generato.
 
-Esamina e poi applica il ritiro delle vecchie voci globali:
+Prima del pruning, completare la [migrazione Data Analytics](#migrazione-dellinstallazione) e verificare il plugin nativo se le vecchie skill sono installate. Esamina e poi applica il ritiro delle vecchie voci globali:
 
 ```bash
 bash scripts/prune-local.sh --dry-run
@@ -268,7 +285,7 @@ Gli aggiornamenti seguono il percorso **upstream → PR Renovate → SHA approva
 
 ### Rilevamento e approvazione
 
-`renovate.json` configura il regex manager nativo con datasource `git-refs`: estrae lo SHA completo (`currentDigest`) e usa `currentValueTemplate: "main"` come riferimento da osservare. Il branch `main` è stato verificato nei nove upstream presenti; il manifest e l'installer continuano a usare soltanto SHA immutabili. Il validatore richiede un riferimento esplicito: `HEAD` sarebbe cercato come nome di branch o tag, non come branch predefinito. Prima di introdurre un upstream che usa un altro ramo, o in caso di rinomina di `main`, aggiornare il manager per quel repository in una PR revisionata. Non cambiare automaticamente canale e non alterare il formato del manifest per aggirare questa verifica.
+`renovate.json` configura il regex manager nativo con datasource `git-refs`: estrae lo SHA completo (`currentDigest`) e usa `currentValueTemplate: "main"` come riferimento da osservare. Il branch `main` è stato verificato negli otto upstream presenti; il manifest e l'installer continuano a usare soltanto SHA immutabili. Il validatore richiede un riferimento esplicito: `HEAD` sarebbe cercato come nome di branch o tag, non come branch predefinito. Prima di introdurre un upstream che usa un altro ramo, o in caso di rinomina di `main`, aggiornare il manager per quel repository in una PR revisionata. Non cambiare automaticamente canale e non alterare il formato del manifest per aggirare questa verifica.
 
 La finestra per creare e aggiornare le PR è **lunedì dalle 00:00 alle 06:00, Europe/Rome**; `updateNotScheduled: false` evita aggiornamenti ordinari dei branch fuori finestra. È una finestra del bot Renovate già collegato, non un nuovo cron: il bot deve comunque eseguire una scansione nella finestra. Il [Dependency Dashboard #24](https://github.com/skunklabs-uk/codex-skills/issues/24) mostra dipendenze rilevate, proposte ed eventuali errori; non modificarne manualmente le sezioni generate.
 
