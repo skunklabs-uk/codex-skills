@@ -17,8 +17,8 @@ I documenti Archived sono evidenze storiche. L'[audit del 2026-09-08](docs/revie
 | Situazione | Ingresso e risultato |
 |---|---|
 | Baseline esistente incerta o documentazione in drift | `reality-check`: confronta intenzione approvata, documentazione, codice/configurazione ed evidenze runtime disponibili. Non legittima un bug aggiornando la specifica. |
-| Modifica circoscritta a un flusso esistente | `brainstorming` upstream, percorso Bounded: proposta e approvazione in chat, poi implementazione; niente spec e piano su file per rito. |
-| Decisioni architetturali nuove | `brainstorming`, percorso Architectural: design/spec approvata, poi `writing-plans`. Gli esperimenti di fattibilità restano Spike e non diventano codice di prodotto implicitamente. |
+| Modifica circoscritta a un flusso esistente | `brainstorming` upstream: per una richiesta chiara esecuzione diretta; per una piccola modifica descrizione in chat; design su file quando il lavoro è un progetto. |
+| Decisioni architetturali nuove | `brainstorming`: design scritto approvato, poi `writing-plans`. Gli esperimenti di fattibilità restano throwaway e non diventano codice di prodotto implicitamente. |
 | Conversazione già risolta da pubblicare nel tracker | `to-spec`; non riscrivere una specifica già adeguata. `writing-plans` solo quando il lavoro richiede un piano implementativo. |
 | Piano approvato da eseguire | `subagent-driven-development` quando runtime e task permettono la delega; `executing-plans` in assenza di subagenti. Le verifiche e la review sono quelle del percorso scelto. |
 | Bug | `systematic-debugging`; `diagnosing-bugs` è un'alternativa Matt, non una seconda diagnosi obbligatoria. |
@@ -59,7 +59,7 @@ La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito
 
 | Famiglia | Distribuzione e vincoli |
 |---|---|
-| Superpowers | Le 14 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
+| Superpowers | Le 15 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
 | Matt Pocock | Tutte le 37 skill presenti in `mattpocock/skills` alla release **v1.3.1**, commit `24fe0ef7737efae15c87225755e9f6f5965e4888`: 27 nel plugin ufficiale, 6 beta `in-progress` e 4 utility `misc`. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
 | Addy Osmani | 13 skill selezionate, senza copiare i comandi lifecycle o imporre un secondo orchestratore. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
 | Altri upstream | Playwright, humanize-writing, frontend-design, caveman e unslop rimangono pacchetti originali secondo i pin del manifest. |
@@ -74,9 +74,25 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 
 `zoom-out` è stato ritirato nell'upstream Matt: l'esplorazione del codice resta una capacità dell'agente. La copia isolata di `office-hours` è ritirata perché dipende dal runtime gstack; non è sostituita con un altro framework. La checklist di rete rimasta in Homelab è dichiarata derivato locale, non «upstream ECC puro».
 
+### Revisioni upstream verificate il 10 ottobre 2026
+
+| Famiglia | Revisione approvata | Cambi rilevanti |
+|---|---|---|
+| `obra/superpowers` | `bb92a77741419a4ab5f06e711a283343f1ada0c3` | v7.0.0: brainstorming riscritto, esecuzione nativa e nuova diagnosing-superpowers. |
+| `addyosmani/agent-skills` | `1401c8b8030e023baeebb31781a6653fe8e93026` | Correzioni API e review; riferimenti estratti per performance e sicurezza; indicazioni UI. |
+| `anthropics/skills` | `dbd4588f9e1033efb41dad4bef2f7947c8993d44` | Design guidato dal brief e critica dei layout generici. |
+| `JuliusBrussee/caveman` | `2e08b9177c07bb7249a8a2d1a6758e5db281d002` | v3.2.0: voice aggiornata; ultracave e megacave incluse come dipendenze delle modalità. |
+| `theclaymethod/unslop` | `17ed39c9d0b522f44190ff0c6233867eadee192a` | Lettura del testo prima degli scanner, meno overhead e conservazione del testo senza difetti. |
+
+Le revisioni di `humanize-writing` e `playwright` risultano già correnti. Gli originali restano invariati. Caveman viene consumato soltanto come skill di stile: questa installazione non attiva proxy, compressione, hook o runtime del repository.
+
+Superpowers 7 introduce helper, workspace e ledger nei suoi percorsi di esecuzione. Il pin ne rende disponibile il contenuto, senza autorizzarne automaticamente ogni controllo: prima di usare un percorso che li richiede, applicare la prova di necessità e la proporzionalità della RFC-0001. Se il requisito non è soddisfatto, scegliere con `ask-skills` un altro percorso disponibile, ad esempio `implement` di Matt; non modificare l’originale o fingere di averne eseguito i gate. Lo stesso limite vale per prove di mutazione o nuovi gate richiesti da altri upstream.
+
+La verifica di questa migrazione copre metadati, riferimenti, pin e installazione isolata; non è una valutazione comportamentale dei modelli né un’installazione personale. Le skill locali senza nuovo upstream restano invariate.
+
 ## Inventario corrente
 
-118 nomi distinti: **69 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
+121 nomi distinti: **72 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
 
 ### Globali
 
@@ -85,7 +101,7 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `api-and-interface-design` | `addyosmani/agent-skills` — diretto | Contratti e interfacce. |
 | `ask-matt` | `mattpocock/skills` — diretto | Router upstream del solo catalogo Matt; `ask-skills` resta l’ingresso multi-catalogo. |
 | `ask-skills` | `derivato locale di Matt Pocock` | Selezione multi-catalogo, senza riscrivere i processi. |
-| `brainstorming` | `obra/superpowers` — diretto | Design proporzionato: Spike, Bounded o Architectural. |
+| `brainstorming` | `obra/superpowers` — diretto | Chiarimento dell’intento e scelta della scala del lavoro. |
 | `browser-testing-with-devtools` | `addyosmani/agent-skills` — diretto | Verifica browser con DevTools disponibili. |
 | `caveman` | `JuliusBrussee/caveman` — diretto | Stile di risposta essenziale. |
 | `claude-handoff` | `mattpocock/skills` — diretto | Beta: handoff a un agente in background; richiede Claude Code. |
@@ -95,6 +111,7 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `codebase-design` | `mattpocock/skills` — diretto | Vocabolario di moduli, interfacce e testabilità. |
 | `deprecation-and-migration` | `addyosmani/agent-skills` — diretto | Ritiro e migrazione di comportamenti esistenti. |
 | `diagnosing-bugs` | `mattpocock/skills` — diretto | Diagnosi Matt con loop riproducibile. |
+| `diagnosing-superpowers` | `obra/superpowers` — diretto | Diagnosi dei problemi nel processo Superpowers. |
 | `dispatching-parallel-agents` | `obra/superpowers` — diretto | Delega di indagini indipendenti quando utile. |
 | `documentation-and-adrs` | `addyosmani/agent-skills` — diretto | Documentazione e decisioni architetturali. |
 | `domain-modeling` | `mattpocock/skills` — diretto | Glossario e decisioni di dominio. |
@@ -114,6 +131,7 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `improve-codebase-architecture` | `mattpocock/skills` — diretto | Analisi degli attriti architetturali. |
 | `interview-me` | `addyosmani/agent-skills` — diretto | Chiarimento dell’intento. |
 | `loop-me` | `mattpocock/skills` — diretto | Beta: definizione iterativa di workflow nel workspace. |
+| `megacave` | `JuliusBrussee/caveman` — diretto | Modalità esplicita in cinese classico. |
 | `migrate-to-shoehorn` | `mattpocock/skills` — diretto | Utility: migrazione dei dati di test a shoehorn. |
 | `performance-optimization` | `addyosmani/agent-skills` — diretto | Ottimizzazione guidata da misure. |
 | `planning-and-task-breakdown` | `addyosmani/agent-skills` — diretto | Scomposizione del lavoro. |
@@ -141,6 +159,7 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `to-tickets` | `mattpocock/skills` — diretto | Scomposizione in ticket verificabili. |
 | `triage` | `mattpocock/skills` — diretto | Classificazione di issue, bug e richieste prima della pianificazione. |
 | `ui-depth-preview` | `locale` | Preview del layering senza costruire un’app temporanea. |
+| `ultracave` | `JuliusBrussee/caveman` — diretto | Modalità esplicita di massima concisione. |
 | `unslop` | `theclaymethod/unslop` — diretto | Revisione della prosa. |
 | `using-git-worktrees` | `obra/superpowers` — diretto | Isolamento del lavoro. |
 | `using-superpowers` | `obra/superpowers` — diretto | Ingresso e adattamento del pacchetto Superpowers. |
@@ -250,7 +269,7 @@ La lista di pruning include queste 16 voci e la sincronizzazione le ignora. Eseg
 
 Cantieri Protetti AI e iWant non hanno più copie di framework o skill generiche proprie: usano gli originali globali e le istruzioni del progetto. Le directory restano come destinazioni valide per la migrazione dei vecchi symlink.
 
-`seo-audit` resta in `projects/baialupo/seo-audit`: `coreyhaines31/marketingskills@5b2c0007766c6a1cf1d53fd8fc73e979e0821022`, versione 2.0.1, con i due riferimenti e la licenza MIT originali. Gli altri moduli marketing citati non sono installati. Le indicazioni SEO devono essere confrontate con le fonti correnti di Google, non assunte come normative immutabili.
+`seo-audit` resta in `projects/baialupo/seo-audit`: `coreyhaines31/marketingskills@1efedbc5148b54b2f0f6c6c9fe0be62e151c7fff`, versione 2.2.0, con tutti i riferimenti e la licenza MIT originali. Gli altri moduli marketing citati non sono installati. Le indicazioni SEO devono essere confrontate con le fonti correnti di Google, non assunte come normative immutabili.
 
 ## Installazione e migrazione
 
