@@ -28,6 +28,68 @@ I documenti Archived sono evidenze storiche. L'[audit del 2026-09-08](docs/revie
 
 Non caricare tutto il catalogo per un task. Usa `grill-with-docs` solo quando è richiesta l'intervista documentale: la sua policy upstream vieta l'invocazione implicita. Il `grilling` corrente di Matt raggruppa per round le domande indipendenti; non conserva il vecchio contatore locale.
 
+## Percorsi upstream: dall'idea al rilascio
+
+I due schemi sono promemoria delle skill ai pin del manifest, non un nuovo workflow locale. Ogni percorso contiene soltanto skill del proprio repository. Le frecce continue mostrano la progressione; quelle tratteggiate indicano supporto quando pertinente. Ripartire dagli artefatti già validi, rispettando le approvazioni e i prerequisiti richiesti dalla skill scelta. Per selezionare tra i cataloghi usare `ask-skills`; i router originali sono `using-agent-skills` e `ask-matt`.
+
+### Addy Osmani
+
+Fonte: [using-agent-skills e sequenza lifecycle](https://github.com/addyosmani/agent-skills/blob/1401c8b8030e023baeebb31781a6653fe8e93026/skills/using-agent-skills/SKILL.md). `spec-driven-development` richiede approvazione della specifica prima del piano e dell'implementazione. TDD e osservabilità accompagnano gli incrementi: non sono verifiche rinviate alla fine.
+
+```mermaid
+flowchart TD
+    A["interview-me: chiarire il bisogno"] --> B["idea-refine: definire direzione e scope"]
+    B --> C["spec-driven-development: specifica approvata"]
+    C --> D["planning-and-task-breakdown: piano e task"]
+    D --> E["incremental-implementation + test-driven-development"]
+    E --> F["code-review-and-quality"]
+    F --> G["code-simplification"]
+    G --> H["git-workflow-and-versioning"]
+    H --> I["documentation-and-adrs"]
+    I --> J["shipping-and-launch: rilascio e verifica in prod"]
+    F -- "Correzioni necessarie" --> E
+    C -.-> K["constraint-driven-development"]
+    E -.-> L["context-engineering + source-driven-development"]
+    E -.-> M["frontend-ui-engineering + api-and-interface-design"]
+    E -.-> N["observability-and-instrumentation"]
+    E -.-> O["browser-testing-with-devtools"]
+    F -.-> P["security-and-hardening + performance-optimization"]
+    H -.-> Q["ci-cd-and-automation"]
+```
+
+`doubt-driven-development` supporta la verifica critica delle decisioni non banali; `debugging-and-error-recovery` interviene sui difetti e riporta al relativo incremento. `deprecation-and-migration` serve quando il rilascio sostituisce sistemi, API o dati esistenti. Git, documentazione e osservabilità si aggiornano anche durante lo sviluppo: la posizione nel diagramma indica il loro contributo alla chiusura.
+
+Nel diagramma `test-driven-development` è l'originale **Osmani**, installabile con la chiave `osmani-test-driven-development`. I comandi upstream `/spec`, `/plan`, `/build`, `/test`, `/review` e `/ship` sono ingressi dei relativi adapter: questa distribuzione installa le skill, non quei comandi.
+
+### Matt Pocock
+
+Fonti: [ask-matt](https://github.com/mattpocock/skills/blob/24fe0ef7737efae15c87225755e9f6f5965e4888/skills/engineering/ask-matt/SKILL.md) e [implement-spec](https://github.com/mattpocock/skills/blob/24fe0ef7737efae15c87225755e9f6f5965e4888/skills/engineering/implement-spec/SKILL.md). `to-spec` sintetizza una conversazione già risolta; non conduce una nuova intervista. `to-tickets` crea un grafo di incrementi con dipendenze, che `implement-spec` esegue su un branch d'integrazione con TDD e review.
+
+```mermaid
+flowchart TD
+    A["grill-me: chiarire idea e decisioni"] --> B["to-spec: sintetizzare la specifica"]
+    B --> C["to-tickets: incrementi e dipendenze"]
+    C --> D["implement-spec: eseguire il grafo dei ticket con tdd"]
+    D --> E["code-review: standard del repo e specifica"]
+    E -- "Correzioni necessarie" --> D
+    E --> F["pr: scrivere la descrizione della PR"]
+    F --> G["retro: retrospettiva della sessione"]
+    A -.-> H["research: fonti primarie"]
+    H -.-> A
+    A -.-> I["prototype: esperimento usa e getta"]
+    I -.-> A
+    A -.-> J["grill-with-docs + domain-modeling + codebase-design"]
+    J -.-> B
+    B -.-> K["wayfinder: mappa di decisioni per lavoro molto grande"]
+    K -.-> C
+    D -.-> L["diagnosing-bugs"]
+    L -.-> D
+```
+
+`implement` è l'ingresso alternativo per una specifica o un insieme di ticket già disponibili. `handoff` trasferisce il contesto tra sessioni. I flussi tracker richiedono la configurazione prevista da `setup-matt-pocock-skills`; `implement-spec` e `code-review` richiedono i subagenti del loro contratto upstream. Non presentarli come eseguiti se il runtime non li offre.
+
+Pocock non contiene una skill dedicata al merge o al deploy in produzione. `code-review` controlla le modifiche; `pr` prepara il testo della PR. L'agente esegue il merge autorizzato dopo aver verificato review, conflitti e CI sull'ultima revisione; il deploy segue pipeline e runbook del progetto. Queste operazioni non sono nuove skill Pocock né integrazioni con un altro catalogo. `retro` riguarda la sessione e non certifica il rilascio.
+
 ## Uso circoscritto di GitNexus
 
 La [politica in RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md#strumenti-specialistici-di-analisi-dei-repository) governa attivazione, limiti e review. Questa procedura riguarda l'esecuzione tecnica; non aggiunge GitNexus al catalogo né autorizza installazioni o modifiche alle configurazioni globali.
