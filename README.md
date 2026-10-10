@@ -60,7 +60,7 @@ La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito
 | Famiglia | Distribuzione e vincoli |
 |---|---|
 | Superpowers | Le 14 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
-| Matt Pocock | Un solo commit per le 18 capability selezionate, incluse dipendenze di grilling e TDD/review. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
+| Matt Pocock | Tutte le 37 skill presenti in `mattpocock/skills` alla release **v1.3.1**, commit `24fe0ef7737efae15c87225755e9f6f5965e4888`: 27 nel plugin ufficiale, 6 beta `in-progress` e 4 utility `misc`. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
 | Addy Osmani | 13 skill selezionate, senza copiare i comandi lifecycle o imporre un secondo orchestratore. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
 | Altri upstream | Data Analytics OpenAI, Playwright, humanize-writing, frontend-design, caveman e unslop rimangono pacchetti originali secondo i pin del manifest. |
 
@@ -68,11 +68,15 @@ L'installer mantiene checkout completi, inclusi licenze, helper e riferimenti; p
 
 Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-review`; Superpowers ha `test-driven-development`. Non applicare contemporaneamente due cicli al medesimo task. Non modificare gli originali per nascondere differenze metodologiche. Istruzioni, scope, autorizzazioni e limiti economici del progetto restano prioritari: esempi, rubriche o «rulings» upstream non autorizzano nuove decisioni di prodotto, costi o modifiche esterne.
 
+`resolving-merge-conflicts` è ritirata dalla v1.3.1 e inclusa nel pruning; i conflitti restano gestiti dall’agente. Le nuove skill usano `GLOSSARY.md` e `GLOSSARY-MAP.md`: nei repository che usano ancora `CONTEXT.md` o `CONTEXT-MAP.md`, verificare i contenuti e migrare i riferimenti prima di usare i flussi di dominio.
+
+`ask-skills` resta il selettore tra tutti i cataloghi; `ask-matt` è disponibile come router originale per il solo percorso Matt. Le beta e le utility sono incluse per scelta esplicita del maintainer, senza promuoverle a stabili. L’installer non esegue hook o setup: disponibilità e prerequisiti vanno verificati al momento dell’uso, soprattutto per le skill specifiche di Claude Code.
+
 `zoom-out` è stato ritirato nell'upstream Matt: l'esplorazione del codice resta una capacità dell'agente. La copia isolata di `office-hours` è ritirata perché dipende dal runtime gstack; non è sostituita con un altro framework. La checklist di rete rimasta in Homelab è dichiarata derivato locale, non «upstream ECC puro».
 
 ## Inventario corrente
 
-97 nomi distinti: **66 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
+116 nomi distinti: **85 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
 
 ### Globali
 
@@ -80,12 +84,14 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 |---|---|---|
 | `analyze-data-quality` | `openai/role-specific-plugins` — diretto | Affidabilità dei dati. |
 | `api-and-interface-design` | `addyosmani/agent-skills` — diretto | Contratti e interfacce. |
+| `ask-matt` | `mattpocock/skills` — diretto | Router upstream del solo catalogo Matt; `ask-skills` resta l’ingresso multi-catalogo. |
 | `ask-skills` | `derivato locale di Matt Pocock` | Selezione multi-catalogo, senza riscrivere i processi. |
 | `brainstorming` | `obra/superpowers` — diretto | Design proporzionato: Spike, Bounded o Architectural. |
 | `browser-testing-with-devtools` | `addyosmani/agent-skills` — diretto | Verifica browser con DevTools disponibili. |
 | `build-dashboard` | `openai/role-specific-plugins` — diretto | Dashboard e scorecard. |
 | `build-report` | `openai/role-specific-plugins` — diretto | Report analitici. |
 | `caveman` | `JuliusBrussee/caveman` — diretto | Stile di risposta essenziale. |
+| `claude-handoff` | `mattpocock/skills` — diretto | Beta: handoff a un agente in background; richiede Claude Code. |
 | `code-review` | `mattpocock/skills` — diretto | Review Matt su standard e specifica. |
 | `code-review-and-quality` | `addyosmani/agent-skills` — diretto | Review di correttezza, qualità, sicurezza e performance. |
 | `code-simplification` | `addyosmani/agent-skills` — diretto | Semplificazione senza variazione del comportamento. |
@@ -102,20 +108,27 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `frontend-design` | `anthropics/skills` — diretto | Design visuale frontend. |
 | `frontend-ui-engineering` | `addyosmani/agent-skills` — diretto | Interfacce, design system, stati e accessibilità. |
 | `gather-business-context` | `openai/role-specific-plugins` — diretto | Contesto della domanda di business. |
+| `git-guardrails-claude-code` | `mattpocock/skills` — diretto | Utility: hook di protezione Git specifici per Claude Code. |
+| `grill-me` | `mattpocock/skills` — diretto | Intervista per chiarire un piano o un design. |
 | `grill-with-docs` | `mattpocock/skills` — diretto | Intervista documentale esplicitamente richiesta. |
 | `grilling` | `mattpocock/skills` — diretto | Decisioni per round secondo le dipendenze. |
 | `handoff` | `mattpocock/skills` — diretto | Contesto trasferibile tra sessioni. |
 | `humanize-writing` | `jpeggdev/humanize-writing` — diretto | Revisione della naturalezza del testo. |
 | `idea-refine` | `addyosmani/agent-skills` — diretto | Chiarimento di idee e alternative. |
+| `implement` | `mattpocock/skills` — diretto | Implementazione di una specifica o di ticket. |
+| `implement-spec` | `mattpocock/skills` — diretto | Implementazione di una specifica con task graph e worktree paralleli. |
 | `improve-codebase-architecture` | `mattpocock/skills` — diretto | Analisi degli attriti architetturali. |
 | `interview-me` | `addyosmani/agent-skills` — diretto | Chiarimento dell’intento. |
 | `jupyter-notebooks` | `openai/role-specific-plugins` — diretto | Notebook riproducibili. |
 | `kpi-reporting` | `openai/role-specific-plugins` — diretto | Rendicontazione KPI. |
+| `loop-me` | `mattpocock/skills` — diretto | Beta: definizione iterativa di workflow nel workspace. |
 | `market-sizing` | `openai/role-specific-plugins` — diretto | Dimensionamento del mercato. |
 | `metric-diagnostics` | `openai/role-specific-plugins` — diretto | Diagnosi dei movimenti delle metriche. |
+| `migrate-to-shoehorn` | `mattpocock/skills` — diretto | Utility: migrazione dei dati di test a shoehorn. |
 | `performance-optimization` | `addyosmani/agent-skills` — diretto | Ottimizzazione guidata da misure. |
 | `planning-and-task-breakdown` | `addyosmani/agent-skills` — diretto | Scomposizione del lavoro. |
 | `playwright` | `openai/skills` — diretto | Browser reale tramite CLI. |
+| `pr` | `mattpocock/skills` — diretto | Descrizione delle PR con evidenze e impatto del merge. |
 | `product-business-analysis` | `openai/role-specific-plugins` — diretto | Analisi di prodotto e business. |
 | `prototype` | `mattpocock/skills` — diretto | Esperimento throwaway. |
 | `reality-check` | `locale` | Riconciliazione della baseline e del drift. |
@@ -125,15 +138,19 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `report-to-pdf` | `openai/role-specific-plugins` — diretto | Conversione di report in PDF. |
 | `requesting-code-review` | `obra/superpowers` — diretto | Preparazione della review. |
 | `research` | `mattpocock/skills` — diretto | Ricerca source-backed secondo il runtime upstream. |
-| `resolving-merge-conflicts` | `mattpocock/skills` — diretto | Risoluzione dei conflitti preservando l’intento. |
+| `retro` | `mattpocock/skills` — diretto | Retrospettiva della sessione e miglioramenti dell’ambiente agente. |
+| `scaffold-exercises` | `mattpocock/skills` — diretto | Utility: struttura di esercizi e soluzioni. |
 | `security-and-hardening` | `addyosmani/agent-skills` — diretto | Sicurezza applicativa e integrazioni. |
 | `setup-matt-pocock-skills` | `mattpocock/skills` — diretto | Configurazione del contesto richiesto dai flussi Matt. |
+| `setup-pre-commit` | `mattpocock/skills` — diretto | Utility: configurazione Husky e lint-staged. |
+| `setup-ts-deep-modules` | `mattpocock/skills` — diretto | Beta: configurazione di moduli TypeScript con dependency-cruiser. |
 | `source-driven-development` | `addyosmani/agent-skills` — diretto | Verifica delle API sulle fonti ufficiali. |
 | `subagent-driven-development` | `obra/superpowers` — diretto | Esecuzione di piani con worker e review. |
 | `systematic-debugging` | `obra/superpowers` — diretto | Diagnosi prima del fix. |
 | `tdd` | `mattpocock/skills` — diretto | Testing comportamentale Matt. |
 | `teach` | `mattpocock/skills` — diretto | Percorso didattico persistente. |
 | `test-driven-development` | `obra/superpowers` — diretto | Ciclo TDD Superpowers. |
+| `to-questionnaire` | `mattpocock/skills` — diretto | Questionario da far compilare a un’altra persona. |
 | `to-spec` | `mattpocock/skills` — diretto | Sintesi della conversazione nel tracker. |
 | `to-tickets` | `mattpocock/skills` — diretto | Scomposizione in ticket verificabili. |
 | `triage` | `mattpocock/skills` — diretto | Classificazione di issue, bug e richieste prima della pianificazione. |
@@ -144,8 +161,14 @@ Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-r
 | `validate-data` | `openai/role-specific-plugins` — diretto | QA delle analisi. |
 | `verification-before-completion` | `obra/superpowers` — diretto | Evidenze prima della conclusione. |
 | `visualize-data` | `openai/role-specific-plugins` — diretto | Visualizzazione di dati. |
+| `wait-what` | `mattpocock/skills` — diretto | Riformulazione di una spiegazione poco chiara. |
 | `wayfinder` | `mattpocock/skills` — diretto | Risoluzione di iniziative multi-sessione. |
+| `wizard` | `mattpocock/skills` — diretto | Wizard Bash per passaggi che richiedono intervento umano. |
+| `writing-beats` | `mattpocock/skills` — diretto | Beta: costruzione di un articolo per sequenze narrative. |
+| `writing-for-agents` | `mattpocock/skills` — diretto | Scrittura di documenti destinati agli agenti. |
+| `writing-fragments` | `mattpocock/skills` — diretto | Beta: raccolta di frammenti per la scrittura. |
 | `writing-plans` | `obra/superpowers` — diretto | Piano implementativo da requisiti definiti. |
+| `writing-shape` | `mattpocock/skills` — diretto | Beta: organizzazione di materiale in un articolo. |
 | `writing-skills` | `obra/superpowers` — diretto | Creazione e verifica di skill. |
 
 Le 16 skill operative OpenAI Data Analytics restano allo stesso pin. Il router interno `index` non è installato come skill globale: il catalogo mantiene nomi non ambigui.
