@@ -61,12 +61,12 @@ La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito
 |---|---|
 | Superpowers | Le 15 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
 | Matt Pocock | Tutte le 37 skill presenti in `mattpocock/skills` alla release **v1.3.1**, commit `24fe0ef7737efae15c87225755e9f6f5965e4888`: 27 nel plugin ufficiale, 6 beta `in-progress` e 4 utility `misc`. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
-| Addy Osmani | 13 skill selezionate, senza copiare i comandi lifecycle o imporre un secondo orchestratore. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
+| Addy Osmani | Tutte le 25 skill upstream, inclusa `using-agent-skills`. `ask-skills` resta il selettore generale: il router Osmani si usa quando viene scelto quel percorso. I comandi lifecycle e gli hook del plugin non vengono installati. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
 | Altri upstream | Playwright, humanize-writing, frontend-design, caveman e unslop rimangono pacchetti originali secondo i pin del manifest. |
 
 L'installer mantiene checkout completi, inclusi licenze, helper e riferimenti; per percorsi relativi complessi considera la directory fisica della skill. Non esegue gli script di setup dei framework né installa hook di un plugin nativo. Una skill a catalogo non prova che il runtime offra browser, subagenti, generazione immagini o un servizio esterno.
 
-Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-review`; Superpowers ha `test-driven-development`. Non applicare contemporaneamente due cicli al medesimo task. Non modificare gli originali per nascondere differenze metodologiche. Istruzioni, scope, autorizzazioni e limiti economici del progetto restano prioritari: esempi, rubriche o «rulings» upstream non autorizzano nuove decisioni di prodotto, costi o modifiche esterne.
+Il TDD Matt usa il ciclo red/green e colloca il refactoring nella review `code-review`; Superpowers ha `test-driven-development`. Osmani è disponibile come `osmani-test-driven-development` nel manifest e nel comando di installazione, con il nome interno originale `test-driven-development` invariato. Il nome interno coincide con Superpowers: per disambiguare usare repository e percorso del manifest, senza affidarsi al solo nome mostrato dal runtime. Non applicare contemporaneamente più cicli al medesimo task. Non modificare gli originali per nascondere differenze metodologiche. Istruzioni, scope, autorizzazioni e limiti economici del progetto restano prioritari: esempi, rubriche o «rulings» upstream non autorizzano nuove decisioni di prodotto, costi o modifiche esterne.
 
 `resolving-merge-conflicts` è ritirata dalla v1.3.1 e inclusa nel pruning; i conflitti restano gestiti dall’agente. Le nuove skill usano `GLOSSARY.md` e `GLOSSARY-MAP.md`: nei repository che usano ancora `CONTEXT.md` o `CONTEXT-MAP.md`, verificare i contenuti e migrare i riferimenti prima di usare i flussi di dominio.
 
@@ -92,12 +92,24 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 
 ## Inventario corrente
 
-121 nomi distinti: **72 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
+133 voci di catalogo: **84 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
 
 ### Globali
 
 | Skill | Fonte | Scopo |
 |---|---|---|
+| `ci-cd-and-automation` | `addyosmani/agent-skills` — diretto | Automazione CI/CD e verifiche di consegna. |
+| `constraint-driven-development` | `addyosmani/agent-skills` — diretto | Vincoli e criteri di qualità espliciti. |
+| `context-engineering` | `addyosmani/agent-skills` — diretto | Contesto pertinente per il lavoro corrente. |
+| `debugging-and-error-recovery` | `addyosmani/agent-skills` — diretto | Riproduzione, diagnosi e recupero degli errori. |
+| `doubt-driven-development` | `addyosmani/agent-skills` — diretto | Verifica critica delle decisioni non banali. |
+| `git-workflow-and-versioning` | `addyosmani/agent-skills` — diretto | Branch, commit e versionamento. |
+| `incremental-implementation` | `addyosmani/agent-skills` — diretto | Implementazione per piccoli percorsi completi. |
+| `observability-and-instrumentation` | `addyosmani/agent-skills` — diretto | Log, metriche e tracing proporzionati. |
+| `shipping-and-launch` | `addyosmani/agent-skills` — diretto | Preparazione e verifica del rilascio. |
+| `spec-driven-development` | `addyosmani/agent-skills` — diretto | Requisiti e criteri di accettazione. |
+| `osmani-test-driven-development` | `addyosmani/agent-skills` — diretto | TDD Osmani; nome interno upstream: test-driven-development. |
+| `using-agent-skills` | `addyosmani/agent-skills` — diretto | Router originale della suite Osmani, scelto tramite ask-skills. |
 | `api-and-interface-design` | `addyosmani/agent-skills` — diretto | Contratti e interfacce. |
 | `ask-matt` | `mattpocock/skills` — diretto | Router upstream del solo catalogo Matt; `ask-skills` resta l’ingresso multi-catalogo. |
 | `ask-skills` | `derivato locale di Matt Pocock` | Selezione multi-catalogo, senza riscrivere i processi. |
