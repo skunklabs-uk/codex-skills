@@ -15,6 +15,8 @@ Conserva i collegamenti che il riferimento usa già: geometria dei placeholder, 
 
 Mantieni nel master o nel layout gli elementi comuni che vi risiedono, inclusa la chiusura quando è costruita nel layout. Un controllo basato soltanto sugli oggetti locali non giustifica copiarli nelle slide: verifica anche la catena di ereditarietà. Distingui nel resoconto riuso del master, ereditarietà della geometria ed ereditarietà degli stili; non descriverli come un'unica proprietà.
 
+Realizza il navigatore richiesto con testi, forme e linee nativi editabili, secondo la specifica di `deck-visual-grounding`. Riusa gli elementi pertinenti già nel layout/master e aggiungi solo quelli mancanti, preservando la struttura del modello. Ricava etichette e stato attivo dalla mappa narrativa corrente: l'appartenenza di una slide alla sezione non va dedotta da intervalli numerici fissati prima delle revisioni. Dopo riordini, accorpamenti o rimozioni, riallinea il componente alla mappa aggiornata prima della verifica finale.
+
 Conserva la formattazione interna dei testi: un titolo bicolore o un paragrafo con enfasi richiedono segmenti distinti con i relativi colori, gradienti e pesi. Sostituire tutto il contenuto con il solo stile del primo segmento perde questa informazione. Inserisci il testo appartenente a una forma nel suo corpo testuale. Per dati tabellari usa una tabella nativa e conserva anche la formattazione diretta della reference, non soltanto il suo identificativo di stile.
 
 Mantieni le proporzioni intrinseche delle immagini e il ritaglio autorizzato. Se le immagini vanno usate come fornite, preservane il contenuto senza maschere, cornici o fondi aggiunti. Verifica separatamente icone, loghi e screenshot quando cambi le loro dimensioni.

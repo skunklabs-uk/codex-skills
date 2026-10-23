@@ -27,6 +27,12 @@ Rivedi la sequenza delle famiglie compositive prima della costruzione. Una serie
 
 Ricava lo stile effettivo dall'oggetto e dalla sua ereditarietà nel layout/master/tema. Conserva separatamente riempimenti di forma, bordi e segmenti di testo. Un solo colore, il nome del tema o l'ID di uno stile tabella non descrivono tutta la formattazione. Per i gradienti preserva stop, posizioni, direzione, trasparenza e riferimenti originali; mantieni i colori di tema dove presenti, senza convertire arbitrariamente gradienti sRGB in colori di tema o viceversa.
 
+## Navigatore della storyline
+
+Quando richiesto, usa la mappa definita da `business-case-storyline` per etichette, ordine e appartenenza delle slide. Riserva lo spazio del navigatore prima di scegliere e adattare le composizioni del catalogo. Nella specifica esistente descrivi una sola volta posizione, trattamento delle tappe e stato attivo, usando la reference approvata e il profilo applicabile. Mantieni stabile il componente lungo la sequenza; cambia solo la tappa corrente.
+
+Adatta dimensioni e spaziature al master e alla lunghezza delle etichette, preservando titolo, loghi, barre e contenuto. Se il percorso non entra, abbrevia le etichette senza cambiarne il significato oppure rivedi la suddivisione con la storyline; non omettere tappe o ridurre la leggibilità per farlo entrare. La tappa attiva indica la posizione nel racconto: non attribuire ai simboli uno stato di completamento del progetto non sostenuto dai contenuti.
+
 ## Profilo TXT Novigo del 12 ottobre 2026
 
 Applica questo profilo quando il riferimento scelto è `2026_10_12 - TXT Novigo Template PowerPoint - Con spiegazioni` oppure il brief richiama esplicitamente queste regole. Le istruzioni dell'utente prevalgono sui dettagli diversi degli esempi storici. Per un altro template ricava il suo profilo, senza trasferire questi valori.
@@ -39,6 +45,7 @@ Applica questo profilo quando il riferimento scelto è `2026_10_12 - TXT Novigo 
 | Titoli laterali e paragrafi | Titoli laterali **18 pt grassetto**, paragrafi **14 pt**. Accorciare o riorganizzare contenuti che non entrano, invece di ridurre questi corpi. I valori non definiscono la dimensione di ogni etichetta o KPI. |
 | Enfasi nei paragrafi | Selezionare termini che sostengono il messaggio e applicare il gradiente TXT originale ai relativi segmenti di testo, conservando il testo editabile. |
 | Barre sotto il titolo | Conservare le linee e il gradiente Novigo del master originale, compresi spessore e geometria. |
+| Navigatore richiesto | Salvo diversa indicazione, compatto in alto a destra: etichette brevi sopra una linea sottile, indicatori circolari e tappa corrente evidenziata. Riprendere font e trattamento TXT dal riferimento corrente; le altre tappe restano visibili e subordinate. Posizione e composizione recepiscono la preferenza dell'utente, non descrivono un oggetto già presente nel catalogo. Nessun numero fisso di tappe, etichetta di progetto o coordinata assoluta. |
 | Forme, separatori, icone e decorazioni | Applicare il trattamento dell'oggetto di riferimento e le correzioni esplicite del brief. Mantenere i riferimenti al tema delle icone/decorazioni. La presenza di un gradiente nel brand non impone gradienti a ogni forma. |
 | Testo associato a una forma | Inserirlo nel corpo testuale della forma, quando ne è l'etichetta o il contenuto; evitare una casella di testo indipendente sovrapposta. |
 | Immagini fornite come input | Mantenerle come immagini indipendenti, con proporzioni e contenuto originali, senza deformazioni o contenitori decorativi aggiunti. |

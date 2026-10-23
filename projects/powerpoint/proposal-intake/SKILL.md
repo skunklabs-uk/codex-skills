@@ -9,7 +9,7 @@ Le istruzioni correnti di `skunklabs-uk/powerpoint-ai`, in particolare `AGENTS.m
 
 Identifica pubblico e decisione attesa, perimetro, materiali disponibili, risultato, vincoli, maturità di tempi/costi e permessi di riuso. Cerca prima le risposte nelle fonti; documenti non raggiungibili sono mancanti, non da ricostruire con prosa plausibile.
 
-Conserva nel brief anche i requisiti espliciti dell'utente assenti dai materiali sorgente: schema obbligatorio, navigatore della storyline quando richiesto, esclusioni e formato di consegna. Prima dell'handoff confronta il brief ricostruito con le richieste disponibili. Per una generazione indipendente includi questi vincoli nel pacchetto di input, senza richiedere al generatore di consultare la conversazione o i deck precedenti.
+Conserva nel brief anche i requisiti espliciti dell'utente assenti dai materiali sorgente: schema obbligatorio, navigatore della storyline quando richiesto, sua posizione e reference visiva concordate, esclusioni e formato di consegna. Prima dell'handoff confronta il brief ricostruito con le richieste disponibili. Per una generazione indipendente includi questi vincoli e le relative reference nel pacchetto di input, senza richiedere al generatore di consultare la conversazione o i deck precedenti.
 
 Chiedi soltanto informazioni che cambiano il deliverable corrente: identità quando indispensabile, obiettivo, scope, impegni, economics vincolante e confidenzialità. Dettagli minori possono restare aperti soltanto nel modo autorizzato dal progetto; le assunzioni ammesse devono essere visibili anche nel messaggio, non nascoste nelle note.
 
