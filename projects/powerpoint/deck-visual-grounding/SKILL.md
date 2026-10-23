@@ -11,13 +11,19 @@ Ispeziona template e slide pertinenti: proporzioni, gerarchie, font, palette, gr
 
 Separa messaggio/contenuti/fonti dalla direzione creativa. Rispetta High/Medium/Low già concordati: non prescrivere coordinate, frecce o conteggi di box ai livelli liberi. La libertà di composizione resta entro i vincoli di brand espliciti. Quando è richiesto il modello aziendale, riusa master, layout, placeholder e asset reali; una ricostruzione visivamente simile su un master generico non soddisfa il requisito. Conserva i gradienti quando fanno parte del pattern scelto.
 
+Prima di scegliere le composizioni, riconcilia il brief operativo con i vincoli dell'utente e del progetto. Uno schema obbligatorio fissa sezioni, ordine e cardinalità; la libertà riguarda i contenuti ammessi al suo interno. Un brief ricostruito dall'assistente non può aggiungere sezioni o indebolire quei vincoli. Risolvi eventuali discrepanze prima della generazione.
+
 Non preimpostare Poppins, colori o un particolare deck come universali: ricavali dal riferimento corrente. Un file riparato da PowerPoint è evidenza tecnica, non una nuova approvazione di tema o layout. Tieni elementi editabili dove praticabile e riferisci deviazioni e limiti visivi senza inventare asset.
 
 ## Decisioni grafiche dell'LLM
 
 Affida all'LLM la scelta del layout e la composizione in base a messaggio, audience e relazioni tra i contenuti. Codex realizza queste decisioni con gli strumenti disponibili; un eventuale script Python resta esecutivo. Un limite del generatore va riportato al piano della slide, senza sostituire silenziosamente master, stile o struttura con un layout più semplice.
 
-Nella specifica della slide già prevista dal progetto indica il riferimento effettivamente ispezionato (file/versione, slide e oggetto quando rilevante), perché è adatto e come vi si collocano i contenuti. Confronta le anteprime pertinenti prima della costruzione. La varietà deriva dalle funzioni narrative: non imporre quote di layout né alternanze decorative.
+Nella specifica della slide già prevista dal progetto indica funzione narrativa, riferimento effettivamente ispezionato (file/versione, slide e oggetto quando rilevante), ragione della scelta e adattamento dei contenuti. Quando il catalogo offre più composizioni pertinenti e lo schema non è fisso, confrontane almeno due e annota brevemente perché una rappresenta meglio il messaggio. Ispeziona le anteprime prima della costruzione; non limitare la ricerca ai riferimenti già usati nelle prime slide.
+
+Adatta la composizione completa: gerarchia, relazioni, distribuzione dello spazio e oggetti. Prelevare una freccia, un colore o lo stile di una cella non equivale a usare il pattern. Se il messaggio richiede tempo, confronto, processo o proporzioni, la composizione deve rendere leggibile quella relazione. Mantieni le informazioni necessarie a interpretarla, come durate, milestone, unità e assunzioni; segnala i dati mancanti senza inventarli.
+
+Rivedi la sequenza delle famiglie compositive prima della costruzione. Una serie di tabelle o di paragrafi è giustificata quando sostiene confronti omogenei; quando nasconde relazioni diverse, scegli un'alternativa pertinente dal catalogo. La varietà deriva dalle funzioni narrative: non imporre quote di layout né alternanze decorative, e non cambiare uno schema obbligatorio per ottenere varietà.
 
 Ricava lo stile effettivo dall'oggetto e dalla sua ereditarietà nel layout/master/tema. Conserva separatamente riempimenti di forma, bordi e segmenti di testo. Un solo colore, il nome del tema o l'ID di uno stile tabella non descrivono tutta la formattazione. Per i gradienti preserva stop, posizioni, direzione, trasparenza e riferimenti originali; mantieni i colori di tema dove presenti, senza convertire arbitrariamente gradienti sRGB in colori di tema o viceversa.
 
@@ -37,13 +43,6 @@ Applica questo profilo quando il riferimento scelto è `2026_10_12 - TXT Novigo 
 | Testo associato a una forma | Inserirlo nel corpo testuale della forma, quando ne è l'etichetta o il contenuto; evitare una casella di testo indipendente sovrapposta. |
 | Immagini fornite come input | Mantenerle come immagini indipendenti, con proporzioni e contenuto originali, senza deformazioni o contenitori decorativi aggiunti. |
 
-Usa questi riferimenti del catalogo in base al contenuto, non alla posizione della slide nel nuovo deck:
-
-| Contenuto da rappresentare | Riferimento da ispezionare |
-|---|---|
-| Tabella o confronto strutturato | Slide **15**, oggetto **`Tabella 2`**: tabella nativa, tipografia, celle, intestazioni, righe e bordi. Adattare righe e colonne ai dati conservando lo stile. |
-| Piano di lavoro con fasi, attività e milestone | Slide **51**: struttura temporale e dipendenze, con durate e contenuti provenienti dal brief corrente. |
-| KPI, risultati o valori da mettere in evidenza | Slide **88**: raggruppamento delle metriche e gerarchia visiva; ogni numero deve avere una fonte corrente. |
-| Strategia progressiva o evoluzione per passi | Slide **91**: progressione a gradoni. Usarla solo se i passaggi aggiungono contenuto distinto. |
+Prima di pianificare un deck con questo modello, leggi la [guida di selezione del catalogo Novigo](references/novigo-slide-guide.md). La guida è il riferimento per lo schema obbligatorio del primo contenuto e per scegliere tra le famiglie dell'intero catalogo. Usa i numeri delle slide originali, non quelli del nuovo deck né di un PDF che omette slide nascoste. Il catalogo guida la scelta; il PPTX fornito resta la fonte per oggetti e stili effettivi.
 
 Il catalogo contiene trattamenti diversi: il gradiente delle barre del master non è necessariamente quello dei riempimenti delle forme o del testo. Riusa l'oggetto pertinente. Se mancano il modello o una capacità necessaria a preservarlo, dichiara il limite concreto senza presentare un'approssimazione come conforme.
