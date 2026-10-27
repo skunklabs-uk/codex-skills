@@ -39,11 +39,11 @@ Per una cover originale usa uno dei **cinque stili approvati**, con i nomi segue
 
 | ID | Stile | Trattamento da riprodurre |
 | --- | --- | --- |
-| 01 | **Cinematic Editorial** | Realismo cinematografico con finitura illustrativa morbida, luce calda, riflessi e profondità. Contorni poco evidenti; niente matita o blueprint imposti. |
-| 02 | **Vibrant Illustration** | Pittura digitale dichiaratamente illustrata, colori vivaci e saturi, campiture morbide, profondità per piani e composizione scenografica. Non desaturare per uniformarla agli stili tecnici. |
-| 03 | **Technical Blueprint** | Fondo bianco luminoso, linee azzurre sottili, geometrie discrete, superfici pulite e morbide, pochi accenti arancioni e spazio negativo. Niente tratteggio marcato. |
-| 04 | **Technical Sketchbook** | Carta avorio, grafite e tratteggio manuale selettivo, contorni anche incompleti, colore desaturato applicato a zone, dettagli e schizzi secondari. L'insieme rimane disegnato. |
-| 05 | **Sketch to Reality** | Transizione graduale sullo stesso soggetto da schizzo in grafite a superfici realistiche tridimensionali. Non è un filtro matita uniforme e non sostituisce Technical Sketchbook. |
+| 01 | **[Cinematic Editorial](references/cover-styles/01-cinematic-editorial.png)** | Realismo cinematografico con finitura illustrativa morbida, luce calda, riflessi e profondità. Contorni poco evidenti; niente matita o blueprint imposti. |
+| 02 | **[Vibrant Illustration](references/cover-styles/02-vibrant-illustration.png)** | Pittura digitale dichiaratamente illustrata, colori vivaci e saturi, campiture morbide, profondità per piani e composizione scenografica. Non desaturare per uniformarla agli stili tecnici. |
+| 03 | **[Technical Blueprint](references/cover-styles/03-technical-blueprint.png)** | Fondo bianco luminoso, linee azzurre sottili, geometrie discrete, superfici pulite e morbide, pochi accenti arancioni e spazio negativo. Niente tratteggio marcato. |
+| 04 | **[Technical Sketchbook](references/cover-styles/04-technical-sketchbook.png)** | Carta avorio, grafite e tratteggio manuale selettivo, contorni anche incompleti, colore desaturato applicato a zone, dettagli e schizzi secondari. L'insieme rimane disegnato. |
+| 05 | **[Sketch to Reality](references/cover-styles/05-sketch-to-reality.png)** | Transizione graduale sullo stesso soggetto da schizzo in grafite a superfici realistiche tridimensionali. Non è un filtro matita uniforme e non sostituisce Technical Sketchbook. |
 
 Rispetta lo stile indicato dall'utente. In sua assenza proponi quello pertinente al soggetto, senza mescolare automaticamente tutti e cinque. Palette, luce, texture e intensità del segno dipendono dalla reference scelta: non applicare matita, carta avorio o colori attenuati a ogni cover.
 
