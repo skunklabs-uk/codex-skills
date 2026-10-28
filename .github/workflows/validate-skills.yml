@@ -53,7 +53,7 @@ jobs:
       - name: Set up Node for Renovate and contract tests
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: 24
+          node-version: 26
 
       - name: Run deterministic skill tests
         shell: bash
