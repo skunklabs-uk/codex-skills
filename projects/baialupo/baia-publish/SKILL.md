@@ -51,33 +51,39 @@ Consulta la [documentazione delle reference](references/cover-styles/README.md) 
 
 Per verificare la continuità con il sito, confronta anche le **cover realmente usate** dagli articoli recenti in `skunklabs-uk/baialupo.com`: leggi il campo `cover` nei post e apri gli asset corrispondenti in `public/img/stories/`. Gli ultimi file per data possono essere fotografie accessorie, non copertine. Le reference definiscono il trattamento, non obbligano a riprodurre il loro soggetto o marchio. Una fotografia pertinente e autorizzata resta preferibile quando prevista da `AGENTS.md`.
 
-Non imporre titoli e annotazioni generati: sono opzionali solo quando aggiungono valore editoriale e il testo è controllabile e verificato. Per safety e normativa, non disegnare carte operative, piste, rotte, quote, marchi, aeromobili o installazioni inventati come se fossero documentari; preferisci schemi volutamente astratti o illustrazioni neutrali.
+### Formato dell'immagine di apertura del sito
+
+La `cover` di un articolo Baialupo è **un'unica immagine panoramica a pieno formato** (target 1672 × 941 px, circa 16:9), destinata alle card e al corpo dell'articolo. Non è una copertina di rivista, un manifesto o una pagina impaginata. Quando servono più cover, prepara **una richiesta autonoma per ogni articolo**, non un'unica richiesta per generare un trittico, una griglia o un collage di cover. Il termine `cover` indica il campo editoriale del sito; al generatore chiedi invece un'**immagine di apertura per UN articolo web**.
+
+Il file di base contiene solo il soggetto e la sua ambientazione, **senza tipografia o impaginazione aggiunta**: niente titoli, testate, numeri di fascicolo, didascalie, banner, loghi, mascotte o watermark. Le scritte nelle reference non sono contenuto da copiare. Se l'articolo richiede espressamente annotazioni verificate, applicale separatamente dopo la generazione; eventuali dettagli illustrati negli stili tecnici riguardano comunque un unico soggetto, non più articoli. Per safety e normativa, non disegnare carte operative, piste, rotte, quote, marchi, aeromobili o installazioni inventati come se fossero documentari; preferisci schemi volutamente astratti o illustrazioni neutrali.
 
 ### Prompt riusabile per la sola immagine
 
 ```text
-Cover editoriale Baialupo, formato orizzontale panoramico.
+Genera UNA SOLA immagine panoramica a pieno formato per l'apertura
+di UN articolo web di aviazione leggera. Rapporto 16:9 (target 1672 × 941 px).
+È un singolo asset visivo, non una pagina impaginata o copertina di rivista.
 Tema: [TEMA]. Soggetto principale: [SOGGETTO].
 Dettagli secondari essenziali: [DETTAGLI]. Ambientazione: [LUOGO GENERICO].
-Stile scelto: [ID E NOME ESATTO DI UNO DEI CINQUE STILI].
-Reference visiva effettivamente aperta: [FILE O ALLEGATO].
-Riproduci questi caratteri osservati nella reference:
-tratto [DESCRIZIONE], palette [DESCRIZIONE], luce [DESCRIZIONE],
-texture e distribuzione del dettaglio [DESCRIZIONE].
-Composizione pulita e leggibile anche in miniatura; geometria aeronautica
-credibile rispetto alle fonti. Non ereditare il soggetto della reference.
+Stile visivo: [ID E NOME ESATTO DI UNO DEI CINQUE STILI].
+Reference visiva realmente aperta: [FILE O ALLEGATO].
+Riproduci questi caratteri osservati: tratto [DESCRIZIONE],
+palette [DESCRIZIONE], luce [DESCRIZIONE], texture [DESCRIZIONE].
+Soggetto leggibile anche in miniatura; geometria aeronautica credibile.
+Non trasferire il soggetto né le scritte della reference.
 Se la composizione è già approvata, conserva soggetti, proporzioni e
 inquadratura: modifica soltanto il trattamento artistico richiesto.
-Nessun logo, mascotte, marchio, watermark o testo inventato.
-Nessun simbolo che ricordi il marchio Baialupo.
-Lascia libero l'angolo [ANGOLO] per l'overlay successivo.
+Output: UNA immagine autonoma, non un collage o trittico di copertine.
+Nessuna tipografia aggiunta: no titoli, testate, didascalie, banner o cornici.
+Non generare loghi, mascotte, marchi, watermark o simboli Baialupo.
+Lascia libero l'angolo [ANGOLO] per l'overlay separato successivo.
 ```
 
 ### Pipeline immagini e logo: due fasi separate
 
-1. **Generazione (agente creativo, quando disponibile):** produci e conserva un'immagine di base **senza alcun logo**, anche se il generatore tende a introdurlo. Controlla l'output: se compare la mascotte, il wordmark o un marchio simile, rigenera o correggi prima di passare alla fase successiva. Non richiedere al modello di riprodurre l'SVG.
+1. **Generazione (agente creativo, quando disponibile):** invia un prompt completo **per un solo articolo alla volta**. Controlla il testo *effettivamente inviato al generatore*, non soltanto il modello di prompt nella skill: deve chiedere un'unica immagine di apertura, non un layout, tre cover affiancate o testi da rivista. Produci e conserva una base senza loghi o elementi grafici sovrapposti. Non richiedere al modello di riprodurre l'SVG.
 2. **Postprocessing (agente tecnico distinto, quando disponibile):** prendi l'immagine di base e sovrapponi in un angolo **l'esatto file** `public/img/covers/baialupo-logo-aviator.svg` del repository, senza ridisegno, alterazione di colori, font, proporzioni o parti del marchio. Usa un compositing deterministico con rendering fedele dell'SVG, margini uniformi e dimensioni leggibili sul ritaglio della card. Se il file canonico non è accessibile, ferma soltanto l'overlay e segnala il blocco: non sostituirlo con un logo generato. La presenza di più agenti non è obbligatoria, ma le due fasi e i rispettivi output devono rimanere verificabili.
-3. **Review:** confronta la base senza logo con il composito finale; verifica che l'unica aggiunta sia l'overlay autentico (identità del marchio, posizione, proporzioni). Confronta poi tratto, palette, luce e texture con la reference dello stile scelto: una composizione simile non prova una revisione stilistica riuscita. Controlla crop desktop/mobile, leggibilità, geometria aeronautica e coerenza con l'articolo. Se non hai verificato visivamente il risultato, non dichiararlo approvato.
+3. **Review:** verifica prima che la base sia un'unica immagine panoramica riferita a un solo articolo, senza impaginazioni, scritte o marchi aggiunti. Se l'output è un trittico o una pagina da rivista, scartalo prima dell'overlay e correggi la richiesta o cambia approccio, senza ripetere alla cieca prompt equivalenti. Confronta poi la base con il composito finale: l'unica aggiunta ordinaria è l'overlay autentico (identità del marchio, posizione, proporzioni). Confronta tratto, palette, luce e texture con la reference dello stile scelto; una composizione simile non prova una revisione stilistica riuscita. Controlla crop desktop/mobile, leggibilità, geometria aeronautica e coerenza con l'articolo. Se non hai verificato visivamente il risultato, non dichiararlo approvato.
 
 Conserva base e risultato finale almeno durante la review; registra nel lavoro corrente fonte dell'SVG e file finale, senza nuovi registri permanenti. Solo il file finale validato entra nel campo `cover` e nel corpo dell'articolo. Non usare la cover editoriale come locandina in `events.md`.
 
