@@ -9,6 +9,8 @@ Leggi i requisiti del task e le istruzioni di esecuzione del progetto. Riusa gli
 
 Controlla sul file effettivamente consegnato: integrità ZIP; parsing XML; Override di `[Content_Types].xml` verso parti esistenti; target interni delle relazioni; master/layout e media; extents non negativi; integrità delle relazioni notes master/theme quando presenti. I target esterni non sono file interni mancanti.
 
+Quando il task richiede un template, confronta la catena slide/layout/master/tema con il sorgente e verifica i placeholder nativi richiesti, considerando quelli ereditati. Un tema rinominato o un font uguale non provano che master e palette siano quelli originali. Quando è richiesta editabilità, controlla che tabelle, testi e forme siano gli oggetti nativi previsti; il solo rendering non lo dimostra. Verifica con ispezione o strumenti esistenti, senza introdurre un secondo sistema di validazione.
+
 Verifica anche che il sorgente non sia stato sovrascritto senza permesso. Usa render/export disponibile per le verifiche visuali richieste, ma distinguine l'esito dalla validità del pacchetto e dall'apertura nel programma PowerPoint.
 
 Se PowerPoint ripara il file, confronta i pacchetti originali/riparati: correggi dangling override, relazioni o geometrie invalide dimostrate, non pattern innocui per supposizione. Non imporre `theme2.xml` o normalizzazioni dei tag vuoti a ogni file: valgono struttura e riferimenti corretti, non una topologia fissa. Non alterare theme e aspetto visivo approvati durante una riparazione tecnica.
