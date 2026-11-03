@@ -20,6 +20,22 @@
       "enabled": false
     },
     {
+      "description": "Mantiene Node compatibile con engines.node della versione di Renovate fissata nel workflow.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "uses-with"
+      ],
+      "matchPackageNames": [
+        "actions/node-versions"
+      ],
+      "matchFileNames": [
+        ".github/workflows/validate-skills.yml"
+      ],
+      "allowedVersions": "^24.11.0"
+    },
+    {
       "description": "Una PR per repository upstream, solo nella finestra settimanale e senza automerge.",
       "matchManagers": [
         "custom.regex"
