@@ -53,6 +53,20 @@
       ],
       "updateNotScheduled": false,
       "minimumReleaseAge": null
+    },
+    {
+      "description": "Aggiorna il pin della CLI Renovate usata dal workflow.",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchFileNames": [
+        ".github/workflows/validate-skills.yml"
+      ],
+      "groupName": "Renovate CLI",
+      "automerge": false
     }
   ],
   "timezone": "Europe/Rome",
@@ -68,6 +82,19 @@
       ],
       "datasourceTemplate": "git-refs",
       "currentValueTemplate": "main"
+    },
+    {
+      "customType": "regex",
+      "description": "Aggiorna la versione della CLI Renovate fissata nel workflow.",
+      "managerFilePatterns": [
+        "/^\\.github\\/workflows\\/validate-skills\\.yml$/"
+      ],
+      "matchStrings": [
+        "RENOVATE_VERSION: (?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "renovate",
+      "versioningTemplate": "npm"
     }
   ]
 }
