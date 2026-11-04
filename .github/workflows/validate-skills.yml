@@ -33,6 +33,8 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ci-standard
     timeout-minutes: 15
+    env:
+      RENOVATE_VERSION: 44.210.0
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -79,14 +81,14 @@ jobs:
 
       - name: Validate Renovate configuration
         if: steps.upstream.outputs.changed == 'true'
-        run: npx --yes --package renovate@44.30.3 -- renovate-config-validator --no-global --strict renovate.json
+        run: npx --yes --package "renovate@${RENOVATE_VERSION}" -- renovate-config-validator --no-global --strict renovate.json
 
       - name: Verify native Renovate lookup without creating updates
         if: steps.upstream.outputs.changed == 'true'
         env:
           LOG_LEVEL: debug
           RENOVATE_LOG_LEVEL_REMAP: '[{"matchMessage":"Could not determine new digest for update.","newLogLevel":"error"}]'
-        run: npx --yes --package renovate@44.30.3 -- renovate --platform=local --dry-run=lookup --enabled-managers=custom.regex
+        run: npx --yes --package "renovate@${RENOVATE_VERSION}" -- renovate --platform=local --dry-run=lookup --enabled-managers=custom.regex
 
       - name: Verify pinned upstream paths without executing upstream code
         if: steps.upstream.outputs.changed == 'true'
