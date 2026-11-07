@@ -79,6 +79,17 @@ Before declaring completion:
 
 For projects governed by [RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md), treat the current RFC as the normative source instead of copying its rules locally. Do not create documentation churn when the change does not materially affect what future maintainers or operators need to know.
 
+## Functional and technical documentation
+
+Use [Diátaxis](https://diataxis.fr/) to choose the form that serves the reader: explanation, how-to guide, reference, or tutorial. Adapt these starting points to the task:
+
+- Explanation: purpose, concepts, how it works, exceptions.
+- How-to guide: goal, prerequisites, steps, expected result, problems.
+- Reference: scope, elements, rules and constraints, examples.
+- Tutorial: learning goal, prerequisites, guided exercise, result.
+
+Identify audience and purpose when useful, link existing authoritative details, and omit unnecessary sections. Do not create all four document types or reorganize existing documentation merely to fit the framework. Follow the user's instructions and the project's language, formats, and authoritative sources; do not force Diátaxis on unrelated artifacts.
+
 ## Operating Rule
 
 Per l'uso di strumenti specialistici di analisi dei repository, applicare la [politica di RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md#strumenti-specialistici-di-analisi-dei-repository). La [procedura GitNexus](https://github.com/skunklabs-uk/codex-skills/blob/main/README.md#uso-circoscritto-di-gitnexus) descrive le capability tecniche, senza sostituire la politica o le istruzioni del progetto.
