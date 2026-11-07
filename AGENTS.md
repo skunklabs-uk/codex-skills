@@ -21,9 +21,9 @@ This repository stores personal and project-specific Codex skills.
 - Use `bash scripts/install-global-agents.sh <project-root>` to install the link.
 - Use `--replace` only when intentionally backing up and replacing an existing project `AGENTS.md`.
 
-## Functional and technical documentation
+## Documentazione funzionale e tecnica
 
-For functional or technical documentation, consult the shared guidance in [AGENTS.global.md](AGENTS.global.md#functional-and-technical-documentation).
+Per la documentazione funzionale o tecnica, consulta la guida condivisa in [AGENTS.global.md](AGENTS.global.md#functional-and-technical-documentation).
 
 ## Arresto e prosecuzione
 
