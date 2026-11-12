@@ -124,7 +124,7 @@ La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito
 | Superpowers | Le 15 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
 | Matt Pocock | Tutte le 37 skill presenti in `mattpocock/skills` alla release **v1.3.1**, commit `24fe0ef7737efae15c87225755e9f6f5965e4888`: 27 nel plugin ufficiale, 6 beta `in-progress` e 4 utility `misc`. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
 | Addy Osmani | Tutte le 25 skill upstream, inclusa `using-agent-skills`. `ask-skills` resta il selettore generale: il router Osmani si usa quando viene scelto quel percorso. I comandi lifecycle e gli hook del plugin non vengono installati. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
-| Altri upstream | Playwright, humanize-writing, frontend-design, caveman e unslop rimangono pacchetti originali secondo i pin del manifest. |
+| Altri upstream | Playwright, humanize-writing, frontend-design, caveman, ponytail e unslop rimangono pacchetti originali secondo i pin del manifest. |
 
 L'installer mantiene checkout completi, inclusi licenze, helper e riferimenti; per percorsi relativi complessi considera la directory fisica della skill. Non esegue gli script di setup dei framework né installa hook di un plugin nativo. Una skill a catalogo non prova che il runtime offra browser, subagenti, generazione immagini o un servizio esterno.
 
@@ -210,6 +210,7 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 | `performance-optimization` | `addyosmani/agent-skills` — diretto | Ottimizzazione guidata da misure. |
 | `planning-and-task-breakdown` | `addyosmani/agent-skills` — diretto | Scomposizione del lavoro. |
 | `playwright` | `openai/skills` — diretto | Browser reale tramite CLI. |
+| `ponytail` | `DietrichGebert/ponytail` — diretto | Soluzione minima completa per task di sviluppo, con livelli di concisione. |
 | `pr` | `mattpocock/skills` — diretto | Descrizione delle PR con evidenze e impatto del merge. |
 | `prototype` | `mattpocock/skills` — diretto | Esperimento throwaway. |
 | `reality-check` | `locale` | Riconciliazione della baseline e del drift. |
@@ -401,7 +402,7 @@ Gli aggiornamenti seguono il percorso **upstream → PR Renovate → SHA approva
 
 ### Rilevamento e approvazione
 
-`renovate.json` configura il regex manager nativo con datasource `git-refs`: estrae lo SHA completo (`currentDigest`) e usa `currentValueTemplate: "main"` come riferimento da osservare. Il branch `main` è stato verificato negli otto upstream presenti; il manifest e l'installer continuano a usare soltanto SHA immutabili. Il validatore richiede un riferimento esplicito: `HEAD` sarebbe cercato come nome di branch o tag, non come branch predefinito. Prima di introdurre un upstream che usa un altro ramo, o in caso di rinomina di `main`, aggiornare il manager per quel repository in una PR revisionata. Non cambiare automaticamente canale e non alterare il formato del manifest per aggirare questa verifica.
+`renovate.json` configura il regex manager nativo con datasource `git-refs`: estrae lo SHA completo (`currentDigest`) e usa `currentValueTemplate: "main"` come riferimento da osservare. Il branch `main` è stato verificato nei nove upstream presenti; il manifest e l'installer continuano a usare soltanto SHA immutabili. Il validatore richiede un riferimento esplicito: `HEAD` sarebbe cercato come nome di branch o tag, non come branch predefinito. Prima di introdurre un upstream che usa un altro ramo, o in caso di rinomina di `main`, aggiornare il manager per quel repository in una PR revisionata. Non cambiare automaticamente canale e non alterare il formato del manifest per aggirare questa verifica.
 
 La finestra per creare e aggiornare le PR è **lunedì dalle 00:00 alle 06:00, Europe/Rome**; `updateNotScheduled: false` evita aggiornamenti ordinari dei branch fuori finestra. È una finestra del bot Renovate già collegato, non un nuovo cron: il bot deve comunque eseguire una scansione nella finestra. Il [Dependency Dashboard #24](https://github.com/skunklabs-uk/codex-skills/issues/24) mostra dipendenze rilevate, proposte ed eventuali errori; non modificarne manualmente le sezioni generate.
 
