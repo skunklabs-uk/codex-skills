@@ -1,0 +1,274 @@
+# Collegare OMP al MCP nativo di n8n
+
+**Stato:** Collegamento OMP operativo; test workflow completati. Job Radar resta funzionalmente `BLOCKED` per accesso non verificato a browser ATS e fonti canoniche.
+**Ultima verifica:** 12 novembre 2026.
+**Responsabile:** coordinatore della missione n8n Action Brief.
+
+## Soluzione
+
+Usare dal **developer workspace 1** il MCP nativo già attivo nell'istanza n8n. Riutilizzare l'endpoint e la variabile della configurazione Codex esistente; provare prima la discovery OMP, aggiungendo una definizione OMP solo se necessaria.
+
+```text
+OMP nel workspace 1
+  → HTTP MCP con autenticazione Bearer
+  → http://n8n.apps.svc.cluster.local:5678/mcp-server/http
+  → istanza n8n esistente
+```
+
+Non occorrono nuove istanze, workflow, adapter npm, tunnel WSL, port-forward o modifiche RBAC. Il MCP `aeris-mcp` usa DBHub ed è estraneo a n8n: le precedenti indicazioni su `cluster-connect.sh mcp` erano errate per questa missione.
+
+Il percorso interno usa HTTP nella rete Kubernetes già prevista da Homelab. Non estenderlo a reti esterne e non pubblicarlo senza una valutazione separata di autenticazione e TLS. Il dominio pubblico `n8n.skunklabs.uk` resta protetto da Cloudflare Access.
+
+## Evidenze disponibili
+
+| Verifica | Esito | Evidenza |
+|---|---|---|
+| Service n8n interno | SÌ | Manifest `apps/n8n`, ClusterIP, porta 5678; `/healthz` ha risposto HTTP 200 dal workspace corrente |
+| Percorso di rete previsto | SÌ | La NetworkPolicy del developer workspace consente egress verso i namespace del cluster |
+| Configurazione preesistente sul workspace 1 | SÌ | `~/.codex/config.toml`, sezione `mcp_servers.n8n`, abilitata |
+| Credenziale disponibile sul workspace 1 | SÌ | `N8N_MCP_API_KEY` presente nella login shell; valore non stampato |
+| Autenticazione MCP | SÌ | `initialize` dal workspace 1: HTTP 200, `n8n MCP Server` versione MCP `1.2.0` |
+| Discovery | SÌ | `tools/list` riuscito, senza pagina successiva; presenti ricerca, lettura, aggiornamento, validazione e test dei workflow |
+| Ricerca job-07 | SÌ | `Homelab - Articolo del Sabato`, ID `dba6Vp7MA1FhN3KH`, descrizione riferita a `job-07`, `availableInMCP: true` |
+| Identificazione job-06 | SÌ | `Homelab - Job Radar`, ID `qgjh8AV3hgdy9LYV`; selettore incorporato `chiave: 'job-06'`, individuato dall'agente RepairJob06 |
+| Corrispondenza con il run storico 48661 | SÌ | Lettura live: workflow `dba6Vp7MA1FhN3KH`, modalità manual, stato error, 8 novembre 2026 07:03:30–45 UTC |
+| Collegamento nel client OMP | SÌ | Client reale sul workspace 1: discovery connessa e `search_workflows` restituisce job-07. `/mcp test n8n` restituisce invece 401: discrepanza del comando diagnostico, non della chiamata operativa |
+| Test e consegna | Parzialmente completati | Job-06 pinned `52901` success; job-07 end-to-end `52906` success con un invio Slack verificato. Job Radar resta funzionalmente `BLOCKED` |
+
+La versione `1.2.0` identifica il server MCP, non la versione applicativa n8n. La sola discovery non dimostra permessi di modifica né esiti dei test.
+
+### Evidenze della ripresa applicativa dell'11 novembre
+
+- Job-06, bozza `f0909a9b-0e71-4104-bdce-71fad9245ea7`: nessun errore riprodotto nel validator dei nove nodi; nessuna correzione speculativa. Il coordinatore ha eseguito il test pinned `51772`, concluso `success`, con loader, Gmail, policy GitHub e notificatore esplicitamente pinned. Risultato: un alert sintetico, policy caricata, stato applicativo `BLOCKED`. Il test non dimostra il completamento del Job Radar: il codice corrente dichiara mancanti verifica ATS/browser, profilo/CV e candidature.
+- Job-07: l'articolo del run storico esiste ed è stato letto direttamente. Il difetto era l'assenza dell'URL diretto fra le citazioni del risultato di ricerca, non l'inesistenza della fonte. La bozza `74b605ae-a0af-4239-bb17-f533b5f8d570` richiede ora l'apertura della pagina esatta; il validator rigoroso resta invariato. Il test pinned `51775` produce `article_found`, data nel periodo e `citationVerified: true`.
+- Il test manuale live `51773` si è fermato nel nodo `Cerca articolo e fonti`: `Authentication Error, Invalid API key provided.` Il coordinatore ha verificato il log LiteLLM delle `06:25:27.155615297Z`: la chiave presentata non esiste nel database del gateway. Non è provata la causa della sua assenza; non è un errore OAuth del provider.
+- Durante le prove precedenti era disabilitato soltanto il sender della bozza job-07, poi ripristinato. Queste prove non hanno invocato Slack. Le versioni indicate nella diagnosi precedente sono state successivamente superate.
+
+### Reality-check dell'11 novembre, 14:09 UTC
+
+- I workflow sono stati modificati e pubblicati dopo la verifica precedente. Job-06 è sulla revisione attiva `13fb924e-0376-4b31-a7f4-7649b572e502`. Il nuovo pinned `51797` è riuscito su tale revisione, con loader, Gmail, GitHub, LLM e due nodi Slack pinned. L'output resta `BLOCKED`: mancano verifica ATS/browser e fonti profilo/CV e candidature.
+- Job-07 è pubblicato alla revisione `a41588df-a84f-4bbc-b27c-5b1bb280aa3e`, con correzione dell'URL diretto e modello `gpt-6.1-terra`. Queste modifiche precedono il reality-check corrente.
+- Run `51777` e `51779`: HTTP 400 per modello `ai-standard` non valido. Run `51780`: `success` parziale, terminato prima della ricerca. Il precedente 401 non dimostrava lo stato della credenziale aggiornata.
+- Il gateway corrente elenca `gpt-6.1-terra`; il test manuale `51795`, con solo sender della bozza disabilitato, è riuscito attraversando ricerca e validator. Ha restituito `article_found` e `citationVerified: true`. La pagina [CNCF](https://www.cncf.io/blog/2026/11/08/lima-v2-3-native-on-windows-vmnet-on-linux-and-menu-tui/) conferma titolo, autore `audra`, data 8 novembre e contenuto.
+- Dopo il test, il coordinatore ha consegnato **una sola volta** il brief risultante al canale esistente tramite Slack/Composio e ne ha verificato il [permalink](https://skunklabs-uk.slack.com/archives/C0CFLLUGLFP/p1794406387389209). Non è stato invocato il notificatore n8n: la prova verifica la ricerca live e una consegna separata, non un end-to-end interamente attraverso il nodo Slack del workflow.
+- Sender ripristinato nella bozza `0ca36fa3-e39a-4d62-8b3a-ab03484e352a`; versione pubblicata `a41588df-a84f-4bbc-b27c-5b1bb280aa3e` invariata. Non è stata pubblicata la modifica temporanea.
+- Verifica successiva in sola lettura: il notificatore condiviso n8n ha eseguito con successo il run integrato `51794` alle 10:30 UTC, includendo invio e recupero del [permalink](https://skunklabs-uk.slack.com/archives/C0CFLLUGLFP/p1794393003635279). È prova del componente su un'altra esecuzione, non della sua invocazione dal run job-07 `51795`.
+- Prova manuale completa job-07 `51799`: `success`, dalla ricerca al notificatore condiviso e Slack, con `article_found` e `citationVerified: true`. [Fonte arXiv](https://arxiv.org/abs/2611.08116) verificata direttamente: titolo, cinque autori e data 5 novembre 2026 corrispondono al brief. [Permalink del messaggio nativo](https://skunklabs-uk.slack.com/archives/C0CFLLUGLFP/p1794430319857989). È una seconda notifica, distinta dal brief CNCF già consegnato tramite Composio.
+
+Il vault resta `locked`, ma non costituisce un blocco per il percorso di ricerca verificato dal run `51795`. Non sono note la causa e le eventuali modifiche intervenute sulla credenziale fra i run.
+
+### Reality-check del 12 novembre
+
+- Il run storico `48661` non aveva pubblicato su Slack. Job-06: il test pinned `52901` è riuscito; il blocco precedente era dovuto al Data Table mancante nel workflow condiviso `pocPromptLoader20261107`, non a un validator specifico di job-06. Le 12 righe sono state ricostruite dall'ultima esecuzione riuscita `52893`; la tabella `homelab_action_brief_prompts_recovered` è stata creata e il loader aggiornato e pubblicato (`ec53d216-4c27-4957-8838-adb86875042a`). Il risultato job-06 rimane `BLOCKED` per ATS/browser e fonti profilo/CV/candidature; il test pinned non ha dimostrato il completamento funzionale del Job Radar.
+- Job-07: la ricerca live ha trovato la pagina CNCF diretta. Il run `52904` ha fermato il flusso prima di Slack perché il validator rifiutava un titolo reale di 190 caratteri con limite 180. Il limite è stato portato a 240; il manual run `52906` è riuscito end-to-end sulla revisione pubblicata `9cc9dca9-1178-48d1-8373-386a7715a60a`. Slack ha ricevuto un solo messaggio dopo il successo; permalink: https://skunklabs-uk.slack.com/archives/C0CFLLUGLFP/p1794508831144549.
+- Il workflow job-07 usato è `dba6Vp7MA1FhN3KH`; job-06 è `qgjh8AV3hgdy9LYV`. Nessun workflow duplicato è stato creato. Non sono stati inviati messaggi Slack durante diagnosi o test falliti.
+
+## Procedura passo passo
+
+### 1. Aprire il terminale del workspace 1
+
+Usare l'accesso già configurato al developer workspace 1 e l'utente `coder`. Eseguire i comandi seguenti **dentro quel workspace**, non nella WSL, nel workspace 2/3 o in un servizio cloud.
+
+```bash
+hostname
+whoami
+cd /workspaces/codex-skills
+bash --login
+```
+
+Il pod associato al workspace 1 nell'inventario Homelab è `developer-workspace-0`. La home e l'ambiente dei worker non sono intercambiabili. Un file sotto `/workspaces` può essere condiviso; questo non rende condivise le credenziali nella home o nell'ambiente.
+
+Per diagnosi remote il coordinatore può usare il playbook esistente `/workspaces/.wkexec/command.yml` con `--limit developer-workspace-1`. Il wrapper `wkexec` esegue invece su tutti i worker: non usarlo indiscriminatamente per modificare configurazioni. Il playbook usa il modulo Ansible `command`; pipeline e sequenze richiedono esplicitamente `bash -lc`.
+
+### 2. Verificare configurazione e segreto senza mostrarlo
+
+```bash
+python3 - <<'PY'
+import os
+import pathlib
+import tomllib
+
+path = pathlib.Path.home() / '.codex/config.toml'
+server = tomllib.loads(path.read_text())['mcp_servers']['n8n']
+assert server['url'] == 'http://n8n.apps.svc.cluster.local:5678/mcp-server/http'
+assert server.get('enabled', True)
+assert server['bearer_token_env_var'] == 'N8N_MCP_API_KEY'
+assert os.environ.get('N8N_MCP_API_KEY'), 'Token assente nella shell corrente'
+print('Endpoint e riferimento al token verificati; segreto non mostrato')
+PY
+```
+
+Il controllo confronta la configurazione esistente; non la modifica. La definizione Codex osservata è equivalente a:
+
+```toml
+[mcp_servers.n8n]
+url = "http://n8n.apps.svc.cluster.local:5678/mcp-server/http"
+bearer_token_env_var = "N8N_MCP_API_KEY"
+enabled = true
+```
+
+Se il token manca, verificare di essere nella login shell del workspace 1. Non stampare `env`, non copiare il token nella chat e non inserirlo nel JSON. Non confondere questo token MCP con una API key della REST API n8n (`X-N8N-API-KEY`). Non ruotarlo per risolvere un problema di discovery: la rotazione invalida il token usato dagli altri client.
+
+### 3. Controllare la raggiungibilità interna
+
+```bash
+curl --silent --show-error --connect-timeout 3 --max-time 8 \
+  --output /dev/null --write-out 'HTTP %{http_code}\n' \
+  http://n8n.apps.svc.cluster.local:5678/healthz
+```
+
+Atteso: `HTTP 200`. Non serve `kubectl port-forward`: il client raggiunge direttamente un Service consentito dalla rete del workspace. Il diniego RBAC sul port-forward non impedisce questo percorso e non deve essere rimosso.
+
+### 4. Provare il riuso della configurazione Codex in OMP
+
+Dalla stessa shell, avviare OMP con il profilo usato dalla missione:
+
+```bash
+omp --profile personal
+```
+
+Nel client OMP eseguire:
+
+```text
+/mcp reload
+/mcp list
+/mcp test n8n
+```
+
+OMP documenta la discovery delle definizioni Codex. Se `n8n` è presente, punta all'endpoint interno e il test riesce, **saltare il passo 5**. Conservare la configurazione già funzionante.
+
+Se risulta disabilitato, individuare da `/mcp list` la fonte effettiva e l'eventuale voce `disabledServers`; non eliminare denylist o definizioni di altri server. Riabilitare soltanto `n8n`, se il blocco è un residuo della configurazione precedente e non una policy intenzionale.
+
+### 5. Solo se il riuso non funziona: aggiungere la definizione OMP
+
+Il file del profilo `personal` è:
+
+```text
+/home/coder/.omp/profiles/personal/agent/mcp.json
+```
+
+Prima di modificarlo, salvarne una copia privata e annotare il nome del backup:
+
+```bash
+umask 077
+cfg="$HOME/.omp/profiles/personal/agent/mcp.json"
+backup="${cfg}.before-n8n.$(date -u +%Y%m%dT%H%M%SZ)"
+cp -- "$cfg" "$backup"
+chmod 600 "$backup"
+printf 'Backup: %s\n' "$backup"
+```
+
+Aggiungere **solo** la proprietà `n8n` alla mappa `mcpServers`. Conservare `$schema`, `composio`, gli altri server e le impostazioni esistenti. Il frammento da integrare è:
+
+```json
+{
+  "n8n": {
+    "type": "http",
+    "url": "http://n8n.apps.svc.cluster.local:5678/mcp-server/http",
+    "headers": {
+      "Authorization": "Bearer ${N8N_MCP_API_KEY}"
+    }
+  }
+}
+```
+
+Il testo `${N8N_MCP_API_KEY}` deve restare letterale nel file: OMP lo risolve dall'ambiente del proprio processo. Non usare un heredoc non quotato che espanda il segreto durante la scrittura. Non aggiungere un secondo server con un nome diverso: la definizione OMP nativa `n8n` ha precedenza su quella importata da Codex.
+
+Controllare la sintassi senza stampare la configurazione:
+
+```bash
+python3 - <<'PY'
+import json
+import pathlib
+path = pathlib.Path.home() / '.omp/profiles/personal/agent/mcp.json'
+server = json.loads(path.read_text())['mcpServers']['n8n']
+assert server['type'] == 'http'
+assert server['url'] == 'http://n8n.apps.svc.cluster.local:5678/mcp-server/http'
+assert server['headers']['Authorization'] == 'Bearer ${N8N_MCP_API_KEY}'
+print('Definizione OMP valida; token non incorporato nel JSON')
+PY
+```
+
+Ripetere `/mcp reload`, `/mcp list` e `/mcp test n8n`. Se OMP era stato avviato prima che il token fosse disponibile, chiudere e riaprire il client dalla shell corretta: il reload non importa retroattivamente l'ambiente di un'altra shell.
+
+### 6. Verificare le capability senza eseguire workflow
+
+Controllare che OMP esponga almeno:
+
+- `search_workflows`, `get_workflow_details`, `get_workflow_execution`;
+- `update_workflow`, `validate_workflow`, `validate_node_config`;
+- `prepare_workflow_pin_data`, `test_workflow`, `execute_workflow`.
+
+Questi nomi sono stati osservati nel `tools/list` live. I prefissi mostrati dal client possono differire. Leggere gli schemi correnti prima di qualsiasi chiamata: `validate_workflow` valida codice Workflow SDK, non automaticamente il JSON esportato.
+
+La prova funzionale in sola lettura è `search_workflows` con:
+
+```json
+{"query":"job-07","limit":50}
+```
+
+Atteso secondo la verifica corrente: ID `dba6Vp7MA1FhN3KH`. Leggere poi i dettagli con il contratto esposto dal tool e confrontare descrizione, nodi e riferimenti della missione. Una preview non basta: i dettagli richiedono anche accesso applicativo e `Available in MCP`.
+
+Per job-06 cercare anche per nome funzionale, progetto e descrizione. La mancata corrispondenza del nome `job-06` non prova che il workflow sia assente. Non clonare, importare o creare workflow per superare questo passaggio.
+
+### 7. Separare il collaudo del collegamento dai test della missione
+
+Il collegamento è accettato quando il client OMP si autentica, scopre i tool e legge i workflow attesi. La missione richiede ancora:
+
+1. Associare job-06 al workflow corretto e confrontare job-07 con il run `48661` e la configurazione precedente.
+2. Individuare il validator responsabile del blocco pinned di job-06. Correggerlo soltanto se il problema è riproducibile e completare il test pinned.
+3. Verificare direttamente la ricerca dell'articolo di job-07, correggere la causa osservata e soltanto dopo eseguire il test.
+4. Eseguire il test manuale end-to-end; pubblicare su Slack solo dopo esito riuscito e verifica del contenuto.
+
+`test_workflow` non è una sandbox generale: nodi Code e I/O senza credenziali possono avere effetti reali. Prima dei test ispezionare anche subworkflow, gestione errori e notifiche condivise. Verificare che nessun percorso diagnostico o fallito possa inviare Slack.
+
+Per l'end-to-end usare esplicitamente la modalità manuale secondo lo schema corrente, senza pubblicare o attivare il workflow per rendere possibile il test. Se esiste una separazione fra produzione del risultato e notifica, riutilizzarla; la descrizione osservata di job-07 dichiara proprio un risultato senza pubblicazione. Verificarne però i nodi prima di affidarsi alla descrizione. Un ID restituito da `execute_workflow` indica l'avvio, non il successo: leggere l'esito finale e i dati pertinenti prima dell'invio Slack. Non rilanciare alla cieca dopo timeout.
+
+## Diagnosi circoscritta
+
+| Sintomo | Azione |
+|---|---|
+| DNS interno non risolto / timeout | Verificare il worker di esecuzione e Service/rete; non aprire route pubbliche o cambiare RBAC |
+| Redirect Cloudflare | È stato usato il dominio pubblico; nel workspace usare l'endpoint interno verificato |
+| `401` MCP | Controllare presenza del token nell'ambiente del processo OMP e header Bearer; non rigenerare credenziali automaticamente |
+| `403` o workflow non leggibile | Verificare permessi n8n e `Available in MCP` per quel workflow; non esporre indiscriminatamente tutti i workflow |
+| Server assente da OMP | Controllare profilo, fonte della configurazione, JSON e denylist; applicare il passo 5 solo se necessario |
+| Healthcheck riuscita ma discovery fallita | Controllare `/mcp-server/http`, autenticazione e trasporto `http`; la healthcheck non verifica MCP |
+| Discovery riuscita ma test pinned fallito | Il collegamento è operativo: diagnosticare il validator o il workflow, senza cambiare tunnel o credenziali |
+
+## Ripristino
+
+Se è stato applicato il passo 5, rimuovere soltanto la definizione OMP `n8n` aggiunta e ripristinare gli eventuali override modificati. Usare il backup completo solo se nel frattempo nessuno ha cambiato altre voci; altrimenti integrare selettivamente. Eseguire `/mcp reload`. La configurazione Codex preesistente rimane intatta.
+
+Non revocare il token condiviso con Codex, non disabilitare il MCP nell'istanza e non toccare workflow o stato published per annullare una modifica al client.
+
+## Coda recuperabile e criterio di chiusura
+
+| Priorità | Attività / responsabile | Stato | Dipendenza | Accettazione e prossima azione |
+|---|---|---|---|---|
+| P1 | Collegamento nel client / coordinatore | Verificato | Shell workspace 1 con token | Discovery e ricerca job-07 eseguite dal client OMP; nessuna modifica alla configurazione necessaria |
+| P1 | Identità job-06 e run storico / coordinatore | Identificati | Tool read-only disponibili | ID job-06 comunicato da RepairJob06; associazione run 48661 verificata dal coordinatore |
+| P2 | Validator e pinned job-06 / coordinatore | Test pinned riuscito; Job Radar bloccato | Loader condiviso e input pinned | Run `52901` success; il precedente errore proveniva dalla tabella prompt mancante, ripristinata e loader pubblicato. L'accesso ATS/browser e le fonti canoniche restano non verificati |
+| P2 | Ricerca articolo job-07 / coordinatore | Verificata e corretta | Fonte live accessibile | Pagina CNCF diretta trovata; il validator ora accetta il titolo reale di 190 caratteri |
+| P3 | Consegna Slack / coordinatore | Verificata dopo successo | Test end-to-end riuscito | Una pubblicazione nel run `52906`; permalink verificato |
+| P3 | End-to-end n8n completo / coordinatore | Verificato | Validator corretto e sender attivo | Run manuale `52906` success dalla ricerca a Slack sulla revisione `9cc9dca9-1178-48d1-8373-386a7715a60a` |
+| P1 | Sblocco funzionale Job Radar / coordinatore | Bloccato | Capacità browser accessibile da n8n e fonti d'applicazione | Il test pinned `52901` passa, ma l'output applicativo resta `BLOCKED`; non rimuovere il gate senza verificare ATS/browser e fonti canoniche |
+| P1 | Accesso fonti e gate ATS / coordinatore | Parzialmente verificato | Browser richiamabile dal runtime n8n | Lettura GitHub career-lab verificata; fonti canoniche includono `APPLICATION_LOG.md`, `applications/`, `profile/` e `cv/`. Chromium nel workspace separato ha aperto un form ATS pubblico senza invio, ma non è dimostrata la sua raggiungibilità da n8n |
+| P1 | Browser runtime / coordinatore | Bloccato da accessi | Identità SSH autorizzata, credenziale n8n e route ammessa | Il MCP n8n espone zero credenziali SSH e nessuna creazione; non è disponibile una chiave REST n8n. Il manifest `developer-workspace-ssh` consente ingresso TCP 2222 soltanto da `default/cloudflared-private`; NetworkPolicy live non leggibile. La route Cloudflare richiede WARP, Access e chiave SSH, non dimostrati nel pod n8n |
+| P2 | Allineamento calendario / coordinatore | Da valutare | Riconciliazione policy e configurazione runtime | Policy `RADAR_POLICY.md`: ogni giorno 08:15 Europe/Rome; trigger live diverso. Non modificare schedule prima di valutare l'impatto operativo |
+
+Ponytail, 12 novembre: preferire il riuso del nodo SSH nativo nel workflow esistente a nuovi servizi o workflow; è una possibilità tecnica, **non una soluzione verificata**. Servono una credenziale SSH autorizzata, prova di raggiungibilità e un'interfaccia browser mantenibile, oltre all'integrazione delle fonti canoniche. La routine Paperclip documentata è `Draft` e non dimostra un esecutore già operativo con Gmail, GitHub e browser. Il gate ATS rimane `UNVERIFIED` quando il percorso reale non è osservabile; non rimuovere il blocco solo per produrre un risultato positivo.
+
+Ripresa autorizzata: il coordinatore ha confermato in lettura che il workflow resta alla revisione `13fb924e-0376-4b31-a7f4-7649b572e502` e che il MCP espone solo `list_credentials`. Il service account non può usare `pods/exec` in `apps`, modificare NetworkPolicy nel namespace workspace, né leggere secret in `apps`. Il percorso Cloudflare non è un bypass: richiede identità ammessa e credenziale SSH. Prossima azione: ripristinare tramite operatore o percorso amministrativo già autorizzato accesso alla creazione credenziali n8n e alla modifica GitOps della connettività; poi dimostrare SSH e ATS prima dell'integrazione. Non scrivere pack, alterare Gmail o inviare notifiche durante la diagnosi. Nessun accesso o policy è stato modificato.
+
+La coda è uno stato di ripresa, non un processo in background persistente. Il coordinatore gestisce gli agenti durante la sessione; nessuna sorveglianza fuori sessione è implicita. Aggiornare versioni, esiti e prossima azione prima del closeout. I test di job-06 e job-07 sono stati eseguiti; la missione Job Radar non è completa finché il gate ATS/browser e le fonti canoniche non sono verificati.
+
+## Fonti e revisione
+
+- [RFC-0001 corrente](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md).
+- [Homelab: Service n8n](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/n8n/service.yaml) e [NetworkPolicy workspace](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/developer-workspace/networkpolicy.yaml), riscontrati anche nel checkout locale `homelab-nexus-1898`.
+- Configurazione effettiva del workspace 1: `/home/coder/.codex/config.toml`, sezione `mcp_servers.n8n`; token conservato soltanto nel meccanismo preesistente.
+- [OMP: discovery, profili, header e reload](https://github.com/can1357/oh-my-pi/blob/main/docs/mcp-config.md).
+- [n8n: MCP nativo e permessi](https://docs.n8n.io/connect/connect-to-n8n-mcp-server.md) e [reference dei tool](https://docs.n8n.io/connect/connect-to-n8n-mcp-server/mcp-server-tools-reference.md).
+
+Non sono stati creati workflow duplicati, credenziali o infrastruttura. Le esecuzioni `52901` e `52906` sono state verificate; il run job-07 ha pubblicato su Slack soltanto dopo il successo. Il collegamento MCP è operativo, ma il Job Radar resta bloccato sull'integrazione non verificata di browser ATS e fonti applicative.
