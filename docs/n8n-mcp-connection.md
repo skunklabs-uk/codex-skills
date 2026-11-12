@@ -33,7 +33,7 @@ Il percorso interno usa HTTP nella rete Kubernetes già prevista da Homelab. Non
 | Identificazione job-06 | SÌ | `Homelab - Job Radar`, ID `qgjh8AV3hgdy9LYV`; selettore incorporato `chiave: 'job-06'`, individuato dall'agente RepairJob06 |
 | Corrispondenza con il run storico 48661 | SÌ | Lettura live: workflow `dba6Vp7MA1FhN3KH`, modalità manual, stato error, 8 novembre 2026 07:03:30–45 UTC |
 | Collegamento nel client OMP | SÌ | Client reale sul workspace 1: discovery connessa e `search_workflows` restituisce job-07. `/mcp test n8n` restituisce invece 401: discrepanza del comando diagnostico, non della chiamata operativa |
-| Test e consegna | Parzialmente completati | Job-06 pinned `52901` success; job-07 end-to-end `52906` success con un invio Slack verificato. Job Radar resta funzionalmente `BLOCKED` |
+| Test e consegna | Verificati | Job-06 pinned `52901` success; job-07 end-to-end `52906` success e un invio Slack verificato. Il Job Radar resta funzionalmente `BLOCKED`: il successo del test non equivale all'accettazione funzionale |
 
 La versione `1.2.0` identifica il server MCP, non la versione applicativa n8n. La sola discovery non dimostra permessi di modifica né esiti dei test.
 
@@ -211,18 +211,13 @@ Atteso secondo la verifica corrente: ID `dba6Vp7MA1FhN3KH`. Leggere poi i dettag
 
 Per job-06 cercare anche per nome funzionale, progetto e descrizione. La mancata corrispondenza del nome `job-06` non prova che il workflow sia assente. Non clonare, importare o creare workflow per superare questo passaggio.
 
-### 7. Separare il collaudo del collegamento dai test della missione
+### 7. Esito dei test e blocco funzionale residuo
 
-Il collegamento è accettato quando il client OMP si autentica, scopre i tool e legge i workflow attesi. La missione richiede ancora:
+I criteri originari per job-06 e job-07 sono stati eseguiti: il test pinned `52901` è riuscito; la ricerca live job-07 è stata verificata, il validator corretto sulla causa riproducibile e il test manuale end-to-end `52906` è riuscito. Nessun workflow duplicato è stato creato. Slack è stato invocato una sola volta dopo il successo, mai durante diagnosi o prove fallite.
 
-1. Associare job-06 al workflow corretto e confrontare job-07 con il run `48661` e la configurazione precedente.
-2. Individuare il validator responsabile del blocco pinned di job-06. Correggerlo soltanto se il problema è riproducibile e completare il test pinned.
-3. Verificare direttamente la ricerca dell'articolo di job-07, correggere la causa osservata e soltanto dopo eseguire il test.
-4. Eseguire il test manuale end-to-end; pubblicare su Slack solo dopo esito riuscito e verifica del contenuto.
+Il Job Radar funzionale resta `BLOCKED`: browser ATS e fonti canoniche (profilo/CV/candidature) non sono accessibili e verificati dal runtime n8n. Non rimuovere il gate né dichiarare completato il radar sulla base del test pinned.
 
-`test_workflow` non è una sandbox generale: nodi Code e I/O senza credenziali possono avere effetti reali. Prima dei test ispezionare anche subworkflow, gestione errori e notifiche condivise. Verificare che nessun percorso diagnostico o fallito possa inviare Slack.
-
-Per l'end-to-end usare esplicitamente la modalità manuale secondo lo schema corrente, senza pubblicare o attivare il workflow per rendere possibile il test. Se esiste una separazione fra produzione del risultato e notifica, riutilizzarla; la descrizione osservata di job-07 dichiara proprio un risultato senza pubblicazione. Verificarne però i nodi prima di affidarsi alla descrizione. Un ID restituito da `execute_workflow` indica l'avvio, non il successo: leggere l'esito finale e i dati pertinenti prima dell'invio Slack. Non rilanciare alla cieca dopo timeout.
+La procedura di collaudo sopra non autorizza a ripetere test già riusciti o a inviare altri messaggi Slack. Per nuove esecuzioni verificare prima la revisione attiva, lo schema del tool e gli effetti dei nodi.
 
 ## Diagnosi circoscritta
 
