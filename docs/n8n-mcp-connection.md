@@ -1,6 +1,6 @@
 # Collegare OMP al MCP nativo di n8n
 
-**Stato:** MCP n8n operativo; job-06 e job-07 identificati senza duplicati. Job-07 è stato verificato end-to-end sul workflow esistente. Browserless è distribuito e il suo uso live da job-06 è verificato; l’ultima bozza job-06 ha completato il run manuale `53963`, ma ha restituito `BLOCKED` (6 URL, 1 `CLOSED`, 5 `UNVERIFIED`, 0 `ACTIVE`). Nessun messaggio Slack è stato inviato da questa prova: entrambi i nodi Slack restano disabilitati nella bozza. Il Job Radar completo non è ancora operativo.
+**Stato:** MCP n8n operativo; job-06 e job-07 identificati senza duplicati. Job-07 è stato verificato end-to-end sul workflow esistente. Browserless è distribuito e l’uso live da job-06 è verificato; il run manuale più recente `53969` ha avuto successo tecnico ma risultato funzionale `BLOCKED`: 6 URL, 1 `CLOSED`, 5 `UNVERIFIED`, 0 `ACTIVE`. Quattro link LinkedIn `Apply` con ID di vacancy discordante sono stati scartati prima della valutazione LLM. Nessun messaggio Slack è stato inviato da questa prova; i nodi Slack restano disabilitati nella bozza. Il Job Radar completo non è ancora operativo.
 **Ultima verifica:** 13 novembre 2026.
 **Responsabile:** coordinatore della missione n8n Action Brief.
 
@@ -70,7 +70,7 @@ Il vault resta `locked`, ma non costituisce un blocco per il percorso di ricerca
 3. Prima del test controllare nel draft che `Invia Action Brief Slack` e `Ottieni permalink Action Brief` siano disabilitati. Avviare solo `Avvio manuale`; non usare il trigger schedulato per la diagnosi.
 4. Il workflow legge gli alert Gmail degli ultimi sette giorni e le fonti canoniche Career Lab via GitHub. Rimuove tracking e dati personali superflui, estrae URL di vacancy, normalizza e deduplica gli ID LinkedIn.
 5. Il nodo `Verifica pagina ATS` invia le URL al Service Browserless interno. Le richieste sono serializzate a un intervallo di 10 secondi; Browserless ammette solo egress HTTP(S) pubblico, mentre l’interceptor blocca destinazioni locali/private e le richieste successive ai redirect verso tali destinazioni. Le pagine sono lette con GET: niente login, CAPTCHA, compilazione o invio di moduli.
-6. Il gate finale richiede un risultato Browserless per ogni URL e rifiuta valutazioni duplicate, URL alterati o uno stato `ACTIVE` non attestato dal browser. `CLOSED` e `UNVERIFIED` non diventano opportunità candidabili.
+6. Il gate finale richiede un risultato Browserless per ogni URL e rifiuta valutazioni duplicate, URL alterati o uno stato `ACTIVE` non attestato dal browser. Per LinkedIn confronta l’ID vacancy del link `Apply` con quello della vacancy sorgente anche quando l’URL include uno slug; se non coincide, scarta URL e contenuto della candidatura prima di inviarli al modello e conserva il gate `UNVERIFIED`. `CLOSED` e `UNVERIFIED` non diventano opportunità candidabili.
 7. Solo dopo una prova funzionale completa si può riabilitare il sender e pubblicare la bozza. Un errore tecnico, un risultato `BLOCKED` o un gate `UNVERIFIED` non autorizzano una pubblicazione diagnostica. La prova `53963` ha verificato lettura, normalizzazione, Browserless, LiteLLM e formatter, ma non ha prodotto opportunità `ACTIVE`; Slack è rimasto disabilitato.
 
 Il PO ha autorizzato l’invio tramite LiteLLM del set minimo di fonti professionali canoniche. Il workflow non esegue ancora manutenzione delle candidature, creazione di pack o modifiche Gmail/GitHub: il suo `success` tecnico non equivale al completamento del Job Radar.
@@ -229,6 +229,9 @@ I criteri iniziali restano verificati: job-06 pinned `52901` è riuscito dopo il
 
 Il run manuale job-06 `53963` ha avuto stato n8n `success`: un alert Gmail ha prodotto sei URL LinkedIn deduplicate; il browser ha verificato sei pagine (una `CLOSED`, cinque `UNVERIFIED`, zero `ACTIVE`); il formatter ha restituito `BLOCKED`. Le richieste Browserless sono riuscite dopo la serializzazione a 10 secondi. I nodi Slack della bozza erano disabilitati e non hanno pubblicato.
 
+Il run `53967` ha mostrato che la prima regex confrontava solo gli URL LinkedIn con l’ID numerico come primo segmento del path; gli URL slugged non venivano riconosciuti e il contatore restava zero. La regex successiva estrae l’ID anche dagli slug; il run `53969` ha verificato il gate end-to-end e contato quattro link LinkedIn `Apply` con ID diversi dalla vacancy sorgente, scartandone le evidenze prima della valutazione LLM. Il run è terminato `success`, ma il risultato funzionale è rimasto `BLOCKED` (0 `ACTIVE`, 1 `CLOSED`, 5 `UNVERIFIED`). Nessun messaggio Slack è stato inviato.
+
+
 Job-06 non è pubblicato: la versione attiva resta `13fb924e-0376-4b31-a7f4-7649b572e502`. Non pubblicare né abilitare Slack finché il percorso non produce un esito funzionale non bloccato. Job-07 non è stato rieseguito: il successo `52906` resta la verifica corrente. Nessun workflow duplicato è stato creato.
 
 ## Diagnosi circoscritta
@@ -270,7 +273,7 @@ Browserless OSS è il runtime scelto e distribuito via GitOps, con utente non-ro
 
 Reality-check live/GitOps del 12 novembre: ArgoCD `n8n` era `Synced/Healthy` alla revisione `0581de8219b459933b72c1225b6e7446ee508da1`; `job-radar-browser` includeva `HOME=/tmp`. Run `52920`: POST `/content` 200 `text/html` con variabili XDG per-request sotto `/tmp/.chromium`. Run `52923`: GET `/active` 204 e POST `/content` 200 con HTML `Example Domain`, senza override per-request. Entrambi erano manuali e senza Slack. I run `52914`, `52917` e `52918` precedenti al fix hanno restituito HTTP 500; il log di `52917` mostra `chrome_crashpad_handler: --database is required`. Il runbook Homelab è aggiornato con PR [#2164](https://github.com/skunklabs-uk/homelab/pull/2164), merge `98b58d1184fb52a13ca631612152fc8333c3b7ec`. I due workflow temporanei sono archiviati; nessuna patch cluster, modifica RBAC o lettura Secret.
 
-La coda è uno stato recuperabile, non un processo persistente. Collegamento MCP, deploy Browserless e test job-07 sono verificati. Job-06 è integrato e provato in bozza, ma resta `BLOCKED`: nessuna delle sei URL ha superato il gate `ACTIVE` e le operazioni di pack/manutenzione non sono implementate. Le decisioni prodotto su trattamento dati e calendari risultano approvate; non restano domande prodotto aperte.
+La coda è uno stato recuperabile, non un processo persistente. Collegamento MCP, deploy Browserless e test job-07 sono verificati. Il run job-06 `53969` ha verificato la correzione dei quattro link LinkedIn discordanti, ma resta `BLOCKED`: nessuna delle sei URL ha superato il gate `ACTIVE` e le operazioni di pack/manutenzione non sono implementate. Le decisioni prodotto su trattamento dati e calendari risultano approvate; non restano domande prodotto aperte.
 
 ## Fonti e revisione
 
