@@ -34,7 +34,7 @@ jobs:
     runs-on: ci-standard
     timeout-minutes: 15
     env:
-      RENOVATE_VERSION: 44.210.0
+      RENOVATE_VERSION: 44.210.2
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
