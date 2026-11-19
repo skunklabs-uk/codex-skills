@@ -4,7 +4,7 @@ These instructions are intended to be shared across projects by linking this fil
 
 They apply to every task, regardless of language, framework, repository, domain, or activated skill.
 
-Per i prompt e gli handoff generati, applicare la [policy di classificazione di Agent OS](https://github.com/skunklabs-uk/agent-os/blob/main/PROMPT-HANDOFF.md), anche nelle deleghe OMP.
+Per gli incarichi principali e delegati, applicare i [criteri di scelta del modello di Agent OS](https://github.com/skunklabs-uk/agent-os/blob/main/PROMPT-HANDOFF.md), anche in OMP.
 
 ## Universal Non-Negotiables
 
