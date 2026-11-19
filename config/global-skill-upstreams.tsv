@@ -3,7 +3,7 @@ api-and-interface-design	https://github.com/addyosmani/agent-skills.git	39b723ce
 ask-matt	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/engineering/ask-matt
 brainstorming	https://github.com/obra/superpowers.git	bb92a77741419a4ab5f06e711a283343f1ada0c3	skills/brainstorming
 browser-testing-with-devtools	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/browser-testing-with-devtools
-caveman	https://github.com/JuliusBrussee/caveman.git	2e08b9177c07bb7249a8a2d1a6758e5db281d002	skills/caveman
+caveman	https://github.com/JuliusBrussee/caveman.git	b4ee71d557d96e3cbc14f88fa6e953a1362865f5	skills/caveman
 ci-cd-and-automation	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/ci-cd-and-automation
 claude-handoff	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/in-progress/claude-handoff
 code-review	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/engineering/code-review
@@ -38,7 +38,7 @@ improve-codebase-architecture	https://github.com/mattpocock/skills.git	24fe0ef77
 incremental-implementation	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/incremental-implementation
 interview-me	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/interview-me
 loop-me	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/in-progress/loop-me
-megacave	https://github.com/JuliusBrussee/caveman.git	2e08b9177c07bb7249a8a2d1a6758e5db281d002	skills/megacave
+megacave	https://github.com/JuliusBrussee/caveman.git	b4ee71d557d96e3cbc14f88fa6e953a1362865f5	skills/megacave
 migrate-to-shoehorn	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/misc/migrate-to-shoehorn
 observability-and-instrumentation	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/observability-and-instrumentation
 osmani-test-driven-development	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/test-driven-development
@@ -69,7 +69,7 @@ to-questionnaire	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c8722
 to-spec	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/engineering/to-spec
 to-tickets	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/engineering/to-tickets
 triage	https://github.com/mattpocock/skills.git	24fe0ef7737efae15c87225755e9f6f5965e4888	skills/engineering/triage
-ultracave	https://github.com/JuliusBrussee/caveman.git	2e08b9177c07bb7249a8a2d1a6758e5db281d002	skills/ultracave
+ultracave	https://github.com/JuliusBrussee/caveman.git	b4ee71d557d96e3cbc14f88fa6e953a1362865f5	skills/ultracave
 unslop	https://github.com/theclaymethod/unslop.git	17ed39c9d0b522f44190ff0c6233867eadee192a	.
 using-agent-skills	https://github.com/addyosmani/agent-skills.git	39b723ceebf81474d0557c1fecd01eddab585563	skills/using-agent-skills
 using-git-worktrees	https://github.com/obra/superpowers.git	bb92a77741419a4ab5f06e711a283343f1ada0c3	skills/using-git-worktrees
