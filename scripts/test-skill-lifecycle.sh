@@ -155,6 +155,20 @@ class SkillLifecycle(unittest.TestCase):
         self.assertFalse(legacy.is_symlink())
         self.assertTrue(any(p.is_symlink() for p in self.home.glob('skill-backups/*/skill')))
 
+    def test_shared_install_preserves_legacy_referenced_by_alias(self):
+        self.skill(self.repo/'global/sample')
+        legacy = self.home/'skills/sample'
+        legacy.symlink_to(self.repo/'global/sample')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'personal-alias').symlink_to(legacy)
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'sample'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((shared/'personal-alias/SKILL.md').is_file())
+        self.assertTrue(legacy.is_symlink())
+
     def test_indirect_shared_link_keeps_legacy_target(self):
         self.skill(self.repo/'global/sample')
         legacy = self.home/'skills/sample'
