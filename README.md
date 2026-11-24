@@ -107,19 +107,15 @@ La [politica in RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfc
 
 Usare gli output e le metriche native nel report già previsto dalla politica. Per dati temporanei, rimuovere soltanto quelli creati dal task; preservare indici e configurazioni preesistenti. La pubblicazione di questa procedura non verifica un'installazione personale, l'integrazione Codex o un beneficio economico netto.
 
-## Collegamento seriale del workspace
+## Collegamento seriale del workspace (storico)
 
-L'incarico richiede repository e thread ammessi, branch e head esatti e prompt corrente. Un solo consumer alla volta lavora nel checkout isolato. Il catalogo disponibile e le skill effettivamente installate nel runtime sono osservazioni distinte, come previsto da [`ask-skills`](global/ask-skills/SKILL.md).
-
-Un report non pubblica modifiche. Il percorso write richiede `publish_paths` con i file esatti autorizzati dall’incarico e una PR Draft nello stesso repository. Il parent pubblica, poi il coordinatore rilegge SHA e diff remoto e completa RETURN. Il child non esegue commit, push, merge o rollout.
-
-Un incarico documentale non autorizza aggiornamenti a manifest, pin, skill o istruzioni globali né installazioni nel runtime personale. Le procedure di installazione e manutenzione conservano la propria ownership: leggere un esempio di installazione non autorizza a eseguirlo.
-
-Le verifiche appartengono al producer. Il workflow [`Validate skills`](.github/workflows/validate-skills.yml) esegue controlli di sintassi shell, struttura delle skill e test deterministici sulle PR fidate verso `main` e sui push a `main` per i percorsi configurati, incluso `README.md`. I controlli upstream sono condizionali; questi controlli e il test CI di installazione di `ui-depth-preview` in un ambiente temporaneo isolato non provano un'installazione personale né il comportamento del modello. Per procedure e limiti, consulta [Manutenzione e verifiche](#manutenzione-e-verifiche) e [Verifiche e limiti](#verifiche-e-limiti).
-
-Per un incarico limitato alla documentazione del catalogo, la preview Kubernetes non è applicabile: il risultato non introduce un servizio HTTP. Restano necessarie la CI applicabile e la consegna reale con RETURN; gli incarichi che modificano strumenti o capacità richiedono le verifiche pertinenti al loro perimetro approvato.
-
-Il runbook del collegamento è [`WORKSPACE-HANDOFF.md`](https://github.com/skunklabs-uk/developer-workspace/blob/main/docs/WORKSPACE-HANDOFF.md); enrollment e lifecycle runtime appartengono al [README Homelab](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/developer-workspace/README.md). Per enrollment, selezione GitOps, recupero e stato persistente, usa queste fonti proprietarie.
+Il collegamento ChatGPT → Codex, inclusi consumer, publisher e percorso
+`publish_paths`/RETURN, è stato ritirato. Il
+[runbook Archived](https://github.com/skunklabs-uk/developer-workspace/blob/main/docs/WORKSPACE-HANDOFF.md)
+conserva protocollo e prove storiche; non è una procedura operativa.
+Per le modalità correnti consulta il
+[README Developer Workspace](https://github.com/skunklabs-uk/developer-workspace#agenti-nativi-e-ripresa-delle-sessioni)
+e il [README Homelab](https://github.com/skunklabs-uk/homelab/blob/main/gitops/apps/developer-workspace/README.md).
 
 La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito di [Homelab #1265](https://github.com/skunklabs-uk/homelab/issues/1265), ha collaudato il percorso con una modifica limitata a questo README: richiesta reale, probe e modello conclusi con exit 0, pubblicazione parent `c66043619df1b18251222a148d24835803d7d6a1` e [RETURN del coordinatore](https://github.com/skunklabs-uk/codex-skills/pull/51#issuecomment-5678806191). La [CI di quella pubblicazione](https://github.com/skunklabs-uk/codex-skills/actions/runs/34958819431) è passata. Il prompt temporaneo è stato ritirato nel closeout; questa prova non attesta installazioni personali o aggiornamenti del catalogo.
 
