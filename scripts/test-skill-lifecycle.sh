@@ -157,7 +157,8 @@ class SkillLifecycle(unittest.TestCase):
 
     def test_shared_install_preserves_legacy_referenced_by_alias(self):
         self.skill(self.repo/'global/sample')
-        self.skill(self.repo/'global/sample/nested')
+        self.skill(self.root/'external')
+        (self.repo/'global/sample/nested').symlink_to(self.root/'external')
         legacy = self.home/'skills/sample'
         legacy.symlink_to(self.repo/'global/sample')
         shared = self.root/'shared'
@@ -210,7 +211,9 @@ class SkillLifecycle(unittest.TestCase):
 
     def test_prune_preserves_differently_named_shared_link(self):
         legacy = self.home/'skills/retired'
-        self.skill(legacy/'nested', 'personal')
+        self.skill(legacy, 'legacy')
+        self.skill(self.root/'external', 'personal')
+        (legacy/'nested').symlink_to(self.root/'external')
         shared = self.root/'shared'
         shared.mkdir()
         (shared/'personal-alias').symlink_to(legacy/'nested')

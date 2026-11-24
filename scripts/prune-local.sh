@@ -91,8 +91,18 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
     fi
     if [[ "${scope}" == legacy ]]; then
       legacy_resolved="$(readlink -m "${target}")"
+      legacy_path="$(realpath -ms "${target}")"
       for shared_entry in "${shared_dir}"/* "${shared_dir}"/.[!.]* "${shared_dir}"/..?*; do
         [[ -L "${shared_entry}" ]] || continue
+        shared_raw="$(readlink "${shared_entry}")"
+        [[ "${shared_raw}" == /* ]] || shared_raw="${shared_dir}/${shared_raw}"
+        shared_raw="$(realpath -ms "${shared_raw}")"
+        [[ "${shared_removable}" -eq 1 && "${shared_entry}" == "${shared_dir}/${entry}" ]] && continue
+        case "${shared_raw}" in
+          "${legacy_path}"|"${legacy_path}/"*)
+            echo "SKIP ${target}: referenced by a preserved shared link"
+            continue 2 ;;
+        esac
         shared_resolved="$(readlink -m "${shared_entry}")"
         case "${shared_resolved}" in
           "${legacy_resolved}"|"${legacy_resolved}/"*) ;;
