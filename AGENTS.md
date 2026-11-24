@@ -15,6 +15,10 @@ This repository stores personal and project-specific Codex skills.
 
 ## Shared Global Instructions
 
+Per questo repository, OMP carica le istruzioni condivise tramite l'import nativo:
+
+@AGENTS.global.md
+
 - `AGENTS.global.md` contains cross-project agent behavior rules.
 - It is not a skill and should not live under `global/` or `projects/`.
 - Link it into a project as that project's `AGENTS.md` when the rules must always be active.
