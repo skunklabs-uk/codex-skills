@@ -408,6 +408,26 @@ L'installazione non esegue audit, pubblicazioni o operazioni live. Verifica sepa
 
 `AGENTS.global.md` può essere collegato intenzionalmente con `bash scripts/install-global-agents.sh <project-root>`; `--replace` significa sostituire le istruzioni esistenti dopo backup e non va usato per cancellare convenzioni di progetto senza una decisione esplicita.
 
+Per OMP, lo stesso installer può collegare `AGENTS.global.md` come `AGENTS.md`
+nella directory agente effettiva: per impostazione predefinita `~/.omp/agent`
+oppure `~/.omp/profiles/<profilo>/agent` per un profilo nominato.
+`PI_CODING_AGENT_DIR`, se impostata, può cambiare la directory. Prima di
+collegare la fonte, verificare quale contesto utente è già caricato: il file
+nativo può oscurare istruzioni utente di altri provider. Se esistono istruzioni
+personali, conservarle in un file nativo regolare e aggiungervi l'import OMP
+`@percorso` alla fonte condivisa; non scrivere attraverso un symlink.
+
+Usare un checkout stabile e aggiornato di questo repository, non un worktree
+temporaneo: il link segue il checkout, non automaticamente `main`. Aggiornarlo
+con `git pull --ff-only` quando il branch segue `origin/main`, dopo aver
+verificato eventuali modifiche locali.
+
+Il contesto utente nativo è caricato nelle nuove sessioni principali OMP;
+non sostituisce le istruzioni di progetto o i `RULES.md` sticky. I subagenti
+task non ricevono automaticamente i file chiamati `AGENTS.md`. Provider,
+override e sessioni già aperte possono cambiare il caricamento: verificare
+nel runtime e riaprire la sessione dopo la modifica.
+
 ## Aggiornamenti upstream
 
 Gli aggiornamenti seguono il percorso **upstream → PR Renovate → SHA approvato nel manifest → installazione locale**. Il contenuto delle skill non viene copiato qui e il manifest continua ad avere quattro colonne: nome, repository, commit e percorso. Questa automazione non aggiorna gli SHA già approvati al momento della sua introduzione.
