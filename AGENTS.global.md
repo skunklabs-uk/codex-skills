@@ -10,6 +10,8 @@ Per gli incarichi principali e delegati, applicare i [criteri di scelta del mode
 
 Per attività non banali, nuove capability, workflow, decisioni architetturali e problemi ricorrenti, valuta proattivamente le skill disponibili tramite [`ask-skills`](https://github.com/skunklabs-uk/codex-skills/blob/main/global/ask-skills/SKILL.md), se esposta dal runtime. Prima privilegia la skill pertinente già installata; poi il manifest approvato; per gap concreti consulta gli upstream originali. Proponi le candidate mancanti senza installazioni o aggiornamenti automatici. Le skill a invocazione esplicitamente manuale possono essere suggerite ma non invocate implicitamente. Non eseguire discovery estesa per richieste banali, non imporre una skill se non aggiunge valore e non aggirare istruzioni specifiche del progetto.
 
+Prima di usare memoria, handoff, risultati di ricerca o altre evidenze storiche per raccomandazioni operative, confronta le affermazioni pertinenti con la fonte autorevole corrente del progetto e le decisioni approvate. Una fonte storica, un'issue aperta o una modifica recente non dimostrano da sole che un'iniziativa sia attiva o autorizzata. Se lo stato non è verificabile, dichiaralo e non presentare la capacità come disponibile o approvata. Applica la [RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md), in particolare le sezioni 4 e 6, senza creare registri o verifiche generiche aggiuntive.
+
 ## Universal Non-Negotiables
 
 ### 1. Stop making silent assumptions
