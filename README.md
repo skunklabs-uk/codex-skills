@@ -8,9 +8,15 @@ Catalogo di skill Codex: originali pubblici fissati a commit; contenuto locale s
 
 `config/global-skill-upstreams.tsv` governa gli originali diretti; `global/` e `projects/` contengono le skill mantenute qui. Il contenuto upstream resta nel repository originale: non copiarlo o modificarlo nella cache. Nessuna skill dichiarata nel manifest deve avere una copia omonima locale, globale o di progetto. Un derivato intenzionale richiede identità, scopo e motivazione propri.
 
-Questo README è il catalogo, non un secondo framework. [`ask-skills`](global/ask-skills/SKILL.md) sceglie la capability; le sue istruzioni e quelle del progetto governano l'esecuzione. `AGENTS.md` e la RFC-0001 attiva restano vincolanti. `AGENTS.global.md` è una fonte di istruzioni, non una skill: non sostituisce automaticamente le istruzioni specifiche di un progetto.
+Questo README è il catalogo, non un secondo framework. [`ask-skills`](global/ask-skills/SKILL.md) seleziona proattivamente le capability pertinenti per attività non banali, senza diventare un gate per ogni task; le sue istruzioni e quelle del progetto governano l'esecuzione. `AGENTS.md` e la RFC-0001 attiva restano vincolanti. `AGENTS.global.md` è una fonte di istruzioni, non una skill: non sostituisce automaticamente le istruzioni specifiche di un progetto.
 
 I documenti Archived sono evidenze storiche. L'[audit del 2026-09-08](docs/reviews/2026-09-08-skill-origin-audit.md) registra motivazioni e verifiche della razionalizzazione; non impone nuovi passaggi operativi. Il vecchio diagramma e il workflow ChatGPT a gate fissi non sono più il percorso corrente.
+
+### Discovery delle skill
+
+`ask-skills` confronta tre livelli: **runtime** (skill effettivamente disponibili), **manifest approvato** (skill installabili ai pin correnti) e **upstream originale** (candidate non ancora approvate). Per nuove soluzioni o capability mancanti controlla anche i percorsi `SKILL.md` upstream: la presenza in un repository, anche a un pin già approvato, non equivale a presenza nel manifest. Le skill con invocazione manuale sono suggeribili ma non eseguibili implicitamente. Senza accesso al runtime o agli upstream, dichiarare la verifica mancante.
+
+La discovery è proporzionata: niente cataloghi caricati per correzioni banali o una skill già scelta. Non installare, aggiornare pin o introdurre framework senza autorizzazione. Verificare Codex e OMP separatamente: l'abilitazione dei metadati non prova il comportamento del modello o l'installazione personale.
 
 ## Come iniziare e proseguire
 
@@ -122,7 +128,7 @@ La [PR #51](https://github.com/skunklabs-uk/codex-skills/pull/51), nell’ambito
 | Famiglia | Distribuzione e vincoli |
 |---|---|
 | Superpowers | Le 15 skill del pacchetto sono fissate allo stesso commit. I piani possono scegliere esecuzione con o senza subagenti; non applicare il ciclo multiagente a ogni piccola modifica. Gli helper e i prompt restano nell'originale. |
-| Matt Pocock | Tutte le 37 skill presenti in `mattpocock/skills` alla release **v1.3.1**, commit `24fe0ef7737efae15c87225755e9f6f5965e4888`: 27 nel plugin ufficiale, 6 beta `in-progress` e 4 utility `misc`. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
+| Matt Pocock | Tutte le 39 skill presenti in `mattpocock/skills` al commit approvato `5863806dd4e15c63174bee4e7515a4256792ecfa` (incluse le beta manuali `chief-of-staff` e `software-factory`): 27 nelle aree engineering/productivity, 8 beta `in-progress` e 4 utility `misc`. `to-spec`, `to-tickets`, `triage` e review richiedono il contesto tracker previsto dall'upstream: configurarlo solo quando quel flusso serve. Non imporre setup o nuove label a ogni repository. |
 | Addy Osmani | Tutte le 25 skill upstream, inclusa `using-agent-skills`. `ask-skills` resta il selettore generale: il router Osmani si usa quando viene scelto quel percorso. I comandi lifecycle e gli hook del plugin non vengono installati. Il checkout completo conserva anche i riferimenti condivisi a livello di repository. |
 | Altri upstream | Playwright, humanize-writing, frontend-design, caveman, ponytail e unslop rimangono pacchetti originali secondo i pin del manifest. |
 
@@ -154,7 +160,7 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 
 ## Inventario corrente
 
-133 voci di catalogo: **84 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
+135 voci di catalogo: **86 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
 
 ### Globali
 
@@ -178,6 +184,7 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 | `brainstorming` | `obra/superpowers` — diretto | Chiarimento dell’intento e scelta della scala del lavoro. |
 | `browser-testing-with-devtools` | `addyosmani/agent-skills` — diretto | Verifica browser con DevTools disponibili. |
 | `caveman` | `JuliusBrussee/caveman` — diretto | Stile di risposta essenziale. |
+| `chief-of-staff` | `mattpocock/skills` — diretto | Beta manuale: coordina un obiettivo lungo con subagenti e wiki; richiede capacità runtime e approvazione esplicita. |
 | `claude-handoff` | `mattpocock/skills` — diretto | Beta: handoff a un agente in background; richiede Claude Code. |
 | `code-review` | `mattpocock/skills` — diretto | Review Matt su standard e specifica. |
 | `code-review-and-quality` | `addyosmani/agent-skills` — diretto | Review di correttezza, qualità, sicurezza e performance. |
@@ -223,6 +230,7 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 | `setup-matt-pocock-skills` | `mattpocock/skills` — diretto | Configurazione del contesto richiesto dai flussi Matt. |
 | `setup-pre-commit` | `mattpocock/skills` — diretto | Utility: configurazione Husky e lint-staged. |
 | `setup-ts-deep-modules` | `mattpocock/skills` — diretto | Beta: configurazione di moduli TypeScript con dependency-cruiser. |
+| `software-factory` | `mattpocock/skills` — diretto | Beta manuale: vocabolario per progettare task, runner e orchestrazione di una software factory. |
 | `source-driven-development` | `addyosmani/agent-skills` — diretto | Verifica delle API sulle fonti ufficiali. |
 | `subagent-driven-development` | `obra/superpowers` — diretto | Esecuzione di piani con worker e review. |
 | `systematic-debugging` | `obra/superpowers` — diretto | Diagnosi prima del fix. |
@@ -402,13 +410,15 @@ Gli aggiornamenti seguono il percorso **upstream → PR Renovate → SHA approva
 
 ### Rilevamento e approvazione
 
+Renovate effettua già il monitoraggio settimanale dei commit upstream: non va aggiunto un secondo scheduler. La revisione delle PR di pin deve includere **anche l'inventario dei percorsi `SKILL.md`** nuovi, rinominati o rimossi rispetto al manifest; Renovate da solo non propone l'aggiunta delle nuove righe. Le skill scoperte sono candidate da valutare separatamente e non vanno installate automaticamente. Se il manifest è incompleto rispetto al pin già approvato, la verifica è necessaria anche senza un aggiornamento del commit.
+
 `renovate.json` configura il regex manager nativo con datasource `git-refs`: estrae lo SHA completo (`currentDigest`) e usa `currentValueTemplate: "main"` come riferimento da osservare. Il branch `main` è stato verificato nei nove upstream presenti; il manifest e l'installer continuano a usare soltanto SHA immutabili. Il validatore richiede un riferimento esplicito: `HEAD` sarebbe cercato come nome di branch o tag, non come branch predefinito. Prima di introdurre un upstream che usa un altro ramo, o in caso di rinomina di `main`, aggiornare il manager per quel repository in una PR revisionata. Non cambiare automaticamente canale e non alterare il formato del manifest per aggirare questa verifica.
 
 La finestra per creare e aggiornare le PR è **lunedì dalle 00:00 alle 06:00, Europe/Rome**; `updateNotScheduled: false` evita aggiornamenti ordinari dei branch fuori finestra. È una finestra del bot Renovate già collegato, non un nuovo cron: il bot deve comunque eseguire una scansione nella finestra. Il [Dependency Dashboard #24](https://github.com/skunklabs-uk/codex-skills/issues/24) mostra dipendenze rilevate, proposte ed eventuali errori; non modificarne manualmente le sezioni generate.
 
 Le righe dello stesso repository condividono l'identità della dipendenza e il gruppo: **una PR per upstream**, non una per skill e non una PR unica per tutti i framework. Tutte le skill della famiglia devono restare allo stesso SHA. L'automerge è disabilitato per queste dipendenze. Non viene promessa una maturazione temporale del commit: `git-refs` non fornisce il timestamp necessario a `minimumReleaseAge`.
 
-Prima del merge, leggere il confronto tra vecchio e nuovo commit per le skill selezionate e i loro riferimenti. Controllare soprattutto cambi a nomi/percorsi, dipendenze, metadati di invocazione, helper, autorizzazioni, regole di arresto e passaggi obbligatori. Non basta che il Markdown sia valido. Se un upstream elimina o rinomina una skill, correggere manifest, catalogo e migrazione nella stessa PR oppure non accettare il pin; non aggiungere automaticamente tutte le nuove skill della suite. Per cambi sostanziali al metodo, verificare un caso rappresentativo nel runtime prima dell'adozione e dichiarare l'eventuale prova mancante.
+Prima del merge, leggere il confronto tra vecchio e nuovo commit per le skill selezionate e i loro riferimenti. Controllare soprattutto cambi a nomi/percorsi, dipendenze, metadati di invocazione, helper, autorizzazioni, regole di arresto e passaggi obbligatori. Non basta che il Markdown sia valido. Se un upstream elimina o rinomina una skill, correggere manifest, catalogo e migrazione nella stessa PR oppure non accettare il pin; non aggiungere automaticamente tutte le nuove skill della suite; annotare nella review le nuove capability pertinenti e distinguere quelle non adottate. Per cambi sostanziali al metodo, verificare un caso rappresentativo nel runtime prima dell'adozione e dichiarare l'eventuale prova mancante.
 
 Il flusso riguarda soltanto gli originali nel manifest. `seo-audit`, importata nel progetto Baialupo, e i derivati locali richiedono un aggiornamento esplicito del loro contenuto; i plugin nativi restano sul proprio canale e non vanno duplicati.
 
