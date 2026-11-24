@@ -1,5 +1,5 @@
 interface:
   display_name: "Ask Skills"
-  short_description: "Scegli la skill adatta al task"
+  short_description: "Individua proattivamente le skill pertinenti"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

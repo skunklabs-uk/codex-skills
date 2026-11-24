@@ -11,6 +11,8 @@ on:
       - "config/**"
       - "renovate.json"
       - "README.md"
+      - "AGENTS.global.md"
+      - "AGENTS.global.md"
       - ".github/workflows/validate-skills.yml"
   pull_request:
     branches:

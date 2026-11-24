@@ -6,6 +6,10 @@ They apply to every task, regardless of language, framework, repository, domain,
 
 Per gli incarichi principali e delegati, applicare i [criteri di scelta del modello di Agent OS](https://github.com/skunklabs-uk/agent-os/blob/main/PROMPT-HANDOFF.md), anche in OMP.
 
+## Skill discovery
+
+Per attività non banali, nuove capability, workflow, decisioni architetturali e problemi ricorrenti, valuta proattivamente le skill disponibili tramite [`ask-skills`](https://github.com/skunklabs-uk/codex-skills/blob/main/global/ask-skills/SKILL.md), se esposta dal runtime. Prima privilegia la skill pertinente già installata; poi il manifest approvato; per gap concreti consulta gli upstream originali. Proponi le candidate mancanti senza installazioni o aggiornamenti automatici. Le skill a invocazione esplicitamente manuale possono essere suggerite ma non invocate implicitamente. Non eseguire discovery estesa per richieste banali, non imporre una skill se non aggiunge valore e non aggirare istruzioni specifiche del progetto.
+
 ## Universal Non-Negotiables
 
 ### 1. Stop making silent assumptions
