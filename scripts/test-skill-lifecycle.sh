@@ -23,7 +23,7 @@ class SkillLifecycle(unittest.TestCase):
         for p in (self.repo/'scripts', self.repo/'global', self.repo/'config',
                   self.repo/'projects/demo', self.home/'skills', self.project/'.agents/skills'):
             p.mkdir(parents=True, exist_ok=True)
-        for script in ('install-local.sh', 'install-project.sh', 'prune-local.sh', 'sync-from-codex.sh', 'validate-skills.sh'):
+        for script in ('install-local.sh', 'install-project.sh', 'list-installed.sh', 'prune-local.sh', 'sync-from-codex.sh', 'validate-skills.sh'):
             shutil.copyfile(SOURCE/'scripts'/script, self.repo/'scripts'/script)
         (self.repo/'config/global-skill-upstreams.tsv').write_text('')
         (self.repo/'config/global-skill-prune.txt').write_text('retired\n')
@@ -51,6 +51,30 @@ class SkillLifecycle(unittest.TestCase):
         self.assertTrue(any('old-copy' in p.read_text() for p in self.home.glob('skill-backups/**/SKILL.md')))
         self.run_script('install-local.sh', '--replace', 'sample')
         self.assertEqual(self.discovered(self.home/'skills'), 1)
+
+    def test_inventory_reports_shadowing_copy_and_duplicate_runtime_entry(self):
+        self.skill(self.repo/'global/sample', 'approved')
+        shared = self.root/'shared'
+        self.skill(shared/'sample', 'different')
+        claude = self.root/'claude'
+        (claude/'skills').mkdir(parents=True)
+        (claude/'skills/sample').symlink_to(shared/'sample')
+        env = {**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared),
+               'CLAUDE_CONFIG_DIR': str(claude)}
+        result = subprocess.run(['bash', str(self.repo/'scripts/list-installed.sh')],
+            env=env, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('shared=unexpected origin', result.stdout)
+        self.assertIn('claude=unexpected origin', result.stdout)
+        self.assertIn('duplicate in claude', result.stdout)
+
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), '--replace', 'sample'],
+            env=env, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((shared/'sample').resolve(), self.repo/'global/sample')
+        self.assertTrue(any('different' in p.read_text() for p in self.home.glob('skill-backups/**/SKILL.md')))
+        self.assertEqual((claude/'skills/sample/SKILL.md').read_text(),
+                         (self.repo/'global/sample/SKILL.md').read_text())
 
     def test_project_replacement_preserves_authority_and_avoids_duplicate_skill(self):
         self.skill(self.repo/'projects/demo/sample')
