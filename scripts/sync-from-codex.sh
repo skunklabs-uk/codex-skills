@@ -14,8 +14,7 @@ fi
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo_skills_dir="${repo_root}/global"
-codex_home="${CODEX_HOME:-${HOME}/.codex}"
-installed_skills_dir="${codex_home}/skills"
+installed_skills_dir="${AGENTS_SKILLS_DIR:-${HOME}/.agents/skills}"
 
 # Do not re-vendor upstream skills or resurrect intentionally retired names.
 declare -A excluded=()

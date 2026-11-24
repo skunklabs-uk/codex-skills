@@ -5,7 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 skills_dir="${repo_root}/global"
 upstreams_file="${repo_root}/config/global-skill-upstreams.tsv"
 codex_home="${CODEX_HOME:-${HOME}/.codex}"
-dest_dir="${codex_home}/skills"
+dest_dir="${AGENTS_SKILLS_DIR:-${HOME}/.agents/skills}"
 upstreams_cache="${codex_home}/upstream-skills"
 replace=0
 
@@ -90,7 +90,7 @@ prepare_upstream_skill() {
   mkdir -p "${upstreams_cache}"
 
   if [[ ! -e "${checkout_dir}" ]]; then
-    git clone --depth 1 --filter=blob:none --no-checkout "${repo_url}" "${checkout_dir}" >&2
+    git clone --depth 1 --filter=blob:none "${repo_url}" "${checkout_dir}" >&2
   elif [[ ! -d "${checkout_dir}/.git" ]]; then
     echo "ERROR upstream cache exists but is not a git repository: ${checkout_dir}" >&2
     exit 1
@@ -112,12 +112,29 @@ prepare_upstream_skill() {
     exit 1
   fi
 
-  git -C "${checkout_dir}" checkout --detach --force "${ref}" >/dev/null 2>&1
+  if [[ -n "$(git -C "${checkout_dir}" status --porcelain --untracked-files=all)" ]]; then
+    echo "ERROR upstream cache has local changes; preserve them before updating: ${checkout_dir}" >&2
+    exit 1
+  fi
+  git -C "${checkout_dir}" checkout --detach "${ref}" >/dev/null 2>&1
 
   resolved_source_dir="${checkout_dir}/${skill_path}"
   if [[ ! -f "${resolved_source_dir}/SKILL.md" ]]; then
     echo "ERROR upstream ${skill_name}: ${resolved_source_dir}/SKILL.md not found" >&2
     exit 1
+  fi
+}
+
+migrate_legacy_link() {
+  local name="$1" source="$2" legacy="${codex_home}/skills/$1"
+  [[ "${dest_dir}" -ef "${codex_home}/skills" ]] && return 0
+  [[ "$(readlink "${dest_dir}/${name}")" == "${source}" ]] || return 0
+  if [[ -L "${legacy}" && "$(readlink -f "${legacy}")" == "$(readlink -f "${source}")" ]]; then
+    mkdir -p "${codex_home}/skill-backups"
+    local backup
+    backup="$(mktemp -d "${codex_home}/skill-backups/${name}.XXXXXX")/skill"
+    mv -- "${legacy}" "${backup}"
+    echo "Moved managed legacy link to ${backup}"
   fi
 }
 
@@ -141,15 +158,22 @@ for skill_name in "${skill_names[@]}"; do
   if [[ -d "${skills_dir}/${skill_name}" ]]; then
     source_dir="${skills_dir}/${skill_name}"
   elif [[ -n "${upstream_repo[${skill_name}]+x}" ]]; then
-    resolved_source_dir=""
-    prepare_upstream_skill "${skill_name}"
-    source_dir="${resolved_source_dir}"
+    source_dir="${upstreams_cache}/${skill_name}/${upstream_path[${skill_name}]}"
   else
     echo "ERROR unknown global skill: ${skill_name}" >&2
     exit 1
   fi
 
   target_dir="${dest_dir}/${skill_name}"
+  if [[ "${replace}" -ne 1 && ( -e "${target_dir}" || -L "${target_dir}" ) ]] &&
+     [[ ! -L "${target_dir}" || "$(readlink -m "${target_dir}")" != "$(readlink -m "${source_dir}")" ]]; then
+    echo "ERROR global/${skill_name}: destination belongs to another installation: ${target_dir}" >&2
+    exit 1
+  fi
+  if [[ -n "${upstream_repo[${skill_name}]+x}" ]]; then
+    prepare_upstream_skill "${skill_name}"
+    source_dir="${resolved_source_dir}"
+  fi
 
   if [[ ! -f "${source_dir}/SKILL.md" ]]; then
     echo "ERROR global/${skill_name}: ${source_dir}/SKILL.md not found" >&2
@@ -158,8 +182,9 @@ for skill_name in "${skill_names[@]}"; do
 
   if [[ -L "${target_dir}" ]]; then
     current_target="$(readlink "${target_dir}")"
-    if [[ "${current_target}" == "${source_dir}" ]]; then
+    if [[ "$(readlink -m "${target_dir}")" == "$(readlink -m "${source_dir}")" ]]; then
       echo "OK global/${skill_name}: already linked"
+      migrate_legacy_link "${skill_name}" "${source_dir}"
       continue
     fi
     if [[ "${replace}" -ne 1 ]]; then
@@ -187,6 +212,7 @@ for skill_name in "${skill_names[@]}"; do
 
   ln -s "${source_dir}" "${target_dir}"
   echo "Linked global/${skill_name} -> ${target_dir}"
+  migrate_legacy_link "${skill_name}" "${source_dir}"
 done
 
-echo "Restart Codex to pick up new or changed skills."
+echo "Restart Codex and OMP to pick up new or changed skills."

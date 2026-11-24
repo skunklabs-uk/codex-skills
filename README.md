@@ -2,7 +2,7 @@
 
 **Stato:** Active.
 
-Catalogo di skill Codex: originali pubblici fissati a commit; contenuto locale soltanto per contesto, integrazione o comportamento non coperto dagli upstream verificati.
+Catalogo di skill per Codex e OMP: originali pubblici fissati a commit; contenuto locale soltanto per contesto, integrazione o comportamento non coperto dagli upstream verificati.
 
 ## Fonti autorevoli
 
@@ -160,7 +160,7 @@ La verifica di questa migrazione copre metadati, riferimenti, pin e installazion
 
 ## Inventario corrente
 
-135 voci di catalogo: **86 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
+136 voci di catalogo: **87 originali globali diretti, 30 skill locali/derivate, 1 originale importato limitato a Baialupo, 18 skill del plugin nativo Data Analytics**. Le copie omonime nei progetti sono state ritirate; la presenza nel catalogo non equivale a installazione sulla macchina dell'utente.
 
 ### Globali
 
@@ -361,7 +361,7 @@ Prima controlla gli upstream già installati come plugin nel runtime: evita una 
 Dal checkout aggiornato, per installare il catalogo globale completo con i pin approvati:
 
 ```bash
-bash scripts/install-local.sh --replace
+bash scripts/install-local.sh
 ```
 
 Per una selezione parziale indica tutti i nomi necessari: l'installer non risolve dipendenze transitive. Esempi:
@@ -371,7 +371,11 @@ bash scripts/install-local.sh ui-depth-preview
 bash scripts/install-local.sh --replace grill-with-docs grilling domain-modeling
 ```
 
-Il percorso globale è `$CODEX_HOME/skills` (default `~/.codex/skills`). Gli originali sono checkout sotto `$CODEX_HOME/upstream-skills/<nome>`; i symlink puntano alla directory upstream con `SKILL.md`. `--replace` conserva le vecchie copie fuori dalla discovery, sotto `$CODEX_HOME/skill-backups`. Nessun wrapper del contenuto upstream viene generato.
+La discovery globale condivisa usa `~/.agents/skills` (override `AGENTS_SKILLS_DIR`), supportata da Codex e OMP; gli originali rimangono in `$CODEX_HOME/upstream-skills/<nome>` (default `~/.codex`). L'installer collega le sorgenti e sposta in `$CODEX_HOME/skill-backups` solo i vecchi symlink Codex che puntano alla stessa sorgente. Non tocca plugin, copie personali o link legacy diversi. Se il nome condiviso è già occupato, si ferma: confronta provenienza e contenuto prima di usare `--replace`, che sposta la voce esistente nel backup. Per ripristinare un link legacy, rimuovi prima il link condiviso gestito e rimetti il link dal backup nella posizione originaria. Non viene generato alcun wrapper upstream.
+
+Prima di aggiornare un checkout, l'installer rifiuta modifiche locali tracciate o non tracciate: conservale fuori dalla discovery e ripristinale solo dopo aver valutato il pin. `bash scripts/list-installed.sh` mostra sorgenti inattese, voci mancanti, pin disallineati e duplicati fra directory condivisa e legacy; non certifica la discovery effettiva dei runtime. I nomi interni delle skill possono coincidere anche quando le directory differiscono: verificare separatamente collisioni e precedenza nel runtime. Riavvia entrambi i runtime dopo la migrazione.
+
+La protezione delle modifiche locali sostituisce il precedente checkout forzato: il requisito è conservare il lavoro dell'utente; il failure mode osservato era la sovrascrittura silenziosa delle modifiche tracciate, non coperta dal backup dei soli link. L'alternativa di non controllare lo stato non preserva quei dati; il controllo Git preesistente sullo stato è la soluzione minima e si verifica con il test lifecycle su un checkout modificato. Il costo è un comando Git per checkout, senza nuovi servizi o stati; il maintainer dell'installer può rimuoverlo quando la distribuzione non modifica più checkout locali. Il backup e il ripristino restano operazioni esplicite.
 
 Prima del pruning, completare la [migrazione Data Analytics](#migrazione-dellinstallazione) e verificare il plugin nativo se le vecchie skill sono installate. Esamina e poi applica il ritiro delle vecchie voci globali:
 
@@ -380,7 +384,7 @@ bash scripts/prune-local.sh --dry-run
 bash scripts/prune-local.sh
 ```
 
-La lista è `config/global-skill-prune.txt`: comprende anche ritiri storici. Il pruning sposta le voci in backup esterno alla discovery, senza cancellare il contenuto delle directory reali e senza seguire i symlink. `reality-check`, `playwright` e `setup-matt-pocock-skills` restano a catalogo e non sono nella lista di ritiro.
+La lista è `config/global-skill-prune.txt`: comprende anche ritiri storici. Il pruning sposta le voci legacy in backup e, nella directory condivisa, solo i link riconducibili alla cache o alle sorgenti locali di questo checkout; conserva directory e link estranei. Non segue i symlink. `reality-check`, `playwright` e `setup-matt-pocock-skills` restano a catalogo e non sono nella lista di ritiro.
 
 Nei checkout di progetto conserva l'autorità locale:
 
@@ -400,7 +404,7 @@ Per installare solo SEO senza cambiare l'`AGENTS.md` di Baialupo:
 bash scripts/install-project.sh --no-global-agents baialupo /percorso/baialupo.com seo-audit
 ```
 
-L'installazione non esegue audit, pubblicazioni o operazioni live. Riavvia Codex e verifica che il catalogo risolva gli originali corretti. Le installazioni personali non sono state eseguite da questa PR.
+L'installazione non esegue audit, pubblicazioni o operazioni live. Verifica separatamente in nuove sessioni Codex e OMP discovery e invocazione; i metadati di invocazione manuale e le configurazioni personali possono limitarle.
 
 `AGENTS.global.md` può essere collegato intenzionalmente con `bash scripts/install-global-agents.sh <project-root>`; `--replace` significa sostituire le istruzioni esistenti dopo backup e non va usato per cancellare convenzioni di progetto senza una decisione esplicita.
 
@@ -424,7 +428,7 @@ Il flusso riguarda soltanto gli originali nel manifest. `seo-audit`, importata n
 
 ### Applicazione e rollback
 
-Chiudere le sessioni Codex interessate prima di aggiornare i checkout upstream: le skill di una famiglia vengono aggiornate in sequenza, non in un'unica transazione. Dal checkout pulito di `codex-skills` sul branch `main`:
+Chiudere le sessioni Codex e OMP interessate prima di aggiornare i checkout upstream: le skill di una famiglia vengono aggiornate in sequenza, non in un'unica transazione. Dal checkout pulito di `codex-skills` sul branch `main`:
 
 ```bash
 git pull --ff-only
@@ -435,7 +439,7 @@ if ((${#skills[@]})); then
 fi
 ```
 
-Usare il repository della famiglia effettivamente gestita con questo installer. Il solo `git pull` aggiorna il manifest, non i checkout upstream. `--replace` serve se cambia il collegamento o si sostituisce una vecchia copia, non per il normale cambio di SHA. Non modificare la cache: il checkout forzato dell'installer sovrascrive modifiche tracciate. Dopo l'installazione riavviare Codex e verificare che non restino plugin o copie omonime su revisioni diverse.
+Usare il repository della famiglia effettivamente gestita con questo installer. Il solo `git pull` aggiorna il manifest, non i checkout upstream. `--replace` serve se cambia il collegamento o si sostituisce intenzionalmente una vecchia copia, non per il normale cambio di SHA. L'installer si ferma se trova modifiche locali nel checkout; conservarle prima di procedere. Dopo l'installazione riavviare Codex e OMP e verificare che non restino plugin o copie omonime su revisioni diverse.
 
 Per il rollback, ripristinare in PR il precedente SHA approvato per **tutta la famiglia**, quindi aggiornare il checkout locale e rieseguire lo stesso installer. Non ripristinare l'intero manifest a una vecchia versione perdendo aggiornamenti di altri upstream. Se un'installazione si interrompe, non usare la famiglia parzialmente aggiornata: completare l'installazione o riapplicare il pin precedente a tutte le sue skill.
 

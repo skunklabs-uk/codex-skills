@@ -5,14 +5,15 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 config_file="${repo_root}/config/global-skill-prune.txt"
 codex_home="${CODEX_HOME:-${HOME}/.codex}"
 skills_dir="${codex_home}/skills"
+shared_dir="${AGENTS_SKILLS_DIR:-${HOME}/.agents/skills}"
 dry_run=0
 
 usage() {
   cat <<'EOF'
 Usage: scripts/prune-local.sh [--dry-run]
 
-Move listed global skill entries out of discovery into $CODEX_HOME/skill-backups.
-Only direct children of $CODEX_HOME/skills are moved; symlink targets are untouched.
+Move listed legacy entries and managed shared links out of discovery into
+$CODEX_HOME/skill-backups. Symlink targets are untouched.
 EOF
 }
 
@@ -61,23 +62,41 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
     exit 1
   fi
 
-  target="${skills_dir}/${entry}"
-
-  if [[ ! -e "${target}" && ! -L "${target}" ]]; then
-    echo "SKIP ${entry}: not installed"
-    skipped=$((skipped + 1))
-    continue
-  fi
-
-  if [[ "${dry_run}" -eq 1 ]]; then
-    echo "WOULD REMOVE ${target}"
-  else
-    mkdir -p "${codex_home}/skill-backups"
-    backup_dir="$(mktemp -d "${codex_home}/skill-backups/${entry}.XXXXXX")/skill"
-    mv -- "${target}" "${backup_dir}"
-    echo "RETIRED ${target} -> ${backup_dir}"
-  fi
-  removed=$((removed + 1))
+  found=0
+  for scope in shared legacy; do
+    directory="${skills_dir}"
+    if [[ "${scope}" == shared ]]; then
+      [[ "${shared_dir}" -ef "${skills_dir}" ]] && continue
+      directory="${shared_dir}"
+    fi
+    target="${directory}/${entry}"
+    if [[ ! -e "${target}" && ! -L "${target}" ]]; then
+      continue
+    fi
+    if [[ "${scope}" == shared ]]; then
+      # Shared entries are retired only when their target identifies our cache or repository.
+      [[ -L "${target}" ]] || continue
+      resolved="$(readlink -m "${target}")"
+      cache_source="$(readlink -m "${codex_home}/upstream-skills/${entry}")"
+      local_source="$(readlink -m "${repo_root}/global/${entry}")"
+      case "${resolved}" in
+        "${cache_source}"|"${cache_source}/"*|"${local_source}")
+          ;;
+        *) continue ;;
+      esac
+    fi
+    if [[ "${dry_run}" -eq 1 ]]; then
+      echo "WOULD REMOVE ${target}"
+    else
+      mkdir -p "${codex_home}/skill-backups"
+      backup_dir="$(mktemp -d "${codex_home}/skill-backups/${entry}.XXXXXX")/skill"
+      mv -- "${target}" "${backup_dir}"
+      echo "RETIRED ${target} -> ${backup_dir}"
+    fi
+    removed=$((removed + 1))
+    found=1
+  done
+  [[ "${found}" -eq 1 ]] || skipped=$((skipped + 1))
 done < "${config_file}"
 
 if [[ "${dry_run}" -eq 1 ]]; then
