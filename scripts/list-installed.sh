@@ -5,6 +5,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 codex_home="${CODEX_HOME:-${HOME}/.codex}"
 shared_dir="${AGENTS_SKILLS_DIR:-${HOME}/.agents/skills}"
 legacy_dir="${codex_home}/skills"
+claude_dir="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}/skills"
 cache_dir="${codex_home}/upstream-skills"
 manifest="${repo_root}/config/global-skill-upstreams.tsv"
 
@@ -35,10 +36,10 @@ entry_status() {
          [[ "${actual_target}" == "${expected_target}" ]]; then
       printf 'linked'
     else
-      printf 'unexpected origin'
+      printf 'unexpected origin (%s)' "$(readlink -- "${entry}")"
     fi
   elif [[ -e "${entry}" ]]; then
-    printf 'unexpected origin'
+    printf 'unexpected origin (%s)' "${entry}"
   else
     printf 'missing'
   fi
@@ -70,6 +71,12 @@ same_directory=0
 if [[ -d "${shared_dir}" && -d "${legacy_dir}" && "${shared_dir}" -ef "${legacy_dir}" ]]; then
   same_directory=1
 fi
+claude_same_as=
+if [[ -d "${claude_dir}" && -d "${shared_dir}" && "${claude_dir}" -ef "${shared_dir}" ]]; then
+  claude_same_as=shared
+elif [[ -d "${claude_dir}" && -d "${legacy_dir}" && "${claude_dir}" -ef "${legacy_dir}" ]]; then
+  claude_same_as=legacy
+fi
 
 printf 'Managed skills:\n'
 while IFS= read -r name; do
@@ -81,6 +88,7 @@ while IFS= read -r name; do
   fi
   shared="${shared_dir}/${name}"
   legacy="${legacy_dir}/${name}"
+  claude="${claude_dir}/${name}"
   printf '%s: shared=%s' "${name}" "$(entry_status "${shared}" "${expected}")"
   if [[ "${same_directory}" -eq 0 ]]; then
     printf '; legacy=%s' "$(entry_status "${legacy}" "${expected}")"
@@ -89,6 +97,15 @@ while IFS= read -r name; do
     fi
   else
     printf '; legacy=same directory'
+  fi
+  if [[ -n "${claude_same_as}" ]]; then
+    printf '; claude=same directory as %s' "${claude_same_as}"
+  else
+    printf '; claude=%s' "$(entry_status "${claude}" "${expected}")"
+    if [[ ( -e "${claude}" || -L "${claude}" ) ]] &&
+       [[ ( -e "${shared}" || -L "${shared}" ) || ( -e "${legacy}" || -L "${legacy}" ) ]]; then
+      printf '; duplicate in claude'
+    fi
   fi
   if [[ -n "${repositories[${name}]+set}" ]]; then
     printf '; checkout=%s' "$(checkout_status "${cache_dir}/${name}" "${repositories[${name}]}" "${pins[${name}]}")"
@@ -110,6 +127,10 @@ list_foreign() {
        [[ -e "${legacy_dir}/${name}" || -L "${legacy_dir}/${name}" ]]; then
       printf ' (duplicate in legacy)'
     fi
+    if [[ -z "${claude_same_as}" && ( "${label}" == shared || "${label}" == legacy ) ]] &&
+       [[ -e "${claude_dir}/${name}" || -L "${claude_dir}/${name}" ]]; then
+      printf ' (duplicate in claude)'
+    fi
     printf '\n'
   done
 }
@@ -118,4 +139,7 @@ printf '\nOther entries:\n'
 list_foreign shared "${shared_dir}"
 if [[ "${same_directory}" -eq 0 ]]; then
   list_foreign legacy "${legacy_dir}"
+fi
+if [[ -z "${claude_same_as}" ]]; then
+  list_foreign claude "${claude_dir}"
 fi
