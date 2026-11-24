@@ -116,7 +116,7 @@ prepare_upstream_skill() {
     echo "ERROR upstream cache has local changes; preserve them before updating: ${checkout_dir}" >&2
     exit 1
   fi
-  git -C "${checkout_dir}" checkout --detach "${ref}" >/dev/null 2>&1
+  git -C "${checkout_dir}" checkout --detach --no-overwrite-ignore "${ref}" >&2
 
   resolved_source_dir="${checkout_dir}/${skill_path}"
   if [[ ! -f "${resolved_source_dir}/SKILL.md" ]]; then

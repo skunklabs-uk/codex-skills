@@ -2,19 +2,22 @@
 set -euo pipefail
 
 force=0
-if [[ "${1:-}" == "--force" ]]; then
-  force=1
+legacy=0
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+    --force) force=1 ;;
+    --legacy) legacy=1 ;;
+    *) echo "Usage: $0 [--force] [--legacy]" >&2; exit 2 ;;
+  esac
   shift
-fi
-
-if [[ "$#" -ne 0 ]]; then
-  echo "Usage: $0 [--force]" >&2
-  exit 2
-fi
+done
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repo_skills_dir="${repo_root}/global"
 installed_skills_dir="${AGENTS_SKILLS_DIR:-${HOME}/.agents/skills}"
+if [[ "${legacy}" -eq 1 ]]; then
+  installed_skills_dir="${CODEX_HOME:-${HOME}/.codex}/skills"
+fi
 
 # Do not re-vendor upstream skills or resurrect intentionally retired names.
 declare -A excluded=()

@@ -86,6 +86,16 @@ class SkillLifecycle(unittest.TestCase):
         self.run_script('sync-from-codex.sh', '--force')
         self.assertFalse((self.repo/'global/retired').exists(), 'retired skill was reimported')
 
+    def test_sync_can_select_legacy_personal_skills(self):
+        self.skill(self.home/'skills/personal', 'legacy')
+        shared = self.root/'shared'
+        shared.mkdir()
+        result = subprocess.run(['bash', str(self.repo/'scripts/sync-from-codex.sh'), '--legacy'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((self.repo/'global/personal/SKILL.md').read_text().splitlines()[-1], 'legacy')
+
     def test_prune_is_reversible_and_does_not_follow_symlinks(self):
         self.skill(self.home/'skills/retired', 'preserve-me')
         self.run_script('prune-local.sh', '--dry-run')
@@ -199,6 +209,33 @@ class SkillLifecycle(unittest.TestCase):
             text=True, capture_output=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(modified.read_text(), 'local changes')
+
+    def test_ignored_local_file_is_not_overwritten_by_pin(self):
+        cache = self.home/'upstream-skills/external'
+        self.skill(cache/'skills/external')
+        (cache/'.gitignore').write_text('personal.log\n')
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(cache), *args], text=True).strip()
+        git('init', '-q')
+        git('config', 'user.name', 'Lifecycle fixture')
+        git('config', 'user.email', 'fixture@example.invalid')
+        git('add', '.')
+        git('commit', '-qm', 'base')
+        base = git('rev-parse', 'HEAD')
+        (cache/'personal.log').write_text('upstream')
+        git('add', '-f', 'personal.log')
+        git('commit', '-qm', 'upstream')
+        ref = git('rev-parse', 'HEAD')
+        git('checkout', '-q', '--detach', base)
+        (cache/'personal.log').write_text('personal')
+        git('remote', 'add', 'origin', 'https://github.com/example/skills.git')
+        (self.repo/'config/global-skill-upstreams.tsv').write_text(
+            f'external\thttps://github.com/example/skills.git\t{ref}\tskills/external\n')
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'external'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(self.home/'skills')},
+            text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((cache/'personal.log').read_text(), 'personal')
 
 unittest.main(verbosity=2)
 PY
