@@ -67,8 +67,10 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
   for scope in shared legacy; do
     directory="${skills_dir}"
     if [[ "${scope}" == shared ]]; then
-      [[ "${shared_dir}" -ef "${skills_dir}" ]] && continue
       directory="${shared_dir}"
+    fi
+    if [[ "${scope}" == legacy && "${shared_dir}" -ef "${skills_dir}" ]]; then
+      continue
     fi
     target="${directory}/${entry}"
     if [[ ! -e "${target}" && ! -L "${target}" ]]; then
@@ -87,11 +89,13 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
       esac
       shared_removable=1
     fi
-    if [[ "${scope}" == legacy && "${shared_removable}" -eq 0 ]] &&
-       [[ ! "${shared_dir}" -ef "${skills_dir}" && -L "${shared_dir}/${entry}" &&
-          "${shared_dir}/${entry}" -ef "${target}" ]]; then
-      echo "SKIP ${target}: referenced by a preserved shared link"
-      continue
+    if [[ "${scope}" == legacy ]]; then
+      for shared_entry in "${shared_dir}"/* "${shared_dir}"/.[!.]* "${shared_dir}"/..?*; do
+        [[ -L "${shared_entry}" && "${shared_entry}" -ef "${target}" ]] || continue
+        [[ "${shared_removable}" -eq 1 && "${shared_entry}" == "${shared_dir}/${entry}" ]] && continue
+        echo "SKIP ${target}: referenced by a preserved shared link"
+        continue 2
+      done
     fi
     if [[ "${dry_run}" -eq 1 ]]; then
       echo "WOULD REMOVE ${target}"

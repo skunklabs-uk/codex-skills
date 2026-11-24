@@ -97,18 +97,23 @@ class SkillLifecycle(unittest.TestCase):
         self.assertEqual((self.repo/'global/personal/SKILL.md').read_text().splitlines()[-1], 'legacy')
 
     def test_prune_is_reversible_and_does_not_follow_symlinks(self):
+        def prune(*args):
+            result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh'), *args],
+                env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(self.root/'shared')},
+                text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.skill(self.home/'skills/retired', 'preserve-me')
-        self.run_script('prune-local.sh', '--dry-run')
+        prune('--dry-run')
         self.assertTrue((self.home/'skills/retired/SKILL.md').exists())
-        self.run_script('prune-local.sh')
+        prune()
         self.assertFalse((self.home/'skills/retired').exists())
         self.assertTrue(any('preserve-me' in p.read_text() for p in self.home.glob('skill-backups/**/SKILL.md')),
                         'retired real directory was destroyed')
         self.skill(self.root/'external-source', 'external')
         (self.home/'skills/retired').symlink_to(self.root/'external-source')
-        self.run_script('prune-local.sh')
+        prune()
         self.assertTrue((self.root/'external-source/SKILL.md').exists())
-        self.run_script('prune-local.sh')
+        prune()
 
     def test_validator_rejects_project_shadow_of_direct_upstream(self):
         (self.repo/'config/global-skill-upstreams.tsv').write_text(
@@ -187,6 +192,24 @@ class SkillLifecycle(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertNotIn('WOULD REMOVE ' + str(legacy), result.stdout)
             self.assertEqual((shared/'retired/SKILL.md').read_text().splitlines()[-1], 'personal')
+
+    def test_prune_preserves_differently_named_shared_link(self):
+        legacy = self.home/'skills/retired'
+        self.skill(legacy, 'personal')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'personal-alias').symlink_to(legacy)
+        result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh')],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((shared/'personal-alias/SKILL.md').read_text().splitlines()[-1], 'personal')
+
+    def test_prune_preserves_foreign_entry_in_shared_legacy_directory(self):
+        legacy = self.home/'skills/retired'
+        self.skill(legacy, 'personal')
+        self.run_script('prune-local.sh')
+        self.assertEqual((legacy/'SKILL.md').read_text().splitlines()[-1], 'personal')
 
     def test_prune_removes_indirect_shared_link_before_legacy(self):
         self.skill(self.home/'upstream-skills/retired/skills/retired')
