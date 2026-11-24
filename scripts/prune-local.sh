@@ -63,6 +63,7 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
   fi
 
   found=0
+  shared_removable=0
   for scope in shared legacy; do
     directory="${skills_dir}"
     if [[ "${scope}" == shared ]]; then
@@ -84,6 +85,13 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
           ;;
         *) continue ;;
       esac
+      shared_removable=1
+    fi
+    if [[ "${scope}" == legacy && "${shared_removable}" -eq 0 ]] &&
+       [[ ! "${shared_dir}" -ef "${skills_dir}" && -L "${shared_dir}/${entry}" &&
+          "${shared_dir}/${entry}" -ef "${target}" ]]; then
+      echo "SKIP ${target}: referenced by a preserved shared link"
+      continue
     fi
     if [[ "${dry_run}" -eq 1 ]]; then
       echo "WOULD REMOVE ${target}"

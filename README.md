@@ -384,7 +384,7 @@ bash scripts/prune-local.sh --dry-run
 bash scripts/prune-local.sh
 ```
 
-La lista è `config/global-skill-prune.txt`: comprende anche ritiri storici. Il pruning sposta le voci legacy in backup e, nella directory condivisa, solo i link riconducibili alla cache o alle sorgenti locali di questo checkout; conserva directory e link estranei. Non segue i symlink. `reality-check`, `playwright` e `setup-matt-pocock-skills` restano a catalogo e non sono nella lista di ritiro.
+La lista è `config/global-skill-prune.txt`: comprende anche ritiri storici. Il pruning sposta le voci legacy in backup e, nella directory condivisa, solo i link riconducibili alla cache o alle sorgenti locali di questo checkout; conserva directory e link estranei e le voci legacy da cui questi dipendono. Non sposta i contenuti dei symlink. `reality-check`, `playwright` e `setup-matt-pocock-skills` restano a catalogo e non sono nella lista di ritiro.
 
 Nei checkout di progetto conserva l'autorità locale:
 

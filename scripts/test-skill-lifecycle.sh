@@ -174,6 +174,20 @@ class SkillLifecycle(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual((shared/'retired/SKILL.md').read_text().splitlines()[-1], 'personal')
 
+    def test_prune_keeps_legacy_target_of_foreign_shared_link(self):
+        legacy = self.home/'skills/retired'
+        self.skill(legacy, 'personal')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'retired').symlink_to(legacy)
+        env = {**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)}
+        for args in (['--dry-run'], []):
+            result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh'), *args],
+                env=env, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertNotIn('WOULD REMOVE ' + str(legacy), result.stdout)
+            self.assertEqual((shared/'retired/SKILL.md').read_text().splitlines()[-1], 'personal')
+
     def test_prune_removes_indirect_shared_link_before_legacy(self):
         self.skill(self.home/'upstream-skills/retired/skills/retired')
         legacy = self.home/'skills/retired'
