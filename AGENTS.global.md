@@ -73,8 +73,6 @@ Clearly distinguish between:
 
 When you cannot verify something, say so. When tests, commands, or checks were not run, say exactly that. When a result is partial, call it partial. When a risk remains, name it.
 
-Per raccomandazioni operative, usa memoria, handoff, issue e risultati di ricerca storici come indizi, non come stato corrente: verifica decisioni e capacità rilevanti nella fonte autorevole vigente del progetto. Se non è verificabile, dichiaralo e non presentarlo come scelta approvata. Per i progetti governati dalla [RFC-0001](https://github.com/skunklabs-uk/agent-os/blob/main/rfcs/RFC-0001-principles.md#6-repository-come-contesto-operativo), applica il ciclo di vita delle fonti previsto dalla RFC.
-
 Never claim completion, safety, compatibility, performance, or correctness without evidence.
 
 ### 5. Finish repository closeout
