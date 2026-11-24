@@ -35,7 +35,7 @@ class SkillLifecycle(unittest.TestCase):
 
     def run_script(self, script, *args):
         result = subprocess.run(['bash', str(self.repo/'scripts'/script), *map(str, args)],
-            env={**os.environ, 'CODEX_HOME': str(self.home)}, text=True, capture_output=True)
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(self.home/'skills')}, text=True, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return result.stdout
 
@@ -86,19 +86,34 @@ class SkillLifecycle(unittest.TestCase):
         self.run_script('sync-from-codex.sh', '--force')
         self.assertFalse((self.repo/'global/retired').exists(), 'retired skill was reimported')
 
+    def test_sync_can_select_legacy_personal_skills(self):
+        self.skill(self.home/'skills/personal', 'legacy')
+        shared = self.root/'shared'
+        shared.mkdir()
+        result = subprocess.run(['bash', str(self.repo/'scripts/sync-from-codex.sh'), '--legacy'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((self.repo/'global/personal/SKILL.md').read_text().splitlines()[-1], 'legacy')
+
     def test_prune_is_reversible_and_does_not_follow_symlinks(self):
+        def prune(*args):
+            result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh'), *args],
+                env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(self.root/'shared')},
+                text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.skill(self.home/'skills/retired', 'preserve-me')
-        self.run_script('prune-local.sh', '--dry-run')
+        prune('--dry-run')
         self.assertTrue((self.home/'skills/retired/SKILL.md').exists())
-        self.run_script('prune-local.sh')
+        prune()
         self.assertFalse((self.home/'skills/retired').exists())
         self.assertTrue(any('preserve-me' in p.read_text() for p in self.home.glob('skill-backups/**/SKILL.md')),
                         'retired real directory was destroyed')
         self.skill(self.root/'external-source', 'external')
         (self.home/'skills/retired').symlink_to(self.root/'external-source')
-        self.run_script('prune-local.sh')
+        prune()
         self.assertTrue((self.root/'external-source/SKILL.md').exists())
-        self.run_script('prune-local.sh')
+        prune()
 
     def test_validator_rejects_project_shadow_of_direct_upstream(self):
         (self.repo/'config/global-skill-upstreams.tsv').write_text(
@@ -126,6 +141,169 @@ class SkillLifecycle(unittest.TestCase):
         self.assertEqual((self.home/'skills/external').resolve(), cache/'skills/external')
         self.assertFalse((self.repo/'global/external').exists())
         self.assertEqual(git('rev-parse', 'HEAD'), ref)
+
+    def test_shared_install_moves_only_matching_legacy_link(self):
+        self.skill(self.repo/'global/sample')
+        legacy = self.home/'skills/sample'
+        legacy.symlink_to(self.repo/'global/sample')
+        shared = self.root/'shared'
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'sample'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((shared/'sample').resolve(), self.repo/'global/sample')
+        self.assertFalse(legacy.is_symlink())
+        self.assertTrue(any(p.is_symlink() for p in self.home.glob('skill-backups/*/skill')))
+
+    def test_shared_install_preserves_legacy_referenced_by_alias(self):
+        self.skill(self.repo/'global/sample')
+        self.skill(self.root/'external')
+        (self.repo/'global/sample/nested').symlink_to(self.root/'external')
+        legacy = self.home/'skills/sample'
+        legacy.symlink_to(self.repo/'global/sample')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'personal-alias').symlink_to(legacy/'nested')
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'sample'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((shared/'personal-alias/SKILL.md').is_file())
+        self.assertTrue(legacy.is_symlink())
+
+    def test_indirect_shared_link_keeps_legacy_target(self):
+        self.skill(self.repo/'global/sample')
+        legacy = self.home/'skills/sample'
+        legacy.symlink_to(self.repo/'global/sample')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'sample').symlink_to(legacy)
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'sample'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((shared/'sample/SKILL.md').is_file())
+        self.assertTrue(legacy.is_symlink())
+
+    def test_prune_preserves_foreign_shared_entry(self):
+        shared = self.root/'shared'
+        shared.mkdir()
+        self.skill(shared/'retired', 'personal')
+        result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh')],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((shared/'retired/SKILL.md').read_text().splitlines()[-1], 'personal')
+
+    def test_prune_preserves_shared_link_referenced_by_personal_alias(self):
+        managed = self.home/'upstream-skills/retired/skills/retired'
+        self.skill(managed, 'managed')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'retired').symlink_to(managed)
+        (shared/'personal-alias').symlink_to(shared/'retired')
+        result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh')],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((shared/'personal-alias/SKILL.md').is_file())
+
+    def test_prune_keeps_legacy_target_of_foreign_shared_link(self):
+        legacy = self.home/'skills/retired'
+        self.skill(legacy, 'personal')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'retired').symlink_to(legacy)
+        env = {**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)}
+        for args in (['--dry-run'], []):
+            result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh'), *args],
+                env=env, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertNotIn('WOULD REMOVE ' + str(legacy), result.stdout)
+            self.assertEqual((shared/'retired/SKILL.md').read_text().splitlines()[-1], 'personal')
+
+    def test_prune_preserves_differently_named_shared_link(self):
+        legacy = self.home/'skills/retired'
+        self.skill(legacy, 'legacy')
+        self.skill(self.root/'external', 'personal')
+        (legacy/'nested').symlink_to(self.root/'external')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'personal-alias').symlink_to(legacy/'nested')
+        result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh')],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual((shared/'personal-alias/SKILL.md').read_text().splitlines()[-1], 'personal')
+
+    def test_prune_preserves_foreign_entry_in_shared_legacy_directory(self):
+        legacy = self.home/'skills/retired'
+        self.skill(legacy, 'personal')
+        self.run_script('prune-local.sh')
+        self.assertEqual((legacy/'SKILL.md').read_text().splitlines()[-1], 'personal')
+
+    def test_prune_removes_indirect_shared_link_before_legacy(self):
+        self.skill(self.home/'upstream-skills/retired/skills/retired')
+        legacy = self.home/'skills/retired'
+        legacy.symlink_to(self.home/'upstream-skills/retired/skills/retired')
+        shared = self.root/'shared'
+        shared.mkdir()
+        (shared/'retired').symlink_to(legacy)
+        result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh')],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
+            text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((shared/'retired').is_symlink())
+        self.assertFalse(legacy.is_symlink())
+
+    def test_dirty_upstream_is_not_overwritten(self):
+        cache = self.home/'upstream-skills/external'
+        self.skill(cache/'skills/external')
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(cache), *args], text=True).strip()
+        git('init', '-q')
+        git('config', 'user.name', 'Lifecycle fixture')
+        git('config', 'user.email', 'fixture@example.invalid')
+        git('add', '.')
+        git('commit', '-qm', 'fixture')
+        ref = git('rev-parse', 'HEAD')
+        git('remote', 'add', 'origin', 'https://github.com/example/skills.git')
+        (self.repo/'config/global-skill-upstreams.tsv').write_text(
+            f'external\thttps://github.com/example/skills.git\t{ref}\tskills/external\n')
+        modified = cache/'skills/external/SKILL.md'
+        modified.write_text('local changes')
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'external'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(self.home/'skills')},
+            text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(modified.read_text(), 'local changes')
+
+    def test_ignored_local_file_is_not_overwritten_by_pin(self):
+        cache = self.home/'upstream-skills/external'
+        self.skill(cache/'skills/external')
+        (cache/'.gitignore').write_text('personal.log\n')
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(cache), *args], text=True).strip()
+        git('init', '-q')
+        git('config', 'user.name', 'Lifecycle fixture')
+        git('config', 'user.email', 'fixture@example.invalid')
+        git('add', '.')
+        git('commit', '-qm', 'base')
+        base = git('rev-parse', 'HEAD')
+        (cache/'personal.log').write_text('upstream')
+        git('add', '-f', 'personal.log')
+        git('commit', '-qm', 'upstream')
+        ref = git('rev-parse', 'HEAD')
+        git('checkout', '-q', '--detach', base)
+        (cache/'personal.log').write_text('personal')
+        git('remote', 'add', 'origin', 'https://github.com/example/skills.git')
+        (self.repo/'config/global-skill-upstreams.tsv').write_text(
+            f'external\thttps://github.com/example/skills.git\t{ref}\tskills/external\n')
+        result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'external'],
+            env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(self.home/'skills')},
+            text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((cache/'personal.log').read_text(), 'personal')
 
 unittest.main(verbosity=2)
 PY

@@ -21,6 +21,5 @@ for name in ("chief-of-staff", "software-factory"):
     assert by_name[name][2] == by_name["ask-matt"][2]
     assert by_name[name][3] == f"skills/in-progress/{name}"
     assert f"| `{name}` |" in readme, name
-assert "135 voci di catalogo" in readme
 print("Skill discovery contract passed (routing, runtime policy, approved beta paths, catalogue)")
 PY

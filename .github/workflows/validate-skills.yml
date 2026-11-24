@@ -139,6 +139,6 @@ jobs:
         run: |
           tmp_codex_home="$(mktemp -d)"
           trap 'rm -rf "$tmp_codex_home"' EXIT
-          CODEX_HOME="$tmp_codex_home" bash scripts/install-local.sh ui-depth-preview
+          CODEX_HOME="$tmp_codex_home" AGENTS_SKILLS_DIR="$tmp_codex_home/skills" bash scripts/install-local.sh ui-depth-preview
           test -L "$tmp_codex_home/skills/ui-depth-preview"
           test "$(readlink "$tmp_codex_home/skills/ui-depth-preview")" = "$GITHUB_WORKSPACE/global/ui-depth-preview"
