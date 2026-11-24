@@ -157,11 +157,12 @@ class SkillLifecycle(unittest.TestCase):
 
     def test_shared_install_preserves_legacy_referenced_by_alias(self):
         self.skill(self.repo/'global/sample')
+        self.skill(self.repo/'global/sample/nested')
         legacy = self.home/'skills/sample'
         legacy.symlink_to(self.repo/'global/sample')
         shared = self.root/'shared'
         shared.mkdir()
-        (shared/'personal-alias').symlink_to(legacy)
+        (shared/'personal-alias').symlink_to(legacy/'nested')
         result = subprocess.run(['bash', str(self.repo/'scripts/install-local.sh'), 'sample'],
             env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
             text=True, capture_output=True)
@@ -209,10 +210,10 @@ class SkillLifecycle(unittest.TestCase):
 
     def test_prune_preserves_differently_named_shared_link(self):
         legacy = self.home/'skills/retired'
-        self.skill(legacy, 'personal')
+        self.skill(legacy/'nested', 'personal')
         shared = self.root/'shared'
         shared.mkdir()
-        (shared/'personal-alias').symlink_to(legacy)
+        (shared/'personal-alias').symlink_to(legacy/'nested')
         result = subprocess.run(['bash', str(self.repo/'scripts/prune-local.sh')],
             env={**os.environ, 'CODEX_HOME': str(self.home), 'AGENTS_SKILLS_DIR': str(shared)},
             text=True, capture_output=True)

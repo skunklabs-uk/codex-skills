@@ -130,13 +130,17 @@ migrate_legacy_link() {
   [[ "${dest_dir}" -ef "${codex_home}/skills" ]] && return 0
   [[ "$(readlink "${dest_dir}/${name}")" == "${source}" ]] || return 0
   if [[ -L "${legacy}" && "$(readlink -f "${legacy}")" == "$(readlink -f "${source}")" ]]; then
-    local shared_entry
+    local shared_entry shared_resolved legacy_resolved
+    legacy_resolved="$(readlink -m "${legacy}")"
     for shared_entry in "${dest_dir}"/* "${dest_dir}"/.[!.]* "${dest_dir}"/..?*; do
       [[ "${shared_entry}" == "${dest_dir}/${name}" ]] && continue
-      if [[ -L "${shared_entry}" && "${shared_entry}" -ef "${legacy}" ]]; then
-        echo "Preserved legacy link referenced by ${shared_entry}"
-        return 0
-      fi
+      [[ -L "${shared_entry}" ]] || continue
+      shared_resolved="$(readlink -m "${shared_entry}")"
+      case "${shared_resolved}" in
+        "${legacy_resolved}"|"${legacy_resolved}/"*)
+          echo "Preserved legacy link referenced by ${shared_entry}"
+          return 0 ;;
+      esac
     done
     mkdir -p "${codex_home}/skill-backups"
     local backup

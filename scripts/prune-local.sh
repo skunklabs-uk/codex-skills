@@ -90,8 +90,14 @@ while IFS= read -r raw_line || [[ -n "${raw_line}" ]]; do
       shared_removable=1
     fi
     if [[ "${scope}" == legacy ]]; then
+      legacy_resolved="$(readlink -m "${target}")"
       for shared_entry in "${shared_dir}"/* "${shared_dir}"/.[!.]* "${shared_dir}"/..?*; do
-        [[ -L "${shared_entry}" && "${shared_entry}" -ef "${target}" ]] || continue
+        [[ -L "${shared_entry}" ]] || continue
+        shared_resolved="$(readlink -m "${shared_entry}")"
+        case "${shared_resolved}" in
+          "${legacy_resolved}"|"${legacy_resolved}/"*) ;;
+          *) continue ;;
+        esac
         [[ "${shared_removable}" -eq 1 && "${shared_entry}" == "${shared_dir}/${entry}" ]] && continue
         echo "SKIP ${target}: referenced by a preserved shared link"
         continue 2
