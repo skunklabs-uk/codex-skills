@@ -31,7 +31,7 @@ Dalla radice del repository, calcolare gli hash con `sha256sum projects/baialupo
 1. Selezionare uno stile per nome e aprire **la relativa immagine reale**.
 2. Distinguere trattamento grafico da soggetto rappresentato; non trasformare il contenuto della reference in vincolo su velivoli, persone, colori o luoghi del nuovo articolo.
 3. Generare un'immagine di base **senza loghi o mascotte**.
-4. Applicare nel secondo passaggio il file originale `public/img/covers/baialupo-logo-aviator.svg` come overlay deterministico, non un logo copiato dalle reference.
+4. Se il brief o la fonte editoriale richiede il marchio, applicare nel secondo passaggio il file originale `public/img/covers/baialupo-logo-aviator.svg` come overlay deterministico, non un logo copiato dalle reference.
 5. Verificare stilisticamente la cover confrontandola con la reference scelta e controllare anche il crop delle card.
 
 I loghi già inclusi nelle immagini storiche sono parte della documentazione visiva, **non** asset da ritagliare o riutilizzare.

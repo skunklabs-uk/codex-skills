@@ -76,16 +76,17 @@ inquadratura: modifica soltanto il trattamento artistico richiesto.
 Output: UNA immagine autonoma, non un collage o trittico di copertine.
 Nessuna tipografia aggiunta: no titoli, testate, didascalie, banner o cornici.
 Non generare loghi, mascotte, marchi, watermark o simboli Baialupo.
-Lascia libero l'angolo [ANGOLO] per l'overlay separato successivo.
+Se il brief richiede il marchio, lascia libero l'angolo [ANGOLO]
+per l'overlay separato successivo.
 ```
 
-### Pipeline immagini e logo: due fasi separate
+### Pipeline immagini e logo
 
 1. **Generazione (agente creativo, quando disponibile):** invia un prompt completo **per un solo articolo alla volta**. Controlla il testo *effettivamente inviato al generatore*, non soltanto il modello di prompt nella skill: deve chiedere un'unica immagine di apertura, non un layout, tre cover affiancate o testi da rivista. Produci e conserva una base senza loghi o elementi grafici sovrapposti. Non richiedere al modello di riprodurre l'SVG.
-2. **Postprocessing (agente tecnico distinto, quando disponibile):** prendi l'immagine di base e sovrapponi in un angolo **l'esatto file** `public/img/covers/baialupo-logo-aviator.svg` del repository, senza ridisegno, alterazione di colori, font, proporzioni o parti del marchio. Usa un compositing deterministico con rendering fedele dell'SVG, margini uniformi e dimensioni leggibili sul ritaglio della card. Se il file canonico non è accessibile, ferma soltanto l'overlay e segnala il blocco: non sostituirlo con un logo generato. La presenza di più agenti non è obbligatoria, ma le due fasi e i rispettivi output devono rimanere verificabili.
-3. **Review:** verifica prima che la base sia un'unica immagine panoramica riferita a un solo articolo, senza impaginazioni, scritte o marchi aggiunti. Se l'output è un trittico o una pagina da rivista, scartalo prima dell'overlay e correggi la richiesta o cambia approccio, senza ripetere alla cieca prompt equivalenti. Confronta poi la base con il composito finale: l'unica aggiunta ordinaria è l'overlay autentico (identità del marchio, posizione, proporzioni). Confronta tratto, palette, luce e texture con la reference dello stile scelto; una composizione simile non prova una revisione stilistica riuscita. Controlla crop desktop/mobile, leggibilità, geometria aeronautica e coerenza con l'articolo. Se non hai verificato visivamente il risultato, non dichiararlo approvato.
+2. **Postprocessing, solo se il marchio è richiesto dal brief o dalla fonte editoriale:** sovrapponi in un angolo **l'esatto file** `public/img/covers/baialupo-logo-aviator.svg` del repository, senza ridisegno o alterazioni. Usa un compositing deterministico, con rendering fedele dell'SVG, margini uniformi e dimensioni leggibili sulla card. Se il file canonico non è accessibile, ferma soltanto l'overlay e segnala il blocco: non sostituirlo con un logo generato. Un agente tecnico distinto può eseguire questa fase quando disponibile.
+3. **Review:** verifica che la base sia un'unica immagine panoramica per un solo articolo, senza impaginazioni, scritte o marchi aggiunti. Se è un trittico o una pagina da rivista, scartala e correggi la richiesta o cambia approccio, senza ripetere alla cieca prompt equivalenti. Se è stato richiesto un overlay, confronta base e composito verificando identità, posizione e proporzioni del marchio. Confronta tratto, palette, luce e texture con la reference scelta; controlla crop desktop/mobile, leggibilità, geometria aeronautica e coerenza con l'articolo. Se non hai verificato visivamente il risultato, non dichiararlo approvato.
 
-Conserva base e risultato finale almeno durante la review; registra nel lavoro corrente fonte dell'SVG e file finale, senza nuovi registri permanenti. Solo il file finale validato entra nel campo `cover` e nel corpo dell'articolo. Non usare la cover editoriale come locandina in `events.md`.
+Conserva la base e, se presente, il composito almeno durante la review; registra nel lavoro corrente la fonte dell'SVG quando usato e il file finale, senza nuovi registri permanenti. Solo il file finale validato entra nel campo `cover` e nel corpo dell'articolo. Non usare la cover editoriale come locandina in `events.md`.
 
 ## Verifica e pubblicazione
 
