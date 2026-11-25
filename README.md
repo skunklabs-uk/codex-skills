@@ -411,22 +411,29 @@ L'installazione non esegue audit, pubblicazioni o operazioni live. Verifica sepa
 Per OMP, lo stesso installer può collegare `AGENTS.global.md` come `AGENTS.md`
 nella directory agente effettiva: per impostazione predefinita `~/.omp/agent`
 oppure `~/.omp/profiles/<profilo>/agent` per un profilo nominato.
-`PI_CODING_AGENT_DIR`, se impostata, può cambiare la directory. Prima di
-collegare la fonte, verificare quale contesto utente è già caricato: il file
-nativo può oscurare istruzioni utente di altri provider. Se esistono istruzioni
-personali, conservarle in un file nativo regolare e aggiungervi l'import OMP
-`@percorso` alla fonte condivisa; non scrivere attraverso un symlink.
+Nel profilo default `PI_CODING_AGENT_DIR` può cambiare la directory; i profili
+nominati usano la propria directory. Prima di collegare la fonte, verificare
+quale contesto utente è già caricato: il file nativo può oscurare istruzioni di
+altri provider. Conservare le istruzioni personali in un file nativo regolare
+e aggiungervi l'import OMP `@percorso`; non scrivere attraverso un symlink.
 
 Usare un checkout stabile e aggiornato di questo repository, non un worktree
 temporaneo: il link segue il checkout, non automaticamente `main`. Aggiornarlo
 con `git pull --ff-only` quando il branch segue `origin/main`, dopo aver
 verificato eventuali modifiche locali.
 
-Il contesto utente nativo è caricato nelle nuove sessioni principali OMP;
-non sostituisce le istruzioni di progetto o i `RULES.md` sticky. I subagenti
-task non ricevono automaticamente i file chiamati `AGENTS.md`. Provider,
-override e sessioni già aperte possono cambiare il caricamento: verificare
-nel runtime e riaprire la sessione dopo la modifica.
+I task subagent non ricevono i file chiamati `AGENTS.md`. Per includere la
+stessa fonte anche nei delegati, collegarla nella directory agente con un altro
+basename, ad esempio `SHARED_INSTRUCTIONS.md`, e aggiungere quel nome a
+`contextFiles.extra` nel `config.yml` del profilo, preservando eventuali voci
+esistenti. Il collegamento `AGENTS.md` può restare per le sessioni principali.
+Un `contextFiles.extra` di progetto sostituisce la lista utente ed esclude gli
+extra della directory agente; provider o file disabilitati possono impedire il
+caricamento. Verificare le impostazioni effettive e il contesto dei delegati:
+la presenza di un link non garantisce la propagazione in ogni progetto.
+
+Le istruzioni di progetto e i `RULES.md` sticky restano distinti. Le sessioni
+già aperte possono conservare il contesto precedente; riaprirle dopo la modifica.
 
 ## Aggiornamenti upstream
 
