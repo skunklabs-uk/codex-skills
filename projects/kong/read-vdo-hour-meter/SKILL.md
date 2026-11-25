@@ -26,20 +26,19 @@ decimal-hour value.
 6. Build a proposed table: filename, capture time if known, reading, confidence,
    and notes for unclear cases. Use `????` as the reading placeholder for values
    that are not clear enough to trust.
-7. Sanity-check the sequence: readings should be non-decreasing; block-on minus
-   block-off should be positive, at most 4 hours, and close to photo elapsed time
-   when photos are paired.
-8. Write `readings.yml` in the image folder unless the user asked for a different
-   output path. Put decimal readings for clear values and the quoted placeholder
-   `'????'` for unclear values. Do not guess.
-9. If `readings.yml` contains any `????` placeholders, stop. Tell the user to
-   complete the YAML file before continuing, list the filenames that still need a
-   value, and suggest the continuation command:
-   `uv run kong drive-dry-run --env-file .env.development --review --readings-file <path-to-readings.yml> --append-sheet --create-gmail-draft`.
-10. If `readings.yml` contains no placeholders, run the command above to continue
-     the workflow and prepare the Gmail draft, unless the user explicitly asked not
-     to run downstream writes. Do not add `--complete-run` for draft preparation;
-     that option also archives Drive photos and requires Drive write scopes.
+7. Check the sequence and confirm photo pairings before comparing block-off and
+   block-on. Flag durations over 4 hours as practical anomalies, not automatic
+   errors; use photo timing and the meter's tenths as approximate checks.
+8. If creating or updating a readings file is in scope, write `readings.yml` in
+   the image folder unless the user requested another path. Put decimal readings
+   for clear values and the quoted placeholder `'????'` for unclear values.
+9. If the file contains placeholders, report the filenames and stop before
+   running Kong. The user must complete the values first.
+10. Continue with `--append-sheet --create-gmail-draft` only when both downstream
+    writes are within the user's authorized scope. A request to read photos or
+    produce `readings.yml` alone does not authorize them. Do not add
+    `--complete-run` unless Drive archive/state completion is also authorized;
+    it requires Drive write scopes.
 
 ## Visual Reading Rules
 
@@ -58,7 +57,8 @@ Essential rules:
   contiguous, place the decimal point before the final digit.
 - Do not copy extra white digits from the dial into the reading.
 - Do not invent hidden digits. If a digit is cropped, blocked by glare, or
-  covered by the needle, put `????` in `readings.yml` for that file.
+  covered by the needle, mark the reading `????` in the table and, if a YAML
+  file was requested, in `readings.yml`.
 
 ## Output Contract
 
@@ -82,13 +82,14 @@ Do not put `UNREADABLE`, comments, notes, confidence values, or alternate
 candidates inside `readings.yml`. Use only decimal values matching `^\d+\.\d$`
 or the temporary placeholder `'????'`.
 
-When unresolved values remain, report them after writing the YAML:
+Report unresolved values whether or not a YAML file was requested:
 
 ```text
 filename.JPG  unclear  leftmost LCD digit cut off
 ```
 
-Then stop and tell the user to replace every `????` before running Kong. Suggest:
+If the user also requested the downstream workflow, replace every `????` before
+running Kong. The continuation command appends to Sheets and creates a Gmail draft:
 
 ```bash
 uv run kong drive-dry-run --env-file .env.development --review --readings-file photo/YYYY-MM-DD/readings.yml --append-sheet --create-gmail-draft

@@ -1,8 +1,7 @@
 # Vault Conventions
 
-These conventions apply to the current clone of the support workspace `skunklabs-uk/obsidian`.
-
-The real Obsidian vault is `/mnt/c/Users/iingenito/OneDrive - TXT e-solutions S.p.A/Documents/Obsidian Vault`. Treat it as a read-only source unless the user explicitly approves a specific write.
+Use the current `skunklabs-uk/obsidian` workspace instructions to locate the
+source vault. Treat it as read-only unless the user authorizes a specific write.
 
 ## Language
 
@@ -13,58 +12,11 @@ The real Obsidian vault is `/mnt/c/Users/iingenito/OneDrive - TXT e-solutions S.
 - Use "nota grezza" for unprocessed capture.
 - Use "nota curata" for reviewed wiki material.
 
-## Recommended Workspace Directories
+## Workspace Structure and Templates
 
-- `Inbox/`: unprocessed captures and temporary notes.
-- `Wiki/`: durable personal knowledge.
-- `Projects/`: active projects.
-- `Areas/`: ongoing responsibilities.
-- `References/`: external sources, excerpts, schemas, manuals, and copied material.
-- `Archive/`: inactive notes retained for history.
-
-## Curated Wiki Note Template
-
-```md
----
-type: wiki
-status: draft
-updated: YYYY-MM-DD
-tags: []
----
-
-# Title
-
-## Sintesi
-
-## Dettagli
-
-## Collegamenti
-
-## Domande Aperte
-```
-
-## Project Note Template
-
-```md
----
-type: project
-status: active
-updated: YYYY-MM-DD
-tags: []
----
-
-# Project Name
-
-## Obiettivo
-
-## Stato
-
-## Prossime Azioni
-
-## Decisioni
-
-## Collegamenti
-```
+Use the current workspace's `Governance/Vault-Structure.md` and
+`Governance/Document-Placement-Guide.md` for directories, metadata and templates.
+Do not copy directory names or frontmatter from an older workspace.
 
 ## Review Checklist
 

@@ -36,16 +36,15 @@ Use low confidence or stop when:
 
 ## Sequence Checks
 
-After reading all images, sort by capture time and pair photos in order:
+Sort images by capture time when available, but verify which photos belong
+together and which show block-off and block-on. Do not assume every consecutive
+pair is complete; report ambiguous associations.
 
-1. block off;
-2. block on.
+For a confirmed pair, check that the block-on reading is greater than block-off.
+Flag durations over 4 hours for review: this is a practical anomaly threshold,
+not an automatic error or an operating limit. Compare elapsed time between photos
+with the meter duration as an approximate check. One tenth of an hour is six
+minutes; photo timing may also differ from meter start and stop.
 
-For each pair:
-
-- block-on reading must be greater than block-off reading;
-- duration must be greater than 0 and no more than 4 hours;
-- duration in minutes should be close to capture elapsed minutes, allowing about
-  6 minutes because the meter advances by tenths.
-
-If a sequence check fails, report the suspected file and ask for confirmation.
+Report suspicious readings, timing or pairings for confirmation. Never alter a
+reading to make a duration fit.
