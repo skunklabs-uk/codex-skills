@@ -43,6 +43,8 @@ Before adding complexity, be able to explain:
 
 If that explanation is weak, do the simpler thing.
 
+When a chosen approach encounters a blocker, first ask whether the approach is still needed for the approved outcome. Before expanding its infrastructure, tooling, tests or dependencies, prefer an existing native or occasional manual action when it satisfies the same outcome safely and within authorization. A blocker of the chosen mechanism is not automatically a blocker of the mission. This is the operational application of RFC-0001, not a new gate or reporting requirement.
+
 ### 3. Stop causing collateral damage
 
 Keep changes narrow and intentional.
